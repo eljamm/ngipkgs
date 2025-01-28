@@ -5,7 +5,6 @@
 }@args:
 {
   packages = null;
-
   nixos = {
     modules = null;
     examples = {
