@@ -11,6 +11,7 @@ let
     list
     option
     attrs
+    enum
     ;
 in
 rec {
@@ -19,7 +20,12 @@ rec {
       name = string name;
       metadata = with metadata; {
         summary = string summary;
-        fund = string fund;
+        funds = list (enum [
+          "Commons"
+          "Core"
+          "Entrust"
+          "Review"
+        ]) funds;
         status = string status;
 
         websites = with websites; {
@@ -46,7 +52,7 @@ rec {
         contact = null;
         other = [ ];
       };
-      fund = "";
+      funds = [ "Review" ];
       status = "";
     };
   };
