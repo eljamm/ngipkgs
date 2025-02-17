@@ -13,10 +13,7 @@ let
     attrs
     enum
     either
-    any
     ;
-
-  optionalAttrs = option (attrs (option string));
 in
 rec {
   project =
@@ -30,16 +27,16 @@ rec {
           "Entrust"
           "Review"
         ]) funds;
-        websites = (either optionalAttrs any) {
-          repo = websites.repo;
-          docs = websites.docs or null;
-          blog = websites.blog or null;
-          forum = websites.forum or null;
-          matrix = websites.matrix or null;
+        websites = attrs (either (option string) (list string)) {
+          repo = string websites.repo;
+          docs = option string (websites.docs or null);
+          blog = option string (websites.blog or null);
+          forum = option string (websites.forum or null);
+          matrix = option string (websites.matrix or null);
           other = list string (websites.other or [ ]);
         };
-        contact = optionalAttrs {
-          email = contact.email or null;
+        contact = {
+          email = option string (contact.email or null);
         };
       };
     };
