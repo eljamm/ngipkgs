@@ -30,7 +30,6 @@ rec {
           "Entrust"
           "Review"
         ]) funds;
-        status = string status;
         websites = (either optionalAttrs any) {
           repo = websites.repo;
           docs = websites.docs or null;
@@ -54,7 +53,6 @@ rec {
         docs = "";
       };
       funds = [ "Review" ];
-      status = "";
       contact = null;
     };
   };
