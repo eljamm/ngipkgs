@@ -12,7 +12,11 @@ let
     option
     attrs
     enum
+    either
+    any
     ;
+
+  optionalAttrs = option (attrs (option string));
 in
 rec {
   project =
@@ -27,18 +31,16 @@ rec {
           "Review"
         ]) funds;
         status = string status;
-
-        websites = with websites; {
-          repo = string repo;
-          docs = option string (websites.docs or null);
-          other = list string other;
-
-          contact = option (attrs (option string)) {
-            email = contact.email or null;
-            forum = contact.forum or null;
-            matrix = contact.matrix or null;
-            blog = contact.blog or null;
-          };
+        websites = (either optionalAttrs any) {
+          repo = websites.repo;
+          docs = websites.docs or null;
+          blog = websites.blog or null;
+          forum = websites.forum or null;
+          matrix = websites.matrix or null;
+          other = list string (websites.other or [ ]);
+        };
+        contact = optionalAttrs {
+          email = contact.email or null;
         };
       };
     };
@@ -49,11 +51,11 @@ rec {
       summary = "";
       websites = {
         repo = "";
-        contact = null;
-        other = [ ];
+        docs = "";
       };
       funds = [ "Review" ];
       status = "";
+      contact = null;
     };
   };
 }
