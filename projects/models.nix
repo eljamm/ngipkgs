@@ -21,12 +21,6 @@ rec {
       name = string name;
       metadata = with metadata; {
         summary = string summary;
-        funds = list (enum [
-          "Commons"
-          "Core"
-          "Entrust"
-          "Review"
-        ]) funds;
         websites = attrs (either (option string) (list string)) {
           repo = string websites.repo;
           docs = option string (websites.docs or null);
@@ -34,9 +28,6 @@ rec {
           forum = option string (websites.forum or null);
           matrix = option string (websites.matrix or null);
           other = list string (websites.other or [ ]);
-        };
-        contact = {
-          email = option string (contact.email or null);
         };
       };
     };
