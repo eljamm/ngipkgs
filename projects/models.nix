@@ -40,8 +40,6 @@ rec {
         repo = "";
         docs = "";
       };
-      funds = [ "Review" ];
-      contact = null;
     };
   };
 }
