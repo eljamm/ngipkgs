@@ -17,19 +17,21 @@ let
 in
 rec {
   project =
-    p: with p; {
+    project: {
       name = string name;
-      metadata = with metadata; {
-        summary = string summary;
-        websites = attrs (either (option string) (list string)) {
-          repo = string websites.repo;
-          docs = option string (websites.docs or null);
-          blog = option string (websites.blog or null);
-          forum = option string (websites.forum or null);
-          matrix = option string (websites.matrix or null);
-          other = list string (websites.other or [ ]);
-        };
+      metadata = {
+        summary = option (string project.metadata.summary);
+        subgrants = list string project.metadata.subgrants;
       };
+      # TODO: somehow express that "not set" means "not needed" and "set to `null`" means "needed but not available".
+      nixos.modules.programs = option attrs (option (/* TODO: a module */)) (
+        if project ? nixos.modules.programs then project.nixos.modules.programs else null
+        );
+        nixos.modules.services = option attrs (option (/* TODO: a module */)) (
+        if project ? nixos.modules.programs then project.nixos.modules.programs else null
+        );
+      nixos.examples = attrs (option /* attrs: description, path, documentation */) project.nixos.examples;
+      nixos.tests = attrs (option derivation) project.nixos.tests;
     };
 
   example = project {
