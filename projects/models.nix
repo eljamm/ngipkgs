@@ -63,9 +63,9 @@ rec {
         basic = null;
 
         # Needs to be a derivation. Error raised otherwise.
-        #will-fail = "";
+        #simple = "This will fail.";
 
-        simple = derivation {
+        foobar-cli = derivation {
           name = "myname";
           builder = "mybuilder";
           system = "mysystem";
