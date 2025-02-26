@@ -18,8 +18,23 @@ let
     path
     ;
 
-  # TODO: use struct
-  moduleType = string;
+  programType = struct "program" {
+    name = string;
+    source = drv;
+    documentation = optionalStruct {
+      build = option string;
+      tests = option string;
+    };
+    examples = attrs exampleType;
+  };
+
+  serviceType = struct "service" {
+    name = string;
+    documentation = optionalStruct {
+      config = option string;
+    };
+    examples = attrs exampleType;
+  };
 
   exampleType = struct "example" {
     description = option string; # TODO: should this be non-optional?
@@ -40,8 +55,8 @@ rec {
       examples = option (attrs exampleType);
       tests = option (attrs (option drv));
       modules = struct "modules" {
-        programs = option (attrs (option moduleType));
-        services = option (attrs (option moduleType));
+        programs = option (attrs (option programType));
+        services = option (attrs (option serviceType));
       };
     };
   };
