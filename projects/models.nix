@@ -15,14 +15,15 @@ let
     either
     struct
     drv
+    path
     ;
 
   # TODO: use struct
   moduleType = string;
 
   exampleType = struct "example" {
-    description = option string;
-    path = option string;
+    description = option string; # TODO: should this be non-optional?
+    path = either string path;
     documentation = option string;
   };
 
@@ -48,7 +49,15 @@ rec {
   example = project {
     name = "foobar";
     nixos = {
-      examples = { };
+      examples = {
+        foobar-cli = {
+          description = ''
+            This is how you can run `foobar` in the terminal.
+          '';
+          path = "";
+          documentation = "";
+        };
+      };
       tests = {
         # Set to `null`: needed, but not available
         basic = null;
