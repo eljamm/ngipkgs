@@ -46,15 +46,25 @@ rec {
   };
 
   example = project {
-    name = "";
+    name = "foobar";
     nixos = {
       examples = { };
       tests = {
+        # Set to `null`: needed, but not available
         basic = null;
+
+        # Needs to be a derivation. Error raised otherwise.
+        #will-fail = "";
+
+        simple = derivation {
+          name = "myname";
+          builder = "mybuilder";
+          system = "mysystem";
+        };
       };
       modules = {
         # Attributes not defined in the data structure are not allowed.
-        # Uncommenting this will raise an error
+        # Uncommenting the line below will raise an error.
         #hello = { };
 
         programs = {
