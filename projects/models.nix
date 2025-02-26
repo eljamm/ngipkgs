@@ -103,6 +103,21 @@ rec {
           # Set to `null`: needed, but not available
           foobar = null;
 
+          foobar-cli = {
+            name = "foobar-cli";
+            source = derivation {
+              name = "foobar-cli-src";
+              builder = "mybuilder";
+              system = "mysystem";
+            };
+            examples = {
+              inherit (examples) foobar-cli;
+
+              # needed, not available
+              foobar-tui = null;
+            };
+          };
+
           # Not set: not needed
         };
       };
