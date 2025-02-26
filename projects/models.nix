@@ -73,7 +73,7 @@ rec {
             This is how you can run `foobar` in the terminal.
           '';
           path = "";
-          documentation = "";
+          documentation = "https://foo.bar/docs";
           tests = {
             # Each example must have at least one test.
             # If the line below is commented out, an error will be raised.
@@ -110,6 +110,8 @@ rec {
               builder = "mybuilder";
               system = "mysystem";
             };
+            # Each program must have at least one example.
+            # Examples can be null to indicate that they're needed.
             examples = {
               inherit (examples) foobar-cli;
 
