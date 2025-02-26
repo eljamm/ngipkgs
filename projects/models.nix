@@ -26,7 +26,7 @@ let
       build = option string;
       tests = option string;
     };
-    examples = attrs exampleType;
+    examples = nonEmtpyAttrs (option exampleType);
   };
 
   serviceType = struct "service" {
@@ -34,7 +34,7 @@ let
     documentation = optionalStruct {
       config = option string;
     };
-    examples = attrs exampleType;
+    examples = nonEmtpyAttrs (option exampleType);
   };
 
   exampleType = struct "example" {
