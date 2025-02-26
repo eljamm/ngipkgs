@@ -16,6 +16,7 @@ let
     struct
     drv
     path
+    restrict
     ;
 
   programType = struct "program" {
@@ -40,9 +41,11 @@ let
     description = option string; # TODO: should this be non-optional?
     path = either string path;
     documentation = option string;
+    tests = nonEmtpyAttrs drv;
   };
 
   optionalStruct = attrs: option (struct attrs);
+  nonEmtpyAttrs = t: restrict "non-empty-attrs" (a: a != { }) (attrs t);
 in
 rec {
   project = struct {
@@ -63,7 +66,7 @@ rec {
 
   example = project {
     name = "foobar";
-    nixos = {
+    nixos = rec {
       examples = {
         foobar-cli = {
           description = ''
@@ -71,6 +74,11 @@ rec {
           '';
           path = "";
           documentation = "";
+          tests = {
+            # Each example must have at least one test.
+            # If the line below is commented out, an error will be raised.
+            inherit (tests) foobar-cli;
+          };
         };
       };
       tests = {
