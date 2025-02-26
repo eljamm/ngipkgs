@@ -13,34 +13,56 @@ let
     attrs
     enum
     either
+    struct
+    drv
     ;
+
+  # TODO: use struct
+  moduleType = string;
+
+  exampleType = struct "example" {
+    description = option string;
+    path = option string;
+    documentation = option string;
+  };
+
+  optionalStruct = attrs: option (struct attrs);
 in
 rec {
-  project =
-    project: {
-      name = string name;
-      metadata = {
-        summary = option (string project.metadata.summary);
-        subgrants = list string project.metadata.subgrants;
-      };
-      # TODO: somehow express that "not set" means "not needed" and "set to `null`" means "needed but not available".
-      nixos.modules.programs = option attrs (option (/* TODO: a module */)) (
-        if project ? nixos.modules.programs then project.nixos.modules.programs else null
-        );
-        nixos.modules.services = option attrs (option (/* TODO: a module */)) (
-        if project ? nixos.modules.programs then project.nixos.modules.programs else null
-        );
-      nixos.examples = attrs (option /* attrs: description, path, documentation */) project.nixos.examples;
-      nixos.tests = attrs (option derivation) project.nixos.tests;
+  project = struct {
+    name = string;
+    metadata = optionalStruct {
+      summary = option string;
+      subgrants = list string;
     };
+    nixos = struct "nixos" {
+      examples = option (attrs exampleType);
+      tests = option (attrs (option drv));
+      modules = struct "modules" {
+        programs = option (attrs (option moduleType));
+        services = option (attrs (option moduleType));
+      };
+    };
+  };
 
   example = project {
     name = "";
-    metadata = {
-      summary = "";
-      websites = {
-        repo = "";
-        docs = "";
+    nixos = {
+      examples = { };
+      tests = {
+        basic = null;
+      };
+      modules = {
+        # Attributes not defined in the data structure are not allowed.
+        # Uncommenting this will raise an error
+        #hello = { };
+
+        programs = {
+          # Set to `null`: needed, but not available
+          foobar = null;
+
+          # Not set: not needed
+        };
       };
     };
   };
