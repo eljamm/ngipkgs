@@ -11,17 +11,22 @@ let
     list
     option
     attrs
-    enum
     either
     struct
     drv
     path
     restrict
+    defun
+    function
+    any
     ;
 
   programType = struct "program" {
-    name = string;
-    source = drv;
+    name = option string;
+    module = defun [
+      (attrs any)
+      (attrs any)
+    ] function any;
     documentation = optionalStruct {
       build = option string;
       tests = option string;
@@ -30,7 +35,7 @@ let
   };
 
   serviceType = struct "service" {
-    name = string;
+    name = option string;
     documentation = optionalStruct {
       config = option string;
     };
@@ -105,11 +110,6 @@ rec {
 
           foobar-cli = {
             name = "foobar-cli";
-            source = derivation {
-              name = "foobar-cli-src";
-              builder = "mybuilder";
-              system = "mysystem";
-            };
             # Each program must have at least one example.
             # Examples can be null to indicate that they're needed.
             examples = {
