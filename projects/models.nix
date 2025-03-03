@@ -2,10 +2,9 @@
   lib,
   pkgs,
   sources,
+  yants ? import sources.yants { inherit lib; },
 }:
 let
-  yants = import sources.yants { };
-
   inherit (yants)
     string
     list
