@@ -50,18 +50,22 @@ rec {
 
   ngipkgs = import ./pkgs/by-name { inherit pkgs lib dream2nix; };
 
-  raw-projects = import ./projects {
-    inherit lib;
-    pkgs = pkgs // ngipkgs;
-    sources = {
-      inputs = sources;
-      # TODO: sops-nix is needed only for Pretalx and Rosenpass, and they can get it from `sources`
-      modules = nixos-modules // {
-        inherit sops-nix;
+  raw-projects =
+    let
+      args = {
+        inherit lib;
+        pkgs = pkgs // ngipkgs;
+        sources = {
+          inputs = sources;
+          # TODO: sops-nix is needed only for Pretalx and Rosenpass, and they can get it from `sources`
+          modules = nixos-modules // {
+            inherit sops-nix;
+          };
+          inherit examples;
+        };
       };
-      inherit examples;
-    };
-  };
+    in
+    import ./projects-old args // import ./projects args;
 
   project-models = import ./projects/models.nix { inherit lib pkgs sources; };
 

@@ -64,6 +64,7 @@ rec {
       modules = struct "modules" {
         programs = option (attrs (option programType));
         services = option (attrs (option serviceType));
+        packages = option (attrs drv);
       };
     };
   };
