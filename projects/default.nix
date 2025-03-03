@@ -31,7 +31,7 @@ let
       services = empty-if-null (new-project.nixos.modules.services or { });
     in
     {
-      packages = { };
+      packages = { }; # NOTE: the overview expects a set
       nixos.modules.services = mapAttrs (name: value: value.path) services;
       nixos.examples = null;
       nixos.tests = null;
