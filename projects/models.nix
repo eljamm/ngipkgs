@@ -20,12 +20,16 @@ let
     any
     ;
 
+  moduelType = (attrs string);
+
+  mkModule = defun [
+    (attrs string)
+    moduelType
+  ] ({ ... }: { });
+
   programType = struct "program" {
     name = option string;
-    module = defun [
-      (attrs any)
-      (attrs any)
-    ] function any;
+    module = moduelType;
     documentation = optionalStruct {
       build = option string;
       tests = option string;
@@ -109,6 +113,7 @@ rec {
 
           foobar-cli = {
             name = "foobar-cli";
+            module = mkModule { };
             # Each program must have at least one example.
             # Examples can be null to indicate that they're needed.
             examples = {
