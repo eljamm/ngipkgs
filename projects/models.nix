@@ -52,6 +52,7 @@ let
 
   serviceType = struct "service" {
     name = option string;
+    path = either string path;
     documentation = optionalStruct {
       config = option string;
     };
