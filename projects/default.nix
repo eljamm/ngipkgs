@@ -24,6 +24,10 @@ let
     project
     ;
 
+  migrateProject = new-project: {
+    packages = new-project.nixos.modules.packages;
+  };
+
   baseDirectory = ./.;
 
   projectDirectories =
@@ -46,5 +50,5 @@ let
     concatMapAttrs names (readDir baseDirectory);
 in
 mapAttrs (
-  name: directory: project (import directory { inherit lib pkgs sources; })
+  name: directory: migrateProject (project (import directory { inherit lib pkgs sources; }))
 ) projectDirectories
