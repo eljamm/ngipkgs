@@ -24,9 +24,18 @@ let
     project
     ;
 
-  migrateProject = new-project: {
-    packages = new-project.nixos.modules.packages;
-  };
+  empty-if-null = x: if x != null then x else { };
+  newProjectToOld =
+    new-project:
+    let
+      services = empty-if-null (new-project.nixos.modules.services or { });
+    in
+    {
+      packages = null;
+      nixos.modules.services = mapAttrs (name: value: value.path) services;
+      nixos.examples = null;
+      nixos.tests = null;
+    };
 
   baseDirectory = ./.;
 
@@ -50,5 +59,5 @@ let
     concatMapAttrs names (readDir baseDirectory);
 in
 mapAttrs (
-  name: directory: migrateProject (project (import directory { inherit lib pkgs sources; }))
+  name: directory: newProjectToOld (project (import directory { inherit lib pkgs sources; }))
 ) projectDirectories
