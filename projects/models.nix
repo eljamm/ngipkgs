@@ -20,16 +20,29 @@ let
     any
     ;
 
-  moduelType = (attrs string);
+  mkModule =
+    defun
+      [
+        (attrs any)
+        moduleType
+      ]
+      (
+        { name, src, ... }:
+        {
+          name = "hello ${name}";
+          inherit src;
+        }
+      );
 
-  mkModule = defun [
-    (attrs string)
-    moduelType
-  ] ({ ... }: { });
+  # WIP: just an example for now
+  moduleType = struct {
+    name = string;
+    src = string;
+  };
 
   programType = struct "program" {
     name = option string;
-    module = moduelType;
+    module = moduleType;
     documentation = optionalStruct {
       build = option string;
       tests = option string;
@@ -113,7 +126,13 @@ rec {
 
           foobar-cli = {
             name = "foobar-cli";
-            module = mkModule { };
+            module = mkModule {
+              name = "foobar";
+              src = "";
+
+              # not included in the final attribute
+              test = "";
+            };
             # Each program must have at least one example.
             # Examples can be null to indicate that they're needed.
             examples = {
