@@ -78,7 +78,7 @@ rec {
     };
     nixos = struct "nixos" {
       examples = option (attrs exampleType);
-      tests = option (attrs (option drv));
+      tests = option (attrs (option (either drv (attrs any))));
       modules = struct "modules" {
         programs = option (attrs (option programType));
         services = option (attrs (option serviceType));

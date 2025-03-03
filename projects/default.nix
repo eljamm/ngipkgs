@@ -34,7 +34,7 @@ let
       packages = { }; # NOTE: the overview expects a set
       nixos.modules.services = mapAttrs (name: value: value.path) services;
       nixos.examples = null;
-      nixos.tests = null;
+      nixos.tests = new-project.nixos.tests;
     };
 
   baseDirectory = ./.;
