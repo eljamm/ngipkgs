@@ -15,34 +15,13 @@ let
     drv
     path
     restrict
-    defun
     function
     any
     ;
 
-  mkModule =
-    defun
-      [
-        (attrs any)
-        moduleType
-      ]
-      (
-        { name, src, ... }:
-        {
-          name = "hello ${name}";
-          inherit src;
-        }
-      );
-
-  # WIP: just an example for now
-  moduleType = struct {
-    name = string;
-    src = string;
-  };
-
   programType = struct "program" {
     name = option string;
-    module = moduleType;
+    module = either path function;
     documentation = optionalStruct {
       build = option string;
       tests = option string;
@@ -127,9 +106,11 @@ rec {
 
           foobar-cli = {
             name = "foobar-cli";
-            module = { lib, ... }: {
-              enable = lib.mkEnableOption "foobar CLI";
-            };
+            module =
+              { lib, ... }:
+              {
+                enable = lib.mkEnableOption "foobar CLI";
+              };
             # Each program must have at least one example.
             # Examples can be null to indicate that they're needed.
             examples = {

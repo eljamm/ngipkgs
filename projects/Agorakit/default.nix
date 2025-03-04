@@ -8,7 +8,7 @@
   nixos = {
     modules.services = {
       agorakit = {
-        path = "${sources.inputs.nixpkgs}/nixos/modules/services/web-apps/agorakit.nix";
+        module = "${sources.inputs.nixpkgs}/nixos/modules/services/web-apps/agorakit.nix";
         examples.basic = null;
       };
     };
