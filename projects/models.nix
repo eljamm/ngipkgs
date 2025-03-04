@@ -52,7 +52,7 @@ let
 
   serviceType = struct "service" {
     name = option string;
-    path = either string path;
+    module = either path function;
     documentation = optionalStruct {
       config = option string;
     };
@@ -60,7 +60,7 @@ let
   };
 
   exampleType = struct "example" {
-    description = option string; # TODO: should this be non-optional?
+    description = string;
     path = either string path;
     documentation = option string;
     tests = nonEmtpyAttrs drv;
@@ -127,12 +127,8 @@ rec {
 
           foobar-cli = {
             name = "foobar-cli";
-            module = mkModule {
-              name = "foobar";
-              src = "";
-
-              # not included in the final attribute
-              test = "";
+            module = { lib, ... }: {
+              enable = lib.mkEnableOption "foobar CLI";
             };
             # Each program must have at least one example.
             # Examples can be null to indicate that they're needed.
