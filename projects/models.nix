@@ -28,9 +28,11 @@ let
     link = string;
   };
 
+  moduleType = either absPath function;
+
   programType = struct "program" {
     name = option string;
-    module = either absPath function;
+    module = moduleType;
     references = optionalStruct {
       build = option urlType;
       tests = option urlType;
@@ -40,7 +42,7 @@ let
 
   serviceType = struct "service" {
     name = option string;
-    module = either absPath function;
+    module = moduleType;
     references = optionalStruct {
       config = option urlType;
     };
@@ -49,12 +51,13 @@ let
 
   exampleType = struct "example" {
     description = string;
-    module = either absPath function;
-    references = option (attrs urlType);
+    module = moduleType;
+    references = optionalAttrs urlType;
     tests = nonEmtpyAttrs drv;
   };
 
-  optionalStruct = attrs: option (struct attrs);
+  optionalStruct = set: option (struct set);
+  optionalAttrs = set: option (attrs set);
   nonEmtpyAttrs = t: restrict "non-empty-attrs" (a: a != { }) (attrs t);
   absPath = restrict "absolute-path" (p: lib.pathExists p) (either path string);
 in
@@ -69,7 +72,7 @@ rec {
       examples = option (attrs exampleType);
       tests = option (attrs (option (either drv (attrs any))));
       modules = struct "modules" {
-        programs = option (attrs (option programType));
+        programs = optionalAttrs (option programType);
         services = option (either (attrs (option serviceType)) function);
       };
     };
