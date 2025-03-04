@@ -19,12 +19,21 @@ let
     any
     ;
 
+  urlType = struct "URL" {
+    # link text
+    text = string;
+    # could be a hover/alternative text or simply a long-form description of a non-trivial resource
+    description = option string;
+    # we may later want to do a fancy syntax check in a custom `typdef`
+    link = string;
+  };
+
   programType = struct "program" {
     name = option string;
     module = either absPath function;
-    documentation = optionalStruct {
-      build = option string;
-      tests = option string;
+    references = optionalStruct {
+      build = option urlType;
+      tests = option urlType;
     };
     examples = nonEmtpyAttrs (option exampleType);
   };
@@ -32,16 +41,16 @@ let
   serviceType = struct "service" {
     name = option string;
     module = either absPath function;
-    documentation = optionalStruct {
-      config = option string;
+    references = optionalStruct {
+      config = option urlType;
     };
     examples = nonEmtpyAttrs (option exampleType);
   };
 
   exampleType = struct "example" {
     description = string;
-    documentation = option string;
     module = either absPath function;
+    references = option (attrs urlType);
     tests = nonEmtpyAttrs drv;
   };
 
@@ -74,8 +83,13 @@ rec {
           description = ''
             This is how you can run `foobar` in the terminal.
           '';
-          documentation = "https://foo.bar/docs";
           module = { ... }: { };
+          references = {
+            website = {
+              text = "FooBar Documentation";
+              link = "https://foo.bar/docs";
+            };
+          };
           tests = {
             # Each example must have at least one test.
             # If the line below is commented out, an error will be raised.
