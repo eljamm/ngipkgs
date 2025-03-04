@@ -24,19 +24,6 @@ let
     project
     ;
 
-  empty-if-null = x: if x != null then x else { };
-  newProjectToOld =
-    new-project:
-    let
-      services = empty-if-null (new-project.nixos.modules.services or { });
-    in
-    {
-      packages = { }; # NOTE: the overview expects a set
-      nixos.modules.services = mapAttrs (name: value: value.path) services;
-      nixos.examples = null;
-      nixos.tests = new-project.nixos.tests;
-    };
-
   baseDirectory = ./.;
 
   projectDirectories =
@@ -59,5 +46,5 @@ let
     concatMapAttrs names (readDir baseDirectory);
 in
 mapAttrs (
-  name: directory: newProjectToOld (project (import directory { inherit lib pkgs sources; }))
+  name: directory: project (import directory { inherit lib pkgs sources; })
 ) projectDirectories

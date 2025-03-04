@@ -64,8 +64,21 @@ rec {
           inherit examples;
         };
       };
+      empty-if-null = x: if x != null then x else { };
+      newProjectToOld =
+        new-project:
+        let
+          services = empty-if-null (new-project.nixos.modules.services or { });
+        in
+        {
+          packages = { }; # NOTE: the overview expects a set
+          nixos.modules.services = lib.mapAttrs (name: value: value.module) services;
+          nixos.examples = null;
+          nixos.tests = new-project.nixos.tests;
+        };
+      mapNewProjects = projects: lib.mapAttrs (name: value: newProjectToOld value) projects;
     in
-    import ./projects-old args // import ./projects args;
+    import ./projects-old args // mapNewProjects (import ./projects args);
 
   project-models = import ./projects/models.nix { inherit lib pkgs sources; };
 
