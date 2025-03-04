@@ -21,7 +21,7 @@ let
 
   programType = struct "program" {
     name = option string;
-    module = either path function;
+    module = either absPath function;
     documentation = optionalStruct {
       build = option string;
       tests = option string;
@@ -31,7 +31,7 @@ let
 
   serviceType = struct "service" {
     name = option string;
-    module = either path function;
+    module = either absPath function;
     documentation = optionalStruct {
       config = option string;
     };
@@ -47,6 +47,7 @@ let
 
   optionalStruct = attrs: option (struct attrs);
   nonEmtpyAttrs = t: restrict "non-empty-attrs" (a: a != { }) (attrs t);
+  absPath = restrict "absolute-path" (p: lib.pathExists p) (either path string);
 in
 rec {
   project = struct {
