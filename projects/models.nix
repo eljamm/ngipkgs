@@ -28,6 +28,10 @@ let
     link = string;
   };
 
+  # TODO: see https://github.com/ngi-nix/ngipkgs/pull/507#issuecomment-2696587318
+  libraryType = any;
+  pluginType = any;
+
   moduleType = either absPath function;
 
   programType = struct "program" {
@@ -38,6 +42,8 @@ let
       tests = option urlType;
     };
     examples = nonEmtpyAttrs (option exampleType);
+    plugins = optionalAttrs (option pluginType);
+    libraries = optionalAttrs (option libraryType);
   };
 
   serviceType = struct "service" {
@@ -47,6 +53,8 @@ let
       config = option urlType;
     };
     examples = nonEmtpyAttrs (option exampleType);
+    plugins = optionalAttrs (option pluginType);
+    libraries = optionalAttrs (option libraryType);
   };
 
   exampleType = struct "example" {
