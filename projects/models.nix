@@ -40,8 +40,8 @@ let
 
   exampleType = struct "example" {
     description = string;
-    path = either string path;
     documentation = option string;
+    module = either absPath function;
     tests = nonEmtpyAttrs drv;
   };
 
@@ -74,8 +74,8 @@ rec {
           description = ''
             This is how you can run `foobar` in the terminal.
           '';
-          path = "";
           documentation = "https://foo.bar/docs";
+          module = { ... }: { };
           tests = {
             # Each example must have at least one test.
             # If the line below is commented out, an error will be raised.
