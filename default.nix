@@ -64,11 +64,11 @@ rec {
           inherit examples;
         };
       };
-      empty-if-null = x: if x != null then x else { };
+      empty-if-not-attrs = x: if lib.isAttrs x then x else { };
       newProjectToOld =
         new-project:
         let
-          services = empty-if-null (new-project.nixos.modules.services or { });
+          services = empty-if-not-attrs (new-project.nixos.modules.services or { });
         in
         {
           packages = { }; # NOTE: the overview expects a set

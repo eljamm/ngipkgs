@@ -70,7 +70,7 @@ rec {
       tests = option (attrs (option (either drv (attrs any))));
       modules = struct "modules" {
         programs = option (attrs (option programType));
-        services = option (attrs (option serviceType));
+        services = option (either (attrs (option serviceType)) function);
       };
     };
   };
