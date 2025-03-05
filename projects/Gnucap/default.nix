@@ -37,7 +37,7 @@
       # http://gnucap.org/dokuwiki/doku.php/gnucap:user:command_plugins
       plugins = null;
       examples.base = {
-        module = { ... }: { };
+        module = ./module.nix;
         description = "Basic configuration, mainly used for testing purposes.";
         tests.base = null;
         references = {
