@@ -78,6 +78,7 @@ rec {
       summary = option string;
       subgrants = list string;
     };
+    references = optionalAttrs urlType;
     nixos = struct "nixos" {
       examples = option (attrs exampleType);
       tests = option (attrs testType);
