@@ -86,6 +86,7 @@ rec {
       summary = option string;
       subgrants = list string;
     };
+    references = optionalAttrs urlType;
     nixos = struct "nixos" {
       # TODO: Tests should really only be per example, in order to clarify that we care about tested examples more than merely tests.
       #       But reality is such that most NixOS tests aren't based on self-contained, minimal examples, or if they are they can't be extracted easily.
