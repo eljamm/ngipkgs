@@ -61,8 +61,10 @@ let
     description = string;
     module = moduleType;
     references = optionalAttrs urlType;
-    tests = nonEmtpyAttrs drv;
+    tests = nonEmtpyAttrs testType;
   };
+
+  testType = option (either drv (attrs any));
 
   optionalStruct = set: option (struct set);
   optionalAttrs = set: option (attrs set);
@@ -78,7 +80,7 @@ rec {
     };
     nixos = struct "nixos" {
       examples = option (attrs exampleType);
-      tests = option (attrs (option (either drv (attrs any))));
+      tests = option (attrs testType);
       modules = struct "modules" {
         programs = optionalAttrs (option programType);
         services = option (either (attrs (option serviceType)) function);
