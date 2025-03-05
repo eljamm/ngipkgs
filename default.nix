@@ -52,7 +52,7 @@ rec {
 
   raw-projects =
     let
-      args = {
+      project-inputs = {
         inherit lib;
         pkgs = pkgs // ngipkgs;
         sources = {
@@ -105,7 +105,7 @@ rec {
         };
       mapNewProjects = projects: lib.mapAttrs (name: value: newProjectToOld value) projects;
     in
-    import ./projects-old args // mapNewProjects (import ./projects args);
+    import ./projects-old project-inputs // mapNewProjects (import ./projects project-inputs);
 
   project-models = import ./projects/models.nix { inherit lib pkgs sources; };
 
