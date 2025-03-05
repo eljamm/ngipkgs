@@ -4,7 +4,6 @@
   sources,
 }@args:
 {
-  name = "Aerogramme";
   nixos = {
     # https://aerogramme.deuxfleurs.fr/documentation/cookbook/config/
     # https://aerogramme.deuxfleurs.fr/documentation/cookbook/service-manager/
@@ -13,9 +12,10 @@
       { lib, pkgs, ... }:
       {
         options = {
-          enable = lib.mkEnableOption "Aerogramme ";
+          enable = lib.mkEnableOption "Aerogramme";
           package = lib.mkPackageOption pkgs "aerogramme" { };
         };
+        # TODO: add a service definition
         meta.broken = true;
       };
     tests = null;
