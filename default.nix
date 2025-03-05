@@ -74,18 +74,29 @@ rec {
 
           get = func: attrs: lib.concatMapAttrs (_: value: func value) attrs;
 
-          examplesFrom = value: lib.mapAttrs (_: example: { path = example.module or {}; }) value.examples;
+          examplesFrom =
+            value:
+            lib.mapAttrs (
+              _: example:
+              if example == { } then
+                null
+              else
+                {
+                  path = example.module;
+                  description = example.description;
+                }
+            ) value.examples;
           testsFrom = value: lib.concatMapAttrs (_: example: example.tests or { }) value.examples;
         in
         {
           packages = { }; # NOTE: the overview expects a set
           nixos.modules.services = lib.mapAttrs (name: value: value.module) services;
           nixos.examples =
-            (empty-if-not-attrs new-project.nixos.examples or {})
+            (empty-if-not-attrs new-project.nixos.examples or { })
             // get examplesFrom services
             // get examplesFrom programs;
           nixos.tests =
-            (empty-if-not-attrs new-project.nixos.tests or {})
+            (empty-if-not-attrs new-project.nixos.tests or { })
             // get testsFrom services
             // get testsFrom programs;
         };
