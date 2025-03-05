@@ -64,7 +64,7 @@ rec {
           inherit examples;
         };
       };
-      newProjectToOld =
+      new-project-to-old =
         new-project:
         let
           empty-if-not-attrs = x: if lib.isAttrs x then x else { };
@@ -74,7 +74,7 @@ rec {
 
           get = func: attrs: lib.concatMapAttrs (_: value: func value) attrs;
 
-          examplesFrom =
+          examples-from =
             value:
             lib.mapAttrs (
               _: example:
@@ -86,7 +86,7 @@ rec {
                   description = example.description;
                 }
             ) (empty-if-not-attrs value.examples);
-          testsFrom =
+          tests-from =
             value: lib.concatMapAttrs (_: example: example.tests or { }) (empty-if-not-attrs value.examples);
         in
         {
@@ -94,18 +94,18 @@ rec {
           nixos.modules.services = lib.mapAttrs (name: value: value.module) services;
           nixos.examples = lib.filterAttrs (_: v: v != null) (
             (empty-if-not-attrs new-project.nixos.examples or { })
-            // get examplesFrom services
-            // get examplesFrom programs
+            // get examples-from services
+            // get examples-from programs
           );
           nixos.tests = lib.filterAttrs (_: v: v != null) (
             (empty-if-not-attrs new-project.nixos.tests or { })
-            // get testsFrom services
-            // get testsFrom programs
+            // get tests-from services
+            // get tests-from programs
           );
         };
-      mapNewProjects = projects: lib.mapAttrs (name: value: newProjectToOld value) projects;
+      map-new-projects = projects: lib.mapAttrs (name: value: new-project-to-old value) projects;
     in
-    import ./projects-old project-inputs // mapNewProjects (import ./projects project-inputs);
+    import ./projects-old project-inputs // map-new-projects (import ./projects project-inputs);
 
   project-models = import ./projects/models.nix { inherit lib pkgs sources; };
 
