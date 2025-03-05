@@ -64,17 +64,32 @@ rec {
           inherit examples;
         };
       };
-      empty-if-not-attrs = x: if lib.isAttrs x then x else { };
       newProjectToOld =
         new-project:
         let
+          empty-if-not-attrs = x: if lib.isAttrs x then x else { };
+
           services = empty-if-not-attrs (new-project.nixos.modules.services or { });
+          programs = empty-if-not-attrs (new-project.nixos.modules.programs or { });
+
+          get = func: attrs: lib.concatMapAttrs (_: value: func value) attrs;
+
+          examplesFrom = value: lib.mapAttrs (_: example: { path = example.module; }) value.examples;
+          testsFrom = value: lib.concatMapAttrs (_: example: example.tests or { }) value.examples;
         in
         {
           packages = { }; # NOTE: the overview expects a set
           nixos.modules.services = lib.mapAttrs (name: value: value.module) services;
-          nixos.examples = null;
-          nixos.tests = new-project.nixos.tests;
+          nixos.examples =
+            new-project.nixos.examples or { }
+            // new-project.nixos.examples or { }
+            // get examplesFrom services
+            // get examplesFrom programs;
+          nixos.tests =
+            new-project.nixos.tests or { }
+            // new-project.nixos.tests or { }
+            // get testsFrom services
+            // get testsFrom programs;
         };
       mapNewProjects = projects: lib.mapAttrs (name: value: newProjectToOld value) projects;
     in
@@ -198,6 +213,8 @@ rec {
                 inherit pkgs;
                 inherit (pkgs) system;
               })
+            else if lib.isDerivation test then
+              test
             else
               nixosTest test
           ) (empty-if-null (project.nixos.tests or { }));
