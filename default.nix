@@ -78,27 +78,30 @@ rec {
             value:
             lib.mapAttrs (
               _: example:
-              if example == { } then
+              if example == null then
                 null
               else
                 {
                   path = example.module;
                   description = example.description;
                 }
-            ) value.examples;
-          testsFrom = value: lib.concatMapAttrs (_: example: example.tests or { }) value.examples;
+            ) (empty-if-not-attrs value.examples);
+          testsFrom =
+            value: lib.concatMapAttrs (_: example: example.tests or { }) (empty-if-not-attrs value.examples);
         in
         {
           packages = { }; # NOTE: the overview expects a set
           nixos.modules.services = lib.mapAttrs (name: value: value.module) services;
-          nixos.examples =
+          nixos.examples = lib.filterAttrs (_: v: v != null) (
             (empty-if-not-attrs new-project.nixos.examples or { })
             // get examplesFrom services
-            // get examplesFrom programs;
-          nixos.tests =
+            // get examplesFrom programs
+          );
+          nixos.tests = lib.filterAttrs (_: v: v != null) (
             (empty-if-not-attrs new-project.nixos.tests or { })
             // get testsFrom services
-            // get testsFrom programs;
+            // get testsFrom programs
+          );
         };
       mapNewProjects = projects: lib.mapAttrs (name: value: newProjectToOld value) projects;
     in
