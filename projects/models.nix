@@ -43,7 +43,6 @@ let
     };
     examples = nonEmtpyAttrs (option exampleType);
     plugins = optionalAttrs (option pluginType);
-    libraries = optionalAttrs (option libraryType);
   };
 
   serviceType = struct "service" {
@@ -54,7 +53,6 @@ let
     };
     examples = nonEmtpyAttrs (option exampleType);
     plugins = optionalAttrs (option pluginType);
-    libraries = optionalAttrs (option libraryType);
   };
 
   exampleType = struct "example" {
