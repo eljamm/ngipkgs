@@ -1,13 +1,5 @@
 { pkgs, ... }@args:
 {
-  # TODO: put these in modules
-  # packages = {
-  #   inherit (pkgs)
-  #     atomic-server
-  #     atomic-browser
-  #     atomic-cli
-  #     ;
-  # };
   name = "AtomicData";
   nixos = {
     modules.services.atomic-server = {
