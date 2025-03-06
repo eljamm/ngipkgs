@@ -50,10 +50,8 @@ let
   serviceType = struct "service" {
     name = option string;
     module = moduleType;
-    references = optionalStruct {
-      config = option urlType;
-    };
     examples = nonEmtpyAttrs (option exampleType);
+    references = optionalAttrs (option urlType);
     extensions = optionalAttrs (option pluginType);
   };
 
@@ -61,10 +59,6 @@ let
   programType = struct "program" {
     name = option string;
     module = moduleType;
-    references = optionalStruct {
-      build = option urlType;
-      tests = option urlType;
-    };
     references = optionalAttrs (option urlType);
     examples = nonEmtpyAttrs (option exampleType);
     extensions = optionalAttrs (option pluginType);
