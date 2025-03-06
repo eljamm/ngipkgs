@@ -28,7 +28,8 @@
             package = lib.mkPackageOption pkgs "aerogramme" { };
           };
           # TODO: add a service definition
-          meta.broken = true;
+          # NOTE: enabling this fails with "The option `meta.broken' does not exist"
+          # meta.broken = false;
         };
     };
     tests = null;
