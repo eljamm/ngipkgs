@@ -2,6 +2,10 @@
   lib,
   pkgs,
   sources,
+  # TODO: arguably we can eventually translate this to the module system:
+  #       - we only need to type-check in CI (e.g. by rendering the overview) and expose the values as regular attrs, so performance is not an issue
+  #       - the module system has much more powerful types
+  #       - the module system is maintained
   yants ? import sources.yants { inherit lib; },
 }:
 let
