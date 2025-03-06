@@ -50,8 +50,8 @@ let
   serviceType = struct "service" {
     name = option string;
     module = moduleType;
-    examples = nonEmtpyAttrs (option exampleType);
     references = optionalAttrs (option urlType);
+    examples = optionalAttrs (option exampleType);
     extensions = optionalAttrs (option pluginType);
   };
 
@@ -60,7 +60,7 @@ let
     name = option string;
     module = moduleType;
     references = optionalAttrs (option urlType);
-    examples = nonEmtpyAttrs (option exampleType);
+    examples = optionalAttrs (option exampleType);
     extensions = optionalAttrs (option pluginType);
   };
 
@@ -81,7 +81,7 @@ let
 in
 rec {
   project = struct {
-    name = string;
+    name = option string;
     metadata = optionalStruct {
       summary = option string;
       subgrants = list string;
