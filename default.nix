@@ -78,16 +78,15 @@ rec {
             value:
             lib.mapAttrs (
               _: example:
-              if example == null then
-                null
-              else
+              if lib.isAttrs example then
                 {
                   path = example.module;
                   description = example.description;
                 }
-            ) (empty-if-not-attrs value.examples);
-          tests-from =
-            value: lib.concatMapAttrs (_: example: example.tests or { }) (empty-if-not-attrs value.examples);
+              else
+                null
+            ) (value.examples or { });
+          tests-from = value: lib.concatMapAttrs (_: example: example.tests or { }) (value.examples or { });
         in
         {
           packages = { }; # NOTE: the overview expects a set
