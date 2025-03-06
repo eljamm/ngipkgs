@@ -15,6 +15,7 @@ let
     option
     attrs
     either
+    eitherN
     struct
     drv
     path
@@ -32,7 +33,11 @@ let
     link = string;
   };
 
-  moduleType = eitherN absPath function attrs;
+  moduleType = eitherN [
+    absPath
+    function
+    (attrs any)
+  ];
 
   # TODO: plugins are actually component *extensions* that are of component-specific type,
   #       and which compose in application-specific ways defined in the application module.
