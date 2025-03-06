@@ -66,8 +66,8 @@ let
 
   optionalStruct = set: option (struct set);
   optionalAttrs = set: option (attrs set);
-  nonEmtpyAttrs = t: restrict "non-empty-attrs" (a: a != { }) (attrs t);
-  absPath = restrict "absolute-path" (p: lib.pathExists p) (either path string);
+  nonEmtpyAttrs = t: restrict "non-empty attribute set" (a: a != { }) (attrs t);
+  absPath = restrict "absolute path" (p: lib.pathExists p) (either path string);
 in
 rec {
   project = struct {
