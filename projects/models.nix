@@ -32,7 +32,7 @@ let
   libraryType = any;
   pluginType = any;
 
-  moduleType = either absPath function;
+  moduleType = eitherN absPath function attrs;
 
   programType = struct "program" {
     name = option string;
@@ -62,7 +62,8 @@ let
     tests = nonEmtpyAttrs testType;
   };
 
-  testType = option (either drv (attrs any));
+  # NixOS tests are modules that boil down to a derivation
+  testType = option (either moduleType drv);
 
   optionalStruct = set: option (struct set);
   optionalAttrs = set: option (attrs set);
