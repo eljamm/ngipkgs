@@ -32,23 +32,16 @@ let
     link = string;
   };
 
-  # TODO: see https://github.com/ngi-nix/ngipkgs/pull/507#issuecomment-2696587318
-  libraryType = any;
-  pluginType = any;
-
   moduleType = eitherN absPath function attrs;
 
-  programType = struct "program" {
-    name = option string;
-    module = moduleType;
-    references = optionalStruct {
-      build = option urlType;
-      tests = option urlType;
-    };
-    examples = nonEmtpyAttrs (option exampleType);
-    plugins = optionalAttrs (option pluginType);
-  };
+  # TODO: plugins are actually component *extensions* that are of component-specific type,
+  #       and which compose in application-specific ways defined in the application module.
+  #       we can't express that with yants, but with the module system, which gives us a bit of dependent typing.
+  #       this also means that there's no fundamental difference between programs and services,
+  #       and even languages: libraries are just extensions of compilers.
+  pluginType = any;
 
+  # TODO: make use of modular services https://github.com/NixOS/nixpkgs/pull/372170
   serviceType = struct "service" {
     name = option string;
     module = moduleType;
@@ -56,13 +49,26 @@ let
       config = option urlType;
     };
     examples = nonEmtpyAttrs (option exampleType);
-    plugins = optionalAttrs (option pluginType);
+    extensions = optionalAttrs (option pluginType);
+  };
+
+  # TODO: port modular services to programs
+  programType = struct "program" {
+    name = option string;
+    module = moduleType;
+    references = optionalStruct {
+      build = option urlType;
+      tests = option urlType;
+    };
+    references = optionalAttrs (option urlType);
+    examples = nonEmtpyAttrs (option exampleType);
+    extensions = optionalAttrs (option pluginType);
   };
 
   exampleType = struct "example" {
     description = string;
     module = moduleType;
-    references = optionalAttrs urlType;
+    references = optionalAttrs (option urlType);
     tests = nonEmtpyAttrs testType;
   };
 
