@@ -50,7 +50,7 @@ let
   serviceType = struct "service" {
     name = option string;
     module = moduleType;
-    references = optionalAttrs (option urlType);
+    links = optionalAttrs (option urlType);
     examples = optionalAttrs (option exampleType);
     extensions = optionalAttrs (option pluginType);
   };
@@ -59,7 +59,7 @@ let
   programType = struct "program" {
     name = option string;
     module = moduleType;
-    references = optionalAttrs (option urlType);
+    links = optionalAttrs (option urlType);
     examples = optionalAttrs (option exampleType);
     extensions = optionalAttrs (option pluginType);
   };
@@ -67,7 +67,7 @@ let
   exampleType = struct "example" {
     description = string;
     module = moduleType;
-    references = optionalAttrs (option urlType);
+    links = optionalAttrs (option urlType);
     tests = nonEmtpyAttrs testType;
   };
 
@@ -114,7 +114,7 @@ rec {
             This is how you can run `foobar` in the terminal.
           '';
           module = { ... }: { };
-          references = {
+          links = {
             website = {
               text = "FooBar Documentation";
               url = "https://foo.bar/docs";

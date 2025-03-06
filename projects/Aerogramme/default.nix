@@ -6,7 +6,7 @@
 {
   nixos = {
     modules.services.aerogramme = {
-      references = {
+      links = {
         config = {
           text = "Configuration reference";
           url = "https://aerogramme.deuxfleurs.fr/documentation/reference/config/";
