@@ -30,7 +30,7 @@ let
     # could be a hover/alternative text or simply a long-form description of a non-trivial resource
     description = option string;
     # we may later want to do a fancy syntax check in a custom `typdef`
-    link = string;
+    url = string;
   };
 
   moduleType = eitherN [
@@ -123,7 +123,7 @@ rec {
           references = {
             website = {
               text = "FooBar Documentation";
-              link = "https://foo.bar/docs";
+              url = "https://foo.bar/docs";
             };
           };
           tests = {
