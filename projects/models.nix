@@ -89,7 +89,7 @@ rec {
       tests = option (attrs testType);
       modules = struct "modules" {
         programs = optionalAttrs (option programType);
-        services = option (either (attrs (option serviceType)) function);
+        services = optionalAttrs (option serviceType);
       };
       # An application component may have examples using it in isolation,
       # but examples may involve multiple application components.
