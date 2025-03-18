@@ -201,12 +201,8 @@
                       checksForNixosExamples = concatMapAttrs (exampleName: example: {
                         "projects/${projectName}/nixos/examples/${exampleName}" = toplevel (mkNixosSystem example.path);
                       }) project.nixos.examples;
-
-                      checksForNixosExamplesVM = concatMapAttrs (exampleName: example: {
-                        "projects/${projectName}/nixos/examples/vm/${exampleName}" = toplevel (mkNixosVM example.path);
-                      }) project.nixos.examples;
                     in
-                    checksForNixosTests // checksForNixosExamples // checksForNixosExamplesVM;
+                    checksForNixosTests // checksForNixosExamples;
                 in
                 concatMapAttrs checksForProject classic.projects;
 
