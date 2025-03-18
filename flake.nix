@@ -111,9 +111,9 @@
           ];
         };
 
-      mkNixosAppVM = system: {
+      mkNixosAppVM = config: {
         type = "app";
-        program = "${system.config.system.build.vm}/bin/run-nixos-vm";
+        program = "${(mkNixosVM config).config.system.build.vm}/bin/run-nixos-vm";
       };
 
       toplevel = machine: machine.config.system.build.toplevel;
@@ -178,7 +178,7 @@
                 '';
           };
 
-          apps.projectVM = mapAttrs (_: mkNixosAppVM mkNixosVM) rawExamples;
+          apps.project-demos = mapAttrs (_: mkNixosAppVM) rawExamples;
 
           # buildbot executes `nix flake check`, therefore this output
           # should only contain derivations that can built within CI.
