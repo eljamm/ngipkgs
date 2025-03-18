@@ -98,6 +98,24 @@
             ++ classic'.extendedNixosModules;
         };
 
+      mkNixosVM =
+        config:
+        nixosSystem {
+          modules = [
+            config
+            {
+              nixpkgs.hostPlatform = "x86_64-linux";
+              system.stateVersion = "23.05";
+            }
+            (nixpkgs + "/nixos/modules/installer/cd-dvd/installation-cd-minimal.nix")
+          ];
+        };
+
+      mkNixosAppVM = system: {
+        type = "app";
+        program = "${system.config.system.build.vm}/bin/run-nixos-vm";
+      };
+
       toplevel = machine: machine.config.system.build.toplevel;
 
       # Finally, define the system-agnostic outputs.
@@ -160,6 +178,8 @@
                 '';
           };
 
+          apps.projectVM = mapAttrs (_: mkNixosAppVM mkNixosVM) rawExamples;
+
           # buildbot executes `nix flake check`, therefore this output
           # should only contain derivations that can built within CI.
           # See ./infra/makemake/buildbot.nix for how it is set up.
@@ -181,8 +201,12 @@
                       checksForNixosExamples = concatMapAttrs (exampleName: example: {
                         "projects/${projectName}/nixos/examples/${exampleName}" = toplevel (mkNixosSystem example.path);
                       }) project.nixos.examples;
+
+                      checksForNixosExamplesVM = concatMapAttrs (exampleName: example: {
+                        "projects/${projectName}/nixos/examples/vm/${exampleName}" = toplevel (mkNixosVM example.path);
+                      }) project.nixos.examples;
                     in
-                    checksForNixosTests // checksForNixosExamples;
+                    checksForNixosTests // checksForNixosExamples // checksForNixosExamplesVM;
                 in
                 concatMapAttrs checksForProject classic.projects;
 
