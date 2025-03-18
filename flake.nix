@@ -105,10 +105,31 @@
             [
               config
               {
+                imports = [
+                  (nixpkgs + "/nixos/modules/installer/cd-dvd/installation-cd-minimal.nix")
+                  (nixpkgs + "/nixos/modules/virtualisation/qemu-vm.nix")
+                ];
+
+                virtualisation = {
+                  memorySize = 4096;
+
+                  qemu.options = [
+                    "-cpu host"
+                    "-enable-kvm"
+                  ];
+
+                  forwardPorts = [
+                    {
+                      from = "host";
+                      host.port = 2222;
+                      guest.port = 22;
+                    }
+                  ];
+                };
+
                 nixpkgs.hostPlatform = "x86_64-linux";
                 system.stateVersion = "23.05";
               }
-              (nixpkgs + "/nixos/modules/installer/cd-dvd/installation-cd-minimal.nix")
             ]
             # TODO: this needs to take a different shape,
             # otherwise the transformation to obtain it is confusing
