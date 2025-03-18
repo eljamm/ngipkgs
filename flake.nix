@@ -101,14 +101,18 @@
       mkNixosVM =
         config:
         nixosSystem {
-          modules = [
-            config
-            {
-              nixpkgs.hostPlatform = "x86_64-linux";
-              system.stateVersion = "23.05";
-            }
-            (nixpkgs + "/nixos/modules/installer/cd-dvd/installation-cd-minimal.nix")
-          ];
+          modules =
+            [
+              config
+              {
+                nixpkgs.hostPlatform = "x86_64-linux";
+                system.stateVersion = "23.05";
+              }
+              (nixpkgs + "/nixos/modules/installer/cd-dvd/installation-cd-minimal.nix")
+            ]
+            # TODO: this needs to take a different shape,
+            # otherwise the transformation to obtain it is confusing
+            ++ classic'.extendedNixosModules;
         };
 
       mkNixosAppVM = config: {
