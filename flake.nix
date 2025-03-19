@@ -110,6 +110,10 @@
                   (nixpkgs + "/nixos/modules/virtualisation/lxc-container.nix")
                 ];
 
+                nix.extraOptions = ''
+                  experimental-features = nix-command flakes
+                '';
+
                 # virtualisation = {
                 #   memorySize = 4096;
                 #
