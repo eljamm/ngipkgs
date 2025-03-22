@@ -45,6 +45,4 @@ let
     # TODO: use fileset and filter for `gitTracked` files
     concatMapAttrs names (readDir baseDirectory);
 in
-mapAttrs (
-  name: directory: project (import directory { inherit lib pkgs sources; })
-) projectDirectories
+mapAttrs (name: directory: (import directory { inherit lib pkgs sources; })) projectDirectories
