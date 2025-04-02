@@ -306,7 +306,6 @@ rec {
 
               qemu.options = [
                 "-cpu host"
-                "-enable-kvm"
               ];
 
               # ssh + open service ports
