@@ -304,10 +304,6 @@ rec {
               graphics = false;
               diskImage = null;
 
-              qemu.options = [
-                "-cpu host"
-              ];
-
               # ssh + open service ports
               forwardPorts = map (port: {
                 from = "host";
