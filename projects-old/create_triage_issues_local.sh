@@ -7,7 +7,7 @@ create_triage_issue() {
     TITLE="Triage data for \`$1\`"
     BODY=$(
         cat <<-EOF
-	 Follow the instructions for [triaging an NGI project](https://github.com/ngi-nix/ngipkgs/blob/main/CONTRIBUTING.md#triaging-an-ngi-project) and collect some relevant information about this project, which will later be used to expose its packaging state.
+	Collect relevant information about this project by following the instructions in the [NGI project issue template](https://github.com/ngi-nix/ngipkgs/issues/new?template=project-triaging.yaml).
 	EOF
     )
 
