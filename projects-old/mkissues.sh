@@ -1,7 +1,7 @@
 #!/bin/env bash
 
 while read -r project; do
-    TITLE="Migrate $project from \`projects-old\` to \`projects\`"
+    TITLE="Migrate \`$project\` from projects-old to projects"
     BODY=$(cat ./body.md)
     BODY=$(
         cat <<-EOF
