@@ -5,10 +5,12 @@ NGIPKGS="$HOME/ngipkgs"
 DIRS=("$NGIPKGS/projects" "$NGIPKGS/projects-old")
 DRY_RUN=true
 
-output=$(gh issue list --repo "ngi-nix/ngipkgs" --label "NGI Project" --search "NGI Project: " --json title)
+output_projects=$(gh issue list --repo "ngi-nix/ngipkgs" --limit 1000 --label "NGI Project" --search "NGI Project: " --json title)
+output_issues=$(gh issue list --repo "ngi-nix/ngipkgs" --limit 1000 --label "good first issue" --search "Triage data for: " --json title)
 
 repo_projects=()
-gh_projects=$(echo "$output" | jq -r '.[].title | select(test("NGI Project: ")) | sub("NGI Project: "; "") | ltrimstr(" ")')
+gh_projects=$(echo "$output_projects" | jq -r '.[].title | select(test("NGI Project: ")) | sub("NGI Project: "; "") | ltrimstr(" ")')
+gh_issues=$(echo "$output_issues" | jq -r '.[].title | select(test("Triage data for ")) | sub("Triage data for "; "") | ltrimstr(" ") | gsub("`"; "")')
 
 create_triage_issue() {
     TITLE="Triage data for \`$1\`"
@@ -47,6 +49,12 @@ true >./not-triaged.txt # empty file
 for project in "${repo_projects[@]}"; do
     exists=false
     for name in $gh_projects; do
+        if [[ "$name" == "$project" ]]; then
+            exists=true
+            break
+        fi
+    done
+    for name in $gh_issues; do
         if [[ "$name" == "$project" ]]; then
             exists=true
             break

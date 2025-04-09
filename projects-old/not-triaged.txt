@@ -1,6 +1,3 @@
-Aerogramme
-AtomicData
-Cryptpad
 Gancio
 MarginaliaSearch
 Mastodon
@@ -11,13 +8,7 @@ OpenWebCalendar
 openXC7
 proximity-matcher
 Re-Isearch
-Agorakit
-Alive2
 arpa2
-Canaille
-CNSPRCY
-DMT-Core
-Dokieli
 Forgejo
 gnunet
 GNUTaler
