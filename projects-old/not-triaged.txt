@@ -1,12 +1,7 @@
 Aerogramme
 AtomicData
-CryptoLyzer
 Cryptpad
-Galene
 Gancio
-Gnucap
-Keyoxide
-Libervia
 MarginaliaSearch
 Mastodon
 Namecoin
@@ -23,7 +18,6 @@ Canaille
 CNSPRCY
 DMT-Core
 Dokieli
-Flarum
 Forgejo
 gnunet
 GNUTaler

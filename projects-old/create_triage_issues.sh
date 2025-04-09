@@ -46,7 +46,7 @@ done
 true >./not-triaged.txt # empty file
 for project in "${repo_projects[@]}"; do
     exists=false
-    for name in "${gh_projects[@]}"; do
+    for name in $gh_projects; do
         if [[ "$name" == "$project" ]]; then
             exists=true
             break
