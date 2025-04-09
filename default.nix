@@ -124,9 +124,14 @@ rec {
 
   project-models = import ./projects/models.nix { inherit lib pkgs sources; };
 
-  templates.project = project-models.project (
-    import ./templates/project { inherit lib pkgs sources; }
-  );
+  # we mainly care about the types being checked
+  templates.project =
+    let
+      project-metadata =
+        (project-models.project (import ./templates/project { inherit lib pkgs sources; })).metadata;
+    in
+    # fake derivation for flake check
+    pkgs.writeText "dummy" (lib.strings.toJSON project-metadata);
 
   # TODO: find a better place for this
   metrics = with lib; {
@@ -198,33 +203,34 @@ rec {
       }
     ) raw-projects;
 
+  nixosTest =
+    test:
+    let
+      # Amenities for interactive tests
+      tools =
+        { pkgs, ... }:
+        {
+          environment.systemPackages = with pkgs; [
+            vim
+            tmux
+            jq
+          ];
+          # Use kmscon <https://www.freedesktop.org/wiki/Software/kmscon/>
+          # to provide a slightly nicer console.
+          # kmscon allows zooming with [Ctrl] + [+] and [Ctrl] + [-]
+          services.kmscon = {
+            enable = true;
+            autologinUser = "root";
+          };
+        };
+      debugging.interactive.nodes = lib.mapAttrs (_: _: tools) test.nodes;
+    in
+    pkgs.nixosTest (debugging // test);
+
   # TODO: find a better place for this
   projects =
     with lib;
     let
-      nixosTest =
-        test:
-        let
-          # Amenities for interactive tests
-          tools =
-            { pkgs, ... }:
-            {
-              environment.systemPackages = with pkgs; [
-                vim
-                tmux
-                jq
-              ];
-              # Use kmscon <https://www.freedesktop.org/wiki/Software/kmscon/>
-              # to provide a slightly nicer console.
-              # kmscon allows zooming with [Ctrl] + [+] and [Ctrl] + [-]
-              services.kmscon = {
-                enable = true;
-                autologinUser = "root";
-              };
-            };
-          debugging.interactive.nodes = mapAttrs (_: _: tools) test.nodes;
-        in
-        pkgs.nixosTest (debugging // test);
 
       empty-if-null = x: if x != null then x else { };
 
