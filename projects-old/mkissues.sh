@@ -1,5 +1,7 @@
 #!/bin/env bash
 
+DRY_RUN=true
+
 while read -r project; do
     TITLE="Migrate \`$project\` from projects-old to projects"
     BODY=$(cat ./body.md)
@@ -40,13 +42,17 @@ while read -r project; do
 	EOF
     )
 
-    # >&2 echo "DEBUGPRINT[237]: mkissues.sh:4: TITLE=${TITLE}"
-    # >&2 echo "DEBUGPRINT[238]: mkissues.sh:5: BODY=${BODY}"
-
-    gh issue create \
-        --repo "ngi-nix/ngipkgs" \
-        --title "$TITLE" \
-        --body "$BODY" \
-        --label "good first issue"
+    if $DRY_RUN; then
+        >&2 echo "==="
+        >&2 echo "${TITLE}"
+        >&2 echo "---"
+        >&2 echo "${BODY}"
+    else
+        gh issue create \
+            --repo "ngi-nix/ngipkgs" \
+            --title "$TITLE" \
+            --body "$BODY" \
+            --label "good first issue"
     # --project Nix@NGI
+    fi
 done <list.txt
