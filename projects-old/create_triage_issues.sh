@@ -68,3 +68,6 @@ for project in "${repo_projects[@]}"; do
         create_triage_issue "$project"
     fi
 done
+
+# sort output in-place, uppercase first
+LC_COLLATE=C sort -o ./not-triaged.txt{,}
