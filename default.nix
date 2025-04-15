@@ -8,7 +8,7 @@ in
 }:
 let
   lib = import "${nixpkgs}/lib";
-  custom-lib = import ./lib.nix { inherit lib };
+  custom-lib = import ./lib.nix { inherit lib; };
 in
 {
   # this depends on Nixpkgs specifics, in particular on arguments to the Nixpkgs entry point function,
@@ -129,7 +129,7 @@ in
       ]
       ++ attrValues nixos-modules.programs
       ++ attrValues nixos-modules.services;
-    }
+    };
 
 }
 
