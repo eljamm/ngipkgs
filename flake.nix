@@ -31,8 +31,6 @@
       ...
     }@inputs:
     let
-      classic' = import ./. { system = null; };
-      inherit (classic') lib lib';
 
       inherit (lib)
         attrValues
@@ -117,7 +115,7 @@
       eachDefaultSystemOutputs = flake-utils.lib.eachDefaultSystem (
         system:
         let
-          classic = import ./. { inherit system; };
+          classic = (import ./. { }).nixpkgs { inherit system; };
 
           inherit (classic) pkgs ngipkgs;
 
@@ -142,22 +140,13 @@
         in
         rec {
           packages = ngipkgs // {
+            # TODO: this should live in default.nix
             overview = import ./overview {
               inherit lib lib' self;
               pkgs = pkgs // ngipkgs;
               projects = ngiProjects;
               options = optionsDoc.optionsNix;
             };
-
-            options =
-              pkgs.runCommand "options.json"
-                {
-                  build = optionsDoc.optionsJSON;
-                }
-                ''
-                  mkdir $out
-                  cp $build/share/doc/nixos/options.json $out/
-                '';
           };
 
           # buildbot executes `nix flake check`, therefore this output

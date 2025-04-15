@@ -7,9 +7,10 @@ in
   sops-nix ? sources.sops-nix,
 }:
 let
-  lib' = import "${nixpkgs}/lib";
+  lib = import "${nixpkgs}/lib";
+  custom-lib = import ./lib.nix { inherit lib };
 in
-rec {
+{
   # this depends on Nixpkgs specifics, in particular on arguments to the Nixpkgs entry point function,
   # and is therefore namespaced under `nixpkgs`
   nixpkgs = {
@@ -24,12 +25,16 @@ rec {
     sops-nix' = import "${sops-nix}/modules/sops";
   in
   {
+    inherit pkgs;
+
+    ngipkgs = import ./pkgs/by-name { inherit pkgs lib; dream2nix = dream2nix'; };
+
     overlays.default =
       final: prev:
       import ./pkgs/by-name {
         pkgs = prev;
         lib = lib';
-        inherit dream2nix;
+        dream2nix = dream2nix';
       };
 
     demo-system =
@@ -39,7 +44,7 @@ rec {
           args:
           import (nixpkgs + "/nixos/lib/eval-config.nix") (
             {
-              lib = lib';
+              inherit lib;
             }
             // args
           );
@@ -112,12 +117,11 @@ rec {
     };
   };
 
-  lib = import ./lib.nix { lib = lib'; };
+  lib = custom-lib;
 
   ngipkgs = rec {
     extendedNixosModules =
       with lib;
-      with lib'; # TODO: do we need this?
       [
         nixos-modules.ngipkgs
         # TODO: needed for examples that use sops (like Pretalx)
@@ -147,7 +151,6 @@ rec {
     // foldl recursiveUpdate { } (map (project: project.nixos.modules) (attrValues projects));
 
 
-  ngipkgs = import ./pkgs/by-name { inherit pkgs lib dream2nix; };
 
   raw-projects =
     let
