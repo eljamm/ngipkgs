@@ -31,7 +31,10 @@
       ...
     }@inputs:
     let
+      classic' = (import ./. { }).nixpkgs { };
+      lib' = import ./lib.nix { inherit lib; };
 
+      inherit (classic') lib;
       inherit (lib)
         attrValues
         concatMapAttrs

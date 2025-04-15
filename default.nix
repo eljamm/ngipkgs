@@ -5,8 +5,9 @@ in
   nixpkgs ? sources.nixpkgs,
   dream2nix ? sources.dream2nix,
   sops-nix ? sources.sops-nix,
-}:
+}@args:
 let
+  self = import ./. args;
   lib = import "${nixpkgs}/lib";
   custom-lib = import ./lib.nix { inherit lib; };
 in
@@ -25,34 +26,153 @@ in
       dream2nix' = (import dream2nix).overrideInputs { inherit (sources) nixpkgs; };
       sops-nix' = import "${sops-nix}/modules/sops";
     in
-    {
-      inherit pkgs;
+    rec {
+      inherit pkgs lib;
 
       ngipkgs = import ./pkgs/by-name {
         inherit pkgs lib;
         dream2nix = dream2nix';
       };
 
+      raw-projects =
+        let
+          project-inputs = {
+            inherit lib;
+            pkgs = pkgs // ngipkgs;
+            sources = {
+              inputs = sources;
+              modules = self.ngipkgs.nixos-modules;
+              examples =
+                with lib;
+                mapAttrs (_: project: mapAttrs (_: example: example.path) project.nixos.examples) projects;
+            };
+          };
+          new-project-to-old =
+            new-project:
+            let
+              empty-if-not-attrs = x: if lib.isAttrs x then x else { };
+              removeNull = a: lib.filterAttrs (_: v: v != null) a;
+
+              services = empty-if-not-attrs (new-project.nixos.modules.services or { });
+              programs = empty-if-not-attrs (new-project.nixos.modules.programs or { });
+
+              get = func: attrs: lib.concatMapAttrs (_: value: func value) attrs;
+
+              examples-from =
+                value:
+                if (value ? examples) && (lib.isAttrs value.examples) then
+                  lib.mapAttrs (
+                    _: example:
+                    if lib.isAttrs example then
+                      {
+                        path = example.module;
+                        description = example.description;
+                      }
+                    else
+                      null
+                  ) value.examples
+                else
+                  { };
+              tests-from =
+                value:
+                if (value ? tests) && (lib.isAttrs value.tests) then
+                  value.tests
+                else if (value ? examples) && (lib.isAttrs value.examples) then
+                  lib.concatMapAttrs (_: example: example.tests or { }) value.examples
+                else
+                  { };
+            in
+            {
+              packages = { }; # NOTE: the overview expects a set
+              metadata = new-project.metadata or { };
+              nixos.modules.services = removeNull (lib.mapAttrs (name: value: value.module or null) services);
+              nixos.modules.programs = removeNull (lib.mapAttrs (name: value: value.module or null) programs);
+              nixos.examples = removeNull (
+                examples-from new-project.nixos // get examples-from services // get examples-from programs
+              );
+              nixos.tests = removeNull (
+                tests-from new-project.nixos // get tests-from services // get tests-from programs
+              );
+            };
+          map-new-projects = projects: lib.mapAttrs (name: value: new-project-to-old value) projects;
+        in
+        import ./projects-old project-inputs // map-new-projects (import ./projects project-inputs);
+
+      # TODO: find a better place for this
+      projects =
+        with lib;
+        let
+          nixosTest =
+            test:
+            let
+              # Amenities for interactive tests
+              tools =
+                { pkgs, ... }:
+                {
+                  environment.systemPackages = with pkgs; [
+                    vim
+                    tmux
+                    jq
+                  ];
+                  # Use kmscon <https://www.freedesktop.org/wiki/Software/kmscon/>
+                  # to provide a slightly nicer console.
+                  # kmscon allows zooming with [Ctrl] + [+] and [Ctrl] + [-]
+                  services.kmscon = {
+                    enable = true;
+                    autologinUser = "root";
+                  };
+                };
+              debugging.interactive.nodes = mapAttrs (_: _: tools) test.nodes;
+            in
+            pkgs.nixosTest (debugging // test);
+
+          empty-if-null = x: if x != null then x else { };
+
+          hydrate =
+            # we use fields to track state of completion.
+            # - `null` means "expected but missing"
+            # - not set means "not applicable"
+            # TODO: encode this in types, either yants or the module system
+            project: {
+              packages = empty-if-null (filterAttrs (name: value: value != null) (project.packages or { }));
+              metadata = empty-if-null (filterAttrs (name: value: value != null) (project.metadata or { }));
+              nixos.modules = empty-if-null (filterAttrs (_: m: m != null) (project.nixos.modules or { }));
+              nixos.examples = empty-if-null (project.nixos.examples or { });
+              nixos.tests = mapAttrs (
+                _: test:
+                if lib.isString test then
+                  (import test {
+                    inherit pkgs;
+                    inherit (pkgs) system;
+                  })
+                else if lib.isDerivation test then
+                  test
+                else
+                  nixosTest test
+              ) (empty-if-null (project.nixos.tests or { }));
+            };
+        in
+        mapAttrs (name: project: hydrate project) raw-projects;
       overlays.default =
         final: prev:
         import ./pkgs/by-name {
           pkgs = prev;
-          lib = lib';
+          lib = custom-lib;
           dream2nix = dream2nix';
         };
 
+      nixosSystem =
+        args:
+        import (nixpkgs + "/nixos/lib/eval-config.nix") (
+          {
+            inherit lib;
+            inherit (nixpkgs-config) system;
+          }
+          // args
+        );
+
       demo-system =
         module:
-        let
-          nixosSystem =
-            args:
-            import (nixpkgs + "/nixos/lib/eval-config.nix") (
-              {
-                inherit lib;
-              }
-              // args
-            );
-        in
         nixosSystem {
           modules = [
             module
@@ -117,7 +237,7 @@ in
                 };
               }
             )
-          ] ++ extendedNixosModules;
+          ] ++ self.ngipkgs.extendedNixosModules;
         };
     };
 
@@ -133,90 +253,22 @@ in
       ]
       ++ attrValues nixos-modules.programs
       ++ attrValues nixos-modules.services;
+
+    nixos-modules =
+      with lib;
+      # TODO: this is a weird shape for what we need: ngipkgs, services, modules?
+      {
+        # Allow using packages from `ngipkgs` to be used alongside regular `pkgs`
+        ngipkgs =
+          { ... }:
+          {
+            nixpkgs.overlays = [ overlays.default ];
+          };
+      }
+      // foldl recursiveUpdate { } (map (project: project.nixos.modules) (attrValues projects));
   };
 }
 
-#   examples =
-#     with lib;
-#     mapAttrs (_: project: mapAttrs (_: example: example.path) project.nixos.examples) projects;
-#
-#   nixos-modules =
-#     with lib;
-#     # TODO: this is a weird shape for what we need: ngipkgs, services, modules?
-#     {
-#       # Allow using packages from `ngipkgs` to be used alongside regular `pkgs`
-#       ngipkgs =
-#         { ... }:
-#         {
-#           nixpkgs.overlays = [ overlays.default ];
-#         };
-#     }
-#     // foldl recursiveUpdate { } (map (project: project.nixos.modules) (attrValues projects));
-#
-#
-#
-#   raw-projects =
-#     let
-#       project-inputs = {
-#         inherit lib;
-#         pkgs = pkgs // ngipkgs;
-#         sources = {
-#           inputs = sources;
-#           modules = nixos-modules;
-#           inherit examples;
-#         };
-#       };
-#       new-project-to-old =
-#         new-project:
-#         let
-#           empty-if-not-attrs = x: if lib.isAttrs x then x else { };
-#           removeNull = a: lib.filterAttrs (_: v: v != null) a;
-#
-#           services = empty-if-not-attrs (new-project.nixos.modules.services or { });
-#           programs = empty-if-not-attrs (new-project.nixos.modules.programs or { });
-#
-#           get = func: attrs: lib.concatMapAttrs (_: value: func value) attrs;
-#
-#           examples-from =
-#             value:
-#             if (value ? examples) && (lib.isAttrs value.examples) then
-#               lib.mapAttrs (
-#                 _: example:
-#                 if lib.isAttrs example then
-#                   {
-#                     path = example.module;
-#                     description = example.description;
-#                   }
-#                 else
-#                   null
-#               ) value.examples
-#             else
-#               { };
-#           tests-from =
-#             value:
-#             if (value ? tests) && (lib.isAttrs value.tests) then
-#               value.tests
-#             else if (value ? examples) && (lib.isAttrs value.examples) then
-#               lib.concatMapAttrs (_: example: example.tests or { }) value.examples
-#             else
-#               { };
-#         in
-#         {
-#           packages = { }; # NOTE: the overview expects a set
-#           metadata = new-project.metadata or { };
-#           nixos.modules.services = removeNull (lib.mapAttrs (name: value: value.module or null) services);
-#           nixos.modules.programs = removeNull (lib.mapAttrs (name: value: value.module or null) programs);
-#           nixos.examples = removeNull (
-#             examples-from new-project.nixos // get examples-from services // get examples-from programs
-#           );
-#           nixos.tests = removeNull (
-#             tests-from new-project.nixos // get tests-from services // get tests-from programs
-#           );
-#         };
-#       map-new-projects = projects: lib.mapAttrs (name: value: new-project-to-old value) projects;
-#     in
-#     import ./projects-old project-inputs // map-new-projects (import ./projects project-inputs);
-#
 #   project-models = import ./projects/models.nix { inherit lib pkgs sources; };
 #
 #   # we mainly care about the types being checked
@@ -298,61 +350,6 @@ in
 #       }
 #     ) raw-projects;
 #
-#   # TODO: find a better place for this
-#   projects =
-#     with lib;
-#     let
-#       nixosTest =
-#         test:
-#         let
-#           # Amenities for interactive tests
-#           tools =
-#             { pkgs, ... }:
-#             {
-#               environment.systemPackages = with pkgs; [
-#                 vim
-#                 tmux
-#                 jq
-#               ];
-#               # Use kmscon <https://www.freedesktop.org/wiki/Software/kmscon/>
-#               # to provide a slightly nicer console.
-#               # kmscon allows zooming with [Ctrl] + [+] and [Ctrl] + [-]
-#               services.kmscon = {
-#                 enable = true;
-#                 autologinUser = "root";
-#               };
-#             };
-#           debugging.interactive.nodes = mapAttrs (_: _: tools) test.nodes;
-#         in
-#         pkgs.nixosTest (debugging // test);
-#
-#       empty-if-null = x: if x != null then x else { };
-#
-#       hydrate =
-#         # we use fields to track state of completion.
-#         # - `null` means "expected but missing"
-#         # - not set means "not applicable"
-#         # TODO: encode this in types, either yants or the module system
-#         project: {
-#           packages = empty-if-null (filterAttrs (name: value: value != null) (project.packages or { }));
-#           metadata = empty-if-null (filterAttrs (name: value: value != null) (project.metadata or { }));
-#           nixos.modules = empty-if-null (filterAttrs (_: m: m != null) (project.nixos.modules or { }));
-#           nixos.examples = empty-if-null (project.nixos.examples or { });
-#           nixos.tests = mapAttrs (
-#             _: test:
-#             if lib.isString test then
-#               (import test {
-#                 inherit pkgs;
-#                 inherit (pkgs) system;
-#               })
-#             else if lib.isDerivation test then
-#               test
-#             else
-#               nixosTest test
-#           ) (empty-if-null (project.nixos.tests or { }));
-#         };
-#     in
-#     mapAttrs (name: project: hydrate project) raw-projects;
 #
 #   shell = pkgs.mkShellNoCC {
 #     packages = [ ];
