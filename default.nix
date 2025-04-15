@@ -1,35 +1,133 @@
+let
+  sources = (import ./flake-compat.nix { root = ./.; }).inputs;
+in
 {
-  sources ? (import ./flake-compat.nix { root = ./.; }).inputs,
-  system ? builtins.currentSystem,
-  pkgs ? import sources.nixpkgs {
-    config = { };
-    overlays = [ ];
-    inherit system;
-  },
-  lib ? import "${sources.nixpkgs}/lib",
+  nixpkgs ? sources.nixpkgs,
+  dream2nix ? sources.dream2nix,
+  sops-nix ? sources.sops-nix,
 }:
 let
-  dream2nix = (import sources.dream2nix).overrideInputs { inherit (sources) nixpkgs; };
-  sops-nix = import "${sources.sops-nix}/modules/sops";
+  lib' = import "${nixpkgs}/lib";
 in
 rec {
-  inherit
-    lib
-    pkgs
-    system
-    sources
-    ;
+  # this depends on Nixpkgs specifics, in particular on arguments to the Nixpkgs entry point function,
+  # and is therefore namespaced under `nixpkgs`
+  nixpkgs = {
+    system ? builtins.currentSystem,
+    config ? { },
+    overlays ? [ ],
+    ...
+  }@nixpkgs-config:
+  let
+    pkgs = import nixpkgs nixpkgs-config;
+    dream2nix' = (import dream2nix).overrideInputs { inherit (sources) nixpkgs; };
+    sops-nix' = import "${sops-nix}/modules/sops";
+  in
+  {
+    overlays.default =
+      final: prev:
+      import ./pkgs/by-name {
+        pkgs = prev;
+        lib = lib';
+        inherit dream2nix;
+      };
 
-  # TODO: we should be exporting our custom functions as `lib`, but refactoring
-  # this to use `pkgs.lib` everywhere is a lot of movement
-  lib' = import ./lib.nix { inherit lib; };
+    demo-system =
+      module:
+      let
+        nixosSystem =
+          args:
+          import (nixpkgs + "/nixos/lib/eval-config.nix") (
+            {
+              lib = lib';
+            }
+            // args
+          );
+      in
+      nixosSystem {
+        modules = [
+          module
+          (nixpkgs + "/nixos/modules/profiles/qemu-guest.nix")
+          (nixpkgs + "/nixos/modules/virtualisation/qemu-vm.nix")
+          (
+            { config, ... }:
+            {
+              nixpkgs = {
+                # NOTE: `pkgs` is the evaluated packages based on evaluation-time paramaters to this file
+                inherit (pkgs.stdenv) buildPlatform hostPlatform;
+              };
 
-  overlays.default =
-    final: prev:
-    import ./pkgs/by-name {
-      pkgs = prev;
-      inherit lib dream2nix;
+              users.users.nixos = {
+                isNormalUser = true;
+                extraGroups = [ "wheel" ];
+                initialPassword = "nixos";
+              };
+
+              users.users.root = {
+                initialPassword = "root";
+              };
+
+              security.sudo.wheelNeedsPassword = false;
+
+              services.getty.autologinUser = "nixos";
+              services.getty.helpLine = ''
+
+                Welcome to NGIpkgs!
+              '';
+
+              services.openssh = {
+                enable = true;
+                settings = {
+                  PasswordAuthentication = true;
+                  PermitEmptyPasswords = "yes";
+                  PermitRootLogin = "yes";
+                };
+              };
+
+              system.stateVersion = "25.05";
+
+              networking.firewall.enable = false;
+
+              virtualisation = {
+                memorySize = 4096;
+                cores = 4;
+                graphics = false;
+
+                qemu.options = [
+                  "-cpu host"
+                  "-enable-kvm"
+                ];
+
+                # ssh + open service ports
+                forwardPorts = map (port: {
+                  from = "host";
+                  guest.port = port;
+                  host.port = port + 10000;
+                  proto = "tcp";
+                }) config.networking.firewall.allowedTCPPorts;
+              };
+            }
+          )
+        ] ++ extendedNixosModules;
     };
+  };
+
+  lib = import ./lib.nix { lib = lib'; };
+
+  ngipkgs = rec {
+    extendedNixosModules =
+      with lib;
+      with lib'; # TODO: do we need this?
+      [
+        nixos-modules.ngipkgs
+        # TODO: needed for examples that use sops (like Pretalx)
+        sops-nix
+      ]
+      ++ attrValues nixos-modules.programs
+      ++ attrValues nixos-modules.services;
+    }
+
+}
 
   examples =
     with lib;
@@ -48,15 +146,6 @@ rec {
     }
     // foldl recursiveUpdate { } (map (project: project.nixos.modules) (attrValues projects));
 
-  extendedNixosModules =
-    with lib;
-    [
-      nixos-modules.ngipkgs
-      # TODO: needed for examples that use sops (like Pretalx)
-      sops-nix
-    ]
-    ++ attrValues nixos-modules.programs
-    ++ attrValues nixos-modules.services;
 
   ngipkgs = import ./pkgs/by-name { inherit pkgs lib dream2nix; };
 
@@ -263,81 +352,6 @@ rec {
     packages = [ ];
   };
 
-  demo-system =
-    module:
-    let
-      nixosSystem =
-        args:
-        import (sources.nixpkgs + "/nixos/lib/eval-config.nix") (
-          {
-            inherit lib;
-            system = null;
-          }
-          // args
-        );
-    in
-    nixosSystem {
-      system = "x86_64-linux";
-      modules = [
-        module
-        (sources.nixpkgs + "/nixos/modules/profiles/qemu-guest.nix")
-        (sources.nixpkgs + "/nixos/modules/virtualisation/qemu-vm.nix")
-        (
-          { config, ... }:
-          {
-            users.users.nixos = {
-              isNormalUser = true;
-              extraGroups = [ "wheel" ];
-              initialPassword = "nixos";
-            };
-
-            users.users.root = {
-              initialPassword = "root";
-            };
-
-            security.sudo.wheelNeedsPassword = false;
-
-            services.getty.autologinUser = "nixos";
-            services.getty.helpLine = ''
-
-              Welcome to NGIpkgs!
-            '';
-
-            services.openssh = {
-              enable = true;
-              settings = {
-                PasswordAuthentication = true;
-                PermitEmptyPasswords = "yes";
-                PermitRootLogin = "yes";
-              };
-            };
-
-            system.stateVersion = "25.05";
-
-            networking.firewall.enable = false;
-
-            virtualisation = {
-              memorySize = 4096;
-              cores = 4;
-              graphics = false;
-
-              qemu.options = [
-                "-cpu host"
-                "-enable-kvm"
-              ];
-
-              # ssh + open service ports
-              forwardPorts = map (port: {
-                from = "host";
-                guest.port = port;
-                host.port = port + 10000;
-                proto = "tcp";
-              }) config.networking.firewall.allowedTCPPorts;
-            };
-          }
-        )
-      ] ++ extendedNixosModules;
-    };
 
   demo =
     module:
