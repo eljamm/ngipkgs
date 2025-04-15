@@ -75,40 +75,10 @@
         default.nixpkgs.overlays = [ overlay ];
       } // rawNixosModules;
 
-      mkNixosSystem =
-        config:
-        nixosSystem {
-          modules =
-            [
-              config
-              {
-                nixpkgs.hostPlatform = "x86_64-linux";
-                system.stateVersion = "23.05";
-
-                # The examples that the flake exports are not meant to be used/booted directly.
-                # See <https://github.com/ngi-nix/ngipkgs/issues/128> for more information.
-                boot = {
-                  initrd.enable = false;
-                  kernel.enable = false;
-                  loader.grub.enable = false;
-                };
-              }
-            ]
-            # TODO: this needs to take a different shape,
-            # otherwise the transformation to obtain it is confusing
-            ++ classic'.extendedNixosModules;
-        };
-
       toplevel = machine: machine.config.system.build.toplevel;
 
       # Finally, define the system-agnostic outputs.
       systemAgnosticOutputs = {
-        nixosConfigurations =
-          # TODO: remove these, noone will (or can even, realistically) use them
-          mapAttrs (_: mkNixosSystem) rawExamples // {
-            makemake = import ./infra/makemake { inherit inputs; };
-          };
-
         inherit nixosModules;
 
         # Overlays a package set (e.g. Nixpkgs) with the packages defined in this flake.
@@ -121,6 +91,30 @@
           classic = (import ./. { }).nixpkgs { inherit system; };
 
           inherit (classic) pkgs ngipkgs;
+
+          mkNixosSystem =
+            config:
+            nixosSystem {
+              modules =
+                [
+                  config
+                  {
+                    nixpkgs.hostPlatform = system;
+                    system.stateVersion = "23.05";
+
+                    # The examples that the flake exports are not meant to be used/booted directly.
+                    # See <https://github.com/ngi-nix/ngipkgs/issues/128> for more information.
+                    boot = {
+                      initrd.enable = false;
+                      kernel.enable = false;
+                      loader.grub.enable = false;
+                    };
+                  }
+                ]
+                # TODO: this needs to take a different shape,
+                # otherwise the transformation to obtain it is confusing
+                ++ classic'.ngipkgs.extendedNixosModules;
+            };
 
           ngiProjects = classic.projects;
 
