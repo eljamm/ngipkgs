@@ -31,10 +31,10 @@
       ...
     }@inputs:
     let
-      classic' = (import ./. { }).nixpkgs { };
+      classic' = import ./. { };
       lib' = import ./lib.nix { inherit lib; };
 
-      inherit (classic') lib;
+      lib = import "${nixpkgs}/lib";
       inherit (lib)
         attrValues
         concatMapAttrs
@@ -53,36 +53,10 @@
           // args
         );
 
-      overlay = classic'.overlays.default;
-
-      # Note that modules and examples are system-agnostic, so import them first.
-      # TODO: get rid of these, it's extremely confusing to import the seemingly same thing twice
-      rawNgiProjects = classic'.projects;
-
-      rawExamples = lib'.flattenAttrs "/" (
-        mapAttrs (_: project: mapAttrs (_: example: example.path) project.nixos.examples) rawNgiProjects
-      );
-
-      rawNixosModules = lib'.flattenAttrs "." (
-        lib.foldl recursiveUpdate { } (
-          attrValues (mapAttrs (_: project: project.nixos.modules) rawNgiProjects)
-        )
-      );
-
-      nixosModules = {
-        # The default module adds the default overlay on top of Nixpkgs.
-        # This is so that `ngipkgs` can be used alongside `nixpkgs` in a configuration.
-        default.nixpkgs.overlays = [ overlay ];
-      } // rawNixosModules;
-
       toplevel = machine: machine.config.system.build.toplevel;
 
       # Finally, define the system-agnostic outputs.
       systemAgnosticOutputs = {
-        inherit nixosModules;
-
-        # Overlays a package set (e.g. Nixpkgs) with the packages defined in this flake.
-        overlays.default = overlay;
       };
 
       eachDefaultSystemOutputs = flake-utils.lib.eachDefaultSystem (
@@ -91,6 +65,24 @@
           classic = (import ./. { }).nixpkgs { inherit system; };
 
           inherit (classic) pkgs ngipkgs;
+
+          # Overlays a package set (e.g. Nixpkgs) with the packages defined in this flake.
+          overlays.default = overlay;
+          overlay = classic.overlays.default;
+
+          # Note that modules and examples are system-agnostic, so import them first.
+          # TODO: get rid of these, it's extremely confusing to import the seemingly same thing twice
+          rawNgiProjects = classic.projects;
+
+          rawExamples = lib'.flattenAttrs "/" classic.examples;
+
+          rawNixosModules = lib'.flattenAttrs "." classic'.ngipkgs.nixos-modules;
+
+          nixosModules = {
+            # The default module adds the default overlay on top of Nixpkgs.
+            # This is so that `ngipkgs` can be used alongside `nixpkgs` in a configuration.
+            default.nixpkgs.overlays = [ overlay ];
+          } // rawNixosModules;
 
           mkNixosSystem =
             config:

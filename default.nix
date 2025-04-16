@@ -34,6 +34,10 @@ in
         dream2nix = dream2nix';
       };
 
+      examples =
+        with lib;
+        mapAttrs (_: project: mapAttrs (_: example: example.path) project.nixos.examples) projects;
+
       raw-projects =
         let
           project-inputs = {
@@ -42,9 +46,7 @@ in
             sources = {
               inputs = sources;
               modules = self.ngipkgs.nixos-modules;
-              examples =
-                with lib;
-                mapAttrs (_: project: mapAttrs (_: example: example.path) project.nixos.examples) projects;
+              inherit examples;
             };
           };
           new-project-to-old =
