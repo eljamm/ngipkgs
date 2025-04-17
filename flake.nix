@@ -31,95 +31,83 @@
       ...
     }@inputs:
     let
-      classic' = import ./. { system = null; };
-      inherit (classic') lib lib';
+      lib = import "${nixpkgs}/lib";
+      lib' = import ./lib.nix { inherit lib; };
+
+      classic' = (import ./. { }).ngipkgs;
 
       inherit (lib)
         attrValues
         concatMapAttrs
         filterAttrs
-        mapAttrs
-        recursiveUpdate
         ;
-
-      nixosSystem =
-        args:
-        import (nixpkgs + "/nixos/lib/eval-config.nix") (
-          {
-            inherit lib;
-            system = null;
-          }
-          // args
-        );
-
-      overlay = classic'.overlays.default;
-
-      # Note that modules and examples are system-agnostic, so import them first.
-      # TODO: get rid of these, it's extremely confusing to import the seemingly same thing twice
-      rawNgiProjects = classic'.projects;
-
-      rawExamples = lib'.flattenAttrs "/" classic'.examples;
-
-      rawNixosModules = lib'.flattenAttrs "." (
-        lib.foldl recursiveUpdate { } (
-          attrValues (mapAttrs (_: project: project.nixos.modules) rawNgiProjects)
-        )
-      );
-
-      nixosModules = {
-        # The default module adds the default overlay on top of Nixpkgs.
-        # This is so that `ngipkgs` can be used alongside `nixpkgs` in a configuration.
-        default.nixpkgs.overlays = [ overlay ];
-      } // rawNixosModules;
-
-      mkNixosSystem =
-        config:
-        nixosSystem {
-          modules =
-            [
-              config
-              {
-                nixpkgs.hostPlatform = "x86_64-linux";
-                system.stateVersion = "23.05";
-
-                # The examples that the flake exports are not meant to be used/booted directly.
-                # See <https://github.com/ngi-nix/ngipkgs/issues/128> for more information.
-                boot = {
-                  initrd.enable = false;
-                  kernel.enable = false;
-                  loader.grub.enable = false;
-                };
-              }
-            ]
-            # TODO: this needs to take a different shape,
-            # otherwise the transformation to obtain it is confusing
-            ++ classic'.extendedNixosModules;
-        };
 
       toplevel = machine: machine.config.system.build.toplevel;
 
       # Finally, define the system-agnostic outputs.
       systemAgnosticOutputs = {
-        nixosConfigurations =
-          # TODO: remove these, noone will (or can even, realistically) use them
-          mapAttrs (_: mkNixosSystem) rawExamples // {
-            makemake = import ./infra/makemake { inherit inputs; };
-          };
-
-        inherit nixosModules;
-
-        # Overlays a package set (e.g. Nixpkgs) with the packages defined in this flake.
-        overlays.default = overlay;
+        nixosConfigurations = {
+          makemake = import ./infra/makemake { inherit inputs; };
+        };
       };
 
       eachDefaultSystemOutputs = flake-utils.lib.eachDefaultSystem (
         system:
         let
-          classic = import ./. { inherit system; };
+          classic = (import ./. { }).nixpkgs { inherit system; };
 
-          inherit (classic) pkgs ngipkgs;
+          # inherit (classic) ngipkgs;
+          pkgs = import nixpkgs { inherit system; };
+          ngipkgs = import ./pkgs/by-name {
+            inherit pkgs lib;
+            dream2nix = dream2nix;
+          };
+
+          nixosSystem =
+            args:
+            import (nixpkgs + "/nixos/lib/eval-config.nix") (
+              {
+                inherit lib system;
+              }
+              // args
+            );
 
           ngiProjects = classic.projects;
+
+          overlay = classic.overlays.default;
+
+          nixosModules = {
+            # The default module adds the default overlay on top of Nixpkgs.
+            # This is so that `ngipkgs` can be used alongside `nixpkgs` in a configuration.
+            default.nixpkgs.overlays = [ overlay ];
+          } // classic'.rawNixosModules;
+
+          # Overlays a package set (e.g. Nixpkgs) with the packages defined in this flake.
+          overlays.default = overlay;
+
+          mkNixosSystem =
+            config:
+            nixosSystem {
+              modules =
+                [
+                  config
+                  {
+                    nixpkgs.hostPlatform = "x86_64-linux";
+                    system.stateVersion = "23.05";
+
+                    # The examples that the flake exports are not meant to be used/booted directly.
+                    # See <https://github.com/ngi-nix/ngipkgs/issues/128> for more information.
+                    boot = {
+                      initrd.enable = false;
+                      kernel.enable = false;
+                      loader.grub.enable = false;
+                    };
+                  }
+                ]
+                # TODO: this needs to take a different shape,
+                # otherwise the transformation to obtain it is confusing
+                ++ classic'.extendedNixosModules;
+            };
 
           optionsDoc = pkgs.nixosOptionsDoc {
             options =
