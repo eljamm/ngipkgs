@@ -26,10 +26,8 @@ in
       dream2nix' = (import dream2nix).overrideInputs { inherit (sources) nixpkgs; };
       sops-nix' = import "${sops-nix}/modules/sops";
     in
-    {
+    rec {
       inherit pkgs;
-
-      lib = custom-lib;
 
       ngipkgs = import ./pkgs/by-name {
         inherit pkgs lib;
@@ -73,17 +71,31 @@ in
             pkgs.nixosTest (debugging // test);
 
           empty-if-null = x: if x != null then x else { };
+          filter-map =
+            attrs: input:
+            lib.pipe attrs [
+              (lib.concatMapAttrs (_: value: value."${input}" or { }))
+              (lib.filterAttrs (_: v: v != null))
+            ];
 
           hydrate =
             # we use fields to track state of completion.
             # - `null` means "expected but missing"
             # - not set means "not applicable"
             # TODO: encode this in types, either yants or the module system
-            project: {
-              packages = empty-if-null (filterAttrs (name: value: value != null) (project.packages or { }));
-              metadata = empty-if-null (filterAttrs (name: value: value != null) (project.metadata or { }));
-              nixos.modules = empty-if-null (filterAttrs (_: m: m != null) (project.nixos.modules or { }));
-              nixos.examples = empty-if-null (project.nixos.examples or { });
+            project: rec {
+              metadata = empty-if-null (filterAttrs (_: m: m != null) (project.metadata or { }));
+              nixos.modules.services = filterAttrs (_: m: m != null) (
+                lib.mapAttrs (name: value: value.module or null) project.nixos.modules.services or { }
+              );
+              nixos.modules.programs = filterAttrs (_: m: m != null) (
+                lib.mapAttrs (name: value: value.module or null) project.nixos.modules.programs or { }
+              );
+              # TODO: access examples for services and programs separately?
+              nixos.examples = empty-if-null (
+                (filter-map (project.nixos.modules.services or { }) "examples")
+                // (filter-map (project.nixos.modules.programs or { }) "examples")
+              );
               nixos.tests = mapAttrs (
                 _: test:
                 if lib.isString test then
@@ -95,72 +107,19 @@ in
                   test
                 else
                   nixosTest test
-              ) (empty-if-null (project.nixos.tests or { }));
+              ) (filter-map (project.nixos or { }) "tests" // (filter-map (nixos.examples or { }) "tests"));
             };
         in
-        mapAttrs (name: project: hydrate project) (self.nixpkgs { }).raw-projects;
-      raw-projects =
-        let
-          npkgs = self.nixpkgs { };
-          project-inputs = {
-            inherit lib;
-            pkgs = pkgs // npkgs.ngipkgs; # TODO:
-            sources = {
-              inputs = sources;
-              modules = npkgs.nixos-modules;
-              inherit (npkgs) examples;
-            };
-          };
-          new-project-to-old =
-            new-project:
-            let
-              empty-if-not-attrs = x: if lib.isAttrs x then x else { };
-              removeNull = a: lib.filterAttrs (_: v: v != null) a;
-
-              services = empty-if-not-attrs (new-project.nixos.modules.services or { });
-              programs = empty-if-not-attrs (new-project.nixos.modules.programs or { });
-
-              get = func: attrs: lib.concatMapAttrs (_: value: func value) attrs;
-
-              examples-from =
-                value:
-                if (value ? examples) && (lib.isAttrs value.examples) then
-                  lib.mapAttrs (
-                    _: example:
-                    if lib.isAttrs example then
-                      {
-                        path = example.module;
-                        description = example.description;
-                      }
-                    else
-                      null
-                  ) value.examples
-                else
-                  { };
-              tests-from =
-                value:
-                if (value ? tests) && (lib.isAttrs value.tests) then
-                  value.tests
-                else if (value ? examples) && (lib.isAttrs value.examples) then
-                  lib.concatMapAttrs (_: example: example.tests or { }) value.examples
-                else
-                  { };
-            in
-            {
-              packages = { }; # NOTE: the overview expects a set
-              metadata = new-project.metadata or { };
-              nixos.modules.services = removeNull (lib.mapAttrs (name: value: value.module or null) services);
-              nixos.modules.programs = removeNull (lib.mapAttrs (name: value: value.module or null) programs);
-              nixos.examples = removeNull (
-                examples-from new-project.nixos // get examples-from services // get examples-from programs
-              );
-              nixos.tests = removeNull (
-                tests-from new-project.nixos // get tests-from services // get tests-from programs
-              );
-            };
-          map-new-projects = projects: lib.mapAttrs (name: value: new-project-to-old value) projects;
-        in
-        import ./projects-old project-inputs // map-new-projects (import ./projects project-inputs);
+        mapAttrs (name: project: hydrate project) raw-projects;
+      raw-projects = import ./projects {
+        inherit lib;
+        pkgs = pkgs // ngipkgs;
+        sources = {
+          inputs = sources;
+          modules = self.ngipkgs.nixos-modules;
+          inherit examples;
+        };
+      };
 
       examples =
         with lib;

@@ -56,12 +56,7 @@
         let
           classic = (import ./. { }).nixpkgs { inherit system; };
 
-          # inherit (classic) ngipkgs;
-          pkgs = import nixpkgs { inherit system; };
-          ngipkgs = import ./pkgs/by-name {
-            inherit pkgs lib;
-            dream2nix = dream2nix;
-          };
+          inherit (classic) pkgs ngipkgs;
 
           rawNixosModules = (import ./lib.nix { inherit lib; }).flattenAttrs "." (
             lib.foldl lib.recursiveUpdate { } (
