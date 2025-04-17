@@ -54,7 +54,7 @@
       eachDefaultSystemOutputs = flake-utils.lib.eachDefaultSystem (
         system:
         let
-          classic = import ./. { inherit system; };
+          classic = (import ./. { }).nixpkgs { inherit system; };
 
           # inherit (classic) ngipkgs;
           pkgs = import nixpkgs { inherit system; };

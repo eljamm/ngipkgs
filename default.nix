@@ -40,7 +40,7 @@ in
         final: prev:
         import ./pkgs/by-name {
           pkgs = prev;
-          lib = custom-lib;
+          lib = lib // custom-lib;
           dream2nix = dream2nix';
         };
 
