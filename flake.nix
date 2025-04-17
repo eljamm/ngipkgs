@@ -54,7 +54,7 @@
       eachDefaultSystemOutputs = flake-utils.lib.eachDefaultSystem (
         system:
         let
-          classic = (import ./. { }).nixpkgs { inherit system; };
+          classic = import ./. { inherit system; };
 
           # inherit (classic) ngipkgs;
           pkgs = import nixpkgs { inherit system; };
@@ -62,6 +62,12 @@
             inherit pkgs lib;
             dream2nix = dream2nix;
           };
+
+          rawNixosModules = (import ./lib.nix { inherit lib; }).flattenAttrs "." (
+            lib.foldl lib.recursiveUpdate { } (
+              lib.attrValues (lib.mapAttrs (_: project: project.nixos.modules) ngiProjects)
+            )
+          );
 
           nixosSystem =
             args:
@@ -80,7 +86,7 @@
             # The default module adds the default overlay on top of Nixpkgs.
             # This is so that `ngipkgs` can be used alongside `nixpkgs` in a configuration.
             default.nixpkgs.overlays = [ overlay ];
-          } // classic'.rawNixosModules;
+          } // rawNixosModules;
 
           # Overlays a package set (e.g. Nixpkgs) with the packages defined in this flake.
           overlays.default = overlay;
