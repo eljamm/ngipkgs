@@ -123,6 +123,22 @@ rec {
     };
   };
 
+  # TODO: remove, after
+  # ===
+
+  raw-projects-modules = import ./projects/default-module.nix {
+    inherit lib;
+    pkgs = pkgs // ngipkgs;
+    sources = {
+      inputs = sources;
+      modules = nixos-modules;
+      inherit examples;
+    };
+  };
+
+  # TODO:
+  # ===
+
   project-models = import ./projects/models.nix { inherit lib pkgs sources; };
 
   # we mainly care about the types being checked
