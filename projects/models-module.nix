@@ -72,6 +72,33 @@ let
       };
     };
 
+  # TODO: port modular services to programs
+  programType =
+    with types;
+    submodule {
+      options = {
+        name = mkOption {
+          type = nullOr str;
+          default = null;
+        };
+        module = mkOption {
+          type = moduleType;
+        };
+        examples = mkOption {
+          type = nullOr (attrsOf (nullOr exampleType));
+          default = null;
+        };
+        extensions = mkOption {
+          type = nullOr (attrsOf (nullOr pluginType));
+          default = null;
+        };
+        links = mkOption {
+          type = attrsOf urlType;
+          default = { };
+        };
+      };
+    };
+
   mkProject = name: value: {
     options.projects."${name}" = {
       name = mkOption {
