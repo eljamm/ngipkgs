@@ -45,6 +45,33 @@ let
   # NixOS tests are modules that boil down to a derivation
   testType = with types; nullOr (either moduleType package);
 
+  # TODO: make use of modular services https://github.com/NixOS/nixpkgs/pull/372170
+  serviceType =
+    with types;
+    submodule {
+      options = {
+        name = mkOption {
+          type = nullOr str;
+          default = null;
+        };
+        module = mkOption {
+          type = moduleType;
+        };
+        examples = mkOption {
+          type = nullOr (attrsOf (nullOr exampleType));
+          default = null;
+        };
+        extensions = mkOption {
+          type = nullOr (attrsOf (nullOr pluginType));
+          default = null;
+        };
+        links = mkOption {
+          type = attrsOf urlType;
+          default = { };
+        };
+      };
+    };
+
   mkProject = name: value: {
     options.projects."${name}" = {
       name = mkOption {
