@@ -22,6 +22,37 @@ let
       }
     );
 
+  urlType =
+    with types;
+    submodule {
+      options = {
+        # link text
+        text = mkOption { type = str; };
+        # could be a hover/alternative text or simply a long-form description of a non-trivial resource
+        description = mkOption {
+          type = nullOr str;
+          default = null;
+        };
+        # we may later want to do a fancy syntax check in a custom `typdef`
+        url = mkOption { type = str; };
+      };
+    };
+
+  binaryType =
+    with types;
+    submodule {
+      options = {
+        name = mkOption {
+          type = nullOr str;
+          default = null;
+        };
+        data = mkOption {
+          type = nullOr (either path package);
+          default = null;
+        };
+      };
+    };
+
   exampleType =
     with types;
     submodule {
