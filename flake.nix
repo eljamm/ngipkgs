@@ -63,7 +63,7 @@
 
       rawNixosModules = lib'.flattenAttrs "." (
         lib.foldl recursiveUpdate { } (
-          attrValues (mapAttrs (_: project: project.nixos.modules) rawNgiProjects)
+          attrValues (mapAttrs (_: project: project.nixos) rawNgiProjects)
         )
       );
 
