@@ -130,18 +130,6 @@
               projects = ngiProjects;
               options = optionsDoc.optionsNix;
             };
-            overview-modules = import ./overview {
-              inherit
-                lib
-                lib'
-                self
-                nixpkgs
-                system
-                ;
-              pkgs = pkgs // ngipkgs;
-              projects = classic.projects-modules;
-              options = optionsDoc.optionsNix;
-            };
 
             options =
               pkgs.runCommand "options.json"
