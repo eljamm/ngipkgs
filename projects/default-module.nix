@@ -2,7 +2,7 @@
   lib,
   pkgs,
   sources,
-  models ? import ./models.nix {
+  models ? import ./models-module.nix {
     inherit lib pkgs;
     sources = sources.inputs;
   },
@@ -18,10 +18,11 @@ let
     concatMapAttrs
     mapAttrs
     filterAttrs
+    mapAttrsToList
     ;
 
   inherit (models)
-    project
+    mkProject
     ;
 
   baseDirectory = ./.;
@@ -51,6 +52,8 @@ let
     # TODO: use fileset and filter for `gitTracked` files
     concatMapAttrs names (readDir baseDirectory);
 in
-mapAttrs (
-  name: directory: project (import directory { inherit lib pkgs sources; })
-) projectDirectories
+lib.foldl lib.recursiveUpdate { } (
+  mapAttrsToList (
+    name: directory: mkProject name (import directory { inherit lib pkgs sources; })
+  ) projectDirectories
+)
