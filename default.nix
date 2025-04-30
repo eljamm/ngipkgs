@@ -113,7 +113,7 @@ rec {
 
   ngipkgs = import ./pkgs/by-name { inherit pkgs lib dream2nix; };
 
-  raw-projects = import ./projects {
+  raw-projects = import ./projects/default-module.nix {
     inherit lib;
     pkgs = pkgs // ngipkgs;
     sources = {
@@ -122,31 +122,6 @@ rec {
       inherit examples;
     };
   };
-
-  # TODO: remove after migrating to modules
-  # ===
-
-  raw-projects-modules = import ./projects/default-module.nix {
-    inherit lib;
-    pkgs = pkgs // ngipkgs;
-    sources = {
-      inputs = sources;
-      modules = nixos-modules;
-      inherit examples;
-    };
-  };
-
-  # TODO: delete the file after migrating to modules
-  projects-modules = import ./modules.nix {
-    inherit
-      lib
-      pkgs
-      raw-projects-modules
-      ;
-  };
-
-  # TODO:
-  # ===
 
   project-models = import ./projects/models.nix { inherit lib pkgs sources; };
 
@@ -228,7 +203,7 @@ rec {
           ) ((empty-if-null project.nixos.tests or { }) // (filter-map (nixos.examples or { }) "tests"));
         };
     in
-    mapAttrs (name: project: hydrate project) raw-projects;
+    mapAttrs (name: project: hydrate project) raw-projects.config.projects;
 
   shell = pkgs.mkShellNoCC {
     packages = [ ];
