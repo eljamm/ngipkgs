@@ -195,11 +195,11 @@ let
           with types;
           submodule {
             options = {
-              services = mkOption {
+              modules.services = mkOption {
                 type = nullOr (attrsOf (nullOr serviceType));
                 default = null;
               };
-              programs = mkOption {
+              modules.programs = mkOption {
                 type = nullOr (attrsOf (nullOr programType));
                 default = null;
               };
