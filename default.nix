@@ -206,6 +206,30 @@ rec {
     in
     mapAttrs (name: project: hydrate project) raw-projects.config.projects;
 
+  nixosModules = import "${sources.nixpkgs}/nixos/modules/module-list.nix";
+  evaluated-modules = lib.evalModules {
+    modules =
+      [
+        {
+          config = {
+            nixpkgs.hostPlatform = { inherit system; };
+
+            networking = {
+              domain = "invalid";
+              hostName = "options";
+            };
+
+            system.stateVersion = "23.05";
+          };
+        }
+      ]
+      ++ nixosModules
+      ++ [ raw-projects ];
+    specialArgs = {
+      modulesPath = "${sources.nixpkgs}/nixos/modules";
+    };
+  };
+
   shell = pkgs.mkShellNoCC {
     packages = [ ];
   };
