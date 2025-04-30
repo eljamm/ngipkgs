@@ -113,7 +113,7 @@ rec {
 
   ngipkgs = import ./pkgs/by-name { inherit pkgs lib dream2nix; };
 
-  raw-projects = import ./projects/default-module.nix {
+  raw-projects = import ./projects {
     inherit lib;
     pkgs = pkgs // ngipkgs;
     sources = {
@@ -129,7 +129,7 @@ rec {
   templates.project =
     let
       project-metadata =
-        (project-models.project (import ./maintainers/templates/project { inherit lib pkgs sources; }))
+        (project-models.mkProject (import ./maintainers/templates/project { inherit lib pkgs sources; }))
         .metadata;
     in
     # fake derivation for flake check

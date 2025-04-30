@@ -16,12 +16,11 @@ let
 
   inherit (lib.attrsets)
     concatMapAttrs
-    mapAttrs
-    filterAttrs
+    mapAttrsToList
     ;
 
   inherit (models)
-    project
+    mkProject
     ;
 
   baseDirectory = ./.;
@@ -36,21 +35,17 @@ let
         else
           assert elem name allowedFiles;
           { };
-      allowedFiles =
-        [
-          "README.md"
-          "default.nix"
-          "models.nix"
-        ]
-        # TODO: remove after fully migrating types to the module system
-        ++ [
-          "models-module.nix"
-          "default-module.nix"
-        ];
+      allowedFiles = [
+        "README.md"
+        "default.nix"
+        "models.nix"
+      ];
     in
     # TODO: use fileset and filter for `gitTracked` files
     concatMapAttrs names (readDir baseDirectory);
 in
-mapAttrs (
-  name: directory: project (import directory { inherit lib pkgs sources; })
-) projectDirectories
+lib.foldl lib.recursiveUpdate { } (
+  mapAttrsToList (
+    name: directory: mkProject name (import directory { inherit lib pkgs sources; })
+  ) projectDirectories
+)
