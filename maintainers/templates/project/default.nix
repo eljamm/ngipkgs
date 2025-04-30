@@ -38,7 +38,7 @@
   };
 
   # NOTE: Replace `_programName_` with the actual program name
-  nixos.programs = {
+  nixos.modules.programs = {
     _programName_ = {
       name = "program name";
       # if a project has `packages`, add them inside the `module.nix` file
@@ -64,7 +64,7 @@
   };
 
   # NOTE: Replace `_serviceName_` with the actual service name
-  nixos.services = {
+  nixos.modules.services = {
     _serviceName_ = {
       name = "service name";
       # Check if the service exists in https://search.nixos.org/options?

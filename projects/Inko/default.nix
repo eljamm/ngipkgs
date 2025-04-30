@@ -12,7 +12,7 @@
     ];
   };
 
-  nixos.programs = {
+  nixos.modules.programs = {
     inko = {
       module = ./module.nix;
       examples.basic = {

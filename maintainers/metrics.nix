@@ -20,15 +20,15 @@ rec {
     in-ngipkgs = attrNames ngipkgs;
     derivations = concatMap (p: attrNames p.packages) (attrValues raw-projects);
     with-services = attrNames (
-      filterAttrs (name: p: p ? nixos.services && p.nixos.services != null) raw-projects
+      filterAttrs (name: p: p ? nixos.modules.services && p.nixos.modules.services != null) raw-projects
     );
     missing-services = attrNames (
-      filterAttrs (name: p: p ? nixos.services && p.nixos.services == null) raw-projects
+      filterAttrs (name: p: p ? nixos.modules.services && p.nixos.modules.services == null) raw-projects
     );
     services = concatMap attrNames (
-      concatMap (p: attrValues p.nixos) (
+      concatMap (p: attrValues p.nixos.modules) (
         attrValues (
-          filterAttrs (name: p: p ? nixos.services && p.nixos.services != null) raw-projects
+          filterAttrs (name: p: p ? nixos.modules.services && p.nixos.modules.services != null) raw-projects
         )
       )
     );
@@ -65,19 +65,19 @@ rec {
           tests = if p.nixos.tests == null then 0 else count (_: true) (attrNames p.nixos.tests);
           examples = if p.nixos.examples == null then 0 else count (_: true) (attrNames p.nixos.examples);
         }
-        // optionalAttrs (p ? nixos.services) {
+        // optionalAttrs (p ? nixos.modules.services) {
           services =
-            if p.nixos.services == null then
+            if p.nixos.modules.services == null then
               0
             else
-              count (_: true) (attrNames p.nixos.services);
+              count (_: true) (attrNames p.nixos.modules.services);
         }
-        // optionalAttrs (p ? nixos.programs) {
+        // optionalAttrs (p ? nixos.modules.programs) {
           programs =
-            if p.nixos.programs == null then
+            if p.nixos.modules.programs == null then
               0
             else
-              count (_: true) (attrNames p.nixos.programs);
+              count (_: true) (attrNames p.nixos.modules.programs);
         };
     }
   ) raw-projects;

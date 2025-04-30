@@ -86,7 +86,7 @@ let
         spec = attrNames (
           lib'.flattenAttrs "." (
             foldl' recursiveUpdate { } (
-              mapAttrsToList (name: value: { ${name} = value; }) project.nixos
+              mapAttrsToList (name: value: { ${name} = value; }) project.nixos.modules
             )
           )
         );
@@ -224,7 +224,7 @@ let
         ${heading 1 null name}
         ${render.metadata.one project.metadata}
         ${optionalString (project.nixos.examples ? demo) (
-          render.serviceDemo.one project.nixos.services project.nixos.examples.demo
+          render.serviceDemo.one project.nixos.modules.services project.nixos.examples.demo
         )}
         ${render.options.many (pick.options project)}
         ${render.examples.many (pick.examples project)}
@@ -239,7 +239,7 @@ let
         project:
         # TODO is missing in the model yet
         optionalString false (one "library")
-        + optionalString (project.nixos ? services && project.nixos.services != { }) (
+        + optionalString (project.nixos.modules ? services && project.nixos.modules.services != { }) (
           one "service"
         )
         +

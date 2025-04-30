@@ -15,6 +15,6 @@
       "Keyoxide-signatures"
     ];
   };
-  nixos.services.keyoxide = import ./keyoxide-web args;
-  nixos.programs.keyoxide-cli = import ./keyoxide-cli args;
+  nixos.modules.services.keyoxide = import ./keyoxide-web args;
+  nixos.modules.programs.keyoxide-cli = import ./keyoxide-cli args;
 }

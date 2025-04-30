@@ -10,7 +10,7 @@
       "Gancio"
     ];
   };
-  nixos.services = {
+  nixos.modules.services = {
     gancio = {
       module = "${sources.inputs.nixpkgs}/nixos/modules/services/web-apps/gancio.nix";
       examples.gancio = {

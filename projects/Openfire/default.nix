@@ -12,7 +12,7 @@
     ];
   };
 
-  nixos.services = {
+  nixos.modules.services = {
     openfire-server = {
       name = "openfire-server";
       module = ./module.nix;

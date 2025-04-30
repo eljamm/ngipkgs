@@ -12,7 +12,7 @@
     ];
   };
 
-  nixos.programs = {
+  nixos.modules.programs = {
     tslib = {
       module = ./module.nix;
       examples.basic = {

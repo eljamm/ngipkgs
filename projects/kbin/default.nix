@@ -12,7 +12,7 @@
     ];
   };
 
-  nixos.programs = {
+  nixos.modules.programs = {
     kbin = {
       name = "kbin";
       module = ./programs/kbin/module.nix;
@@ -24,7 +24,7 @@
     };
   };
 
-  nixos.services = {
+  nixos.modules.services = {
     kbin = {
       name = "kbin";
       module = ./services/kbin/module.nix;

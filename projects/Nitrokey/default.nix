@@ -13,7 +13,7 @@
     ];
   };
 
-  nixos.programs = {
+  nixos.modules.programs = {
     nitrokey = {
       module = ./module.nix;
       examples.basic = {

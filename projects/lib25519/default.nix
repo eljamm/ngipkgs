@@ -14,7 +14,7 @@
     ];
   };
 
-  nixos.programs = {
+  nixos.modules.programs = {
     # TODO: figure out a better representation for this since it's a library
     lib25519 = {
       module = ./module.nix;

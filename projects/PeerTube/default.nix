@@ -27,7 +27,7 @@
     };
   };
 
-  nixos.services = {
+  nixos.modules.services = {
     peertube = {
       name = "peertube";
       module = ./services/peertube/module.nix;

@@ -14,7 +14,7 @@
     ];
   };
 
-  nixos.services.liberaforms = {
+  nixos.modules.services.liberaforms = {
     module = ./service.nix;
     examples.basic = {
       module = ./example.nix;

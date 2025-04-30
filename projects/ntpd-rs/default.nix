@@ -22,7 +22,7 @@
     };
   };
 
-  nixos.services = {
+  nixos.modules.services = {
     ntpd-rs = {
       name = "ntpd-rs";
       module = "${sources.inputs.nixpkgs}/nixos/modules/services/networking/ntp/ntpd-rs.nix";

@@ -13,7 +13,7 @@
     ];
   };
 
-  nixos.programs = {
+  nixos.modules.programs = {
     kikit = {
       module = ./module.nix;
       examples.basic = {

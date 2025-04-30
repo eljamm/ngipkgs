@@ -12,7 +12,7 @@
     ];
   };
 
-  nixos.programs = {
+  nixos.modules.programs = {
     stract = {
       module = ./module.nix;
       examples.basic = {

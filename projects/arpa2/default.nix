@@ -20,7 +20,7 @@
     ];
   };
 
-  nixos.programs = {
+  nixos.modules.programs = {
     arpa2 = {
       module = ./module.nix;
       examples.basic = {

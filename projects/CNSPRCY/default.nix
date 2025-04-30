@@ -11,7 +11,7 @@
   };
 
   # https://git.sr.ht/~xaos/cnsprcy/tree/master/item/src/config.rs
-  nixos.programs.cnsprcy = {
+  nixos.modules.programs.cnsprcy = {
     module = ./module.nix;
     examples.cnsprcy = {
       module = ./example.nix;

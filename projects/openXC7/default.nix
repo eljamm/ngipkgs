@@ -13,7 +13,7 @@
     ];
   };
 
-  nixos.programs = {
+  nixos.modules.programs = {
     openxc7 = {
       name = "openXC7";
       module = ./module.nix;

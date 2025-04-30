@@ -32,7 +32,7 @@
     };
   };
 
-  nixos.programs = {
+  nixos.modules.programs = {
     scion = {
       name = "scion";
       module = ./programs/basic/module.nix;
@@ -44,7 +44,7 @@
     };
   };
 
-  nixos.services = {
+  nixos.modules.services = {
     scion = {
       name = "scion";
       module = "${sources.inputs.nixpkgs}/nixos/modules/services/networking/scion/scion.nix";

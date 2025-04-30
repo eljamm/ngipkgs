@@ -18,7 +18,7 @@
     ];
   };
 
-  nixos.programs = {
+  nixos.modules.programs = {
     wireguard = {
       module = ./program/module.nix;
       examples.basic = {
@@ -29,7 +29,7 @@
     };
   };
 
-  nixos.services = {
+  nixos.modules.services = {
     wireguard = {
       module = "${sources.inputs.nixpkgs}/nixos/modules/services/networking/wireguard.nix";
       examples.basic = null;

@@ -19,7 +19,7 @@
   };
 
   # https://libre-soc.org/nlnet_2022_ongoing/
-  nixos.programs = {
+  nixos.modules.programs = {
     libresoc = {
       module = ./module.nix;
       examples.basic = {

@@ -18,7 +18,7 @@
     ];
   };
 
-  nixos.services = {
+  nixos.modules.services = {
     gnunet = {
       name = "gnunet";
       module = "${sources.inputs.nixpkgs}/nixos/modules/services/networking/gnunet.nix";
