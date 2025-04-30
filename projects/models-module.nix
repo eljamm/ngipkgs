@@ -99,6 +99,26 @@ let
       };
     };
 
+  moduleType =
+    with types;
+    oneOf [
+      path
+      attrs
+      (functionTo attrs)
+    ];
+
+  subgrantType =
+    with types;
+    submodule {
+      options = lib.genAttrs [ "Commons" "Core" "Entrust" "Review" ] (
+        name:
+        mkOption {
+          type = listOf str;
+          default = [ ];
+        }
+      );
+    };
+
   mkProject = name: value: {
     options.projects."${name}" = {
       name = mkOption {
