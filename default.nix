@@ -123,7 +123,7 @@ rec {
     };
   };
 
-  # TODO: remove, after
+  # TODO: remove after migrating to modules
   # ===
 
   raw-projects-modules = import ./projects/default-module.nix {
@@ -136,7 +136,14 @@ rec {
     };
   };
 
-  projects-modules = raw-projects-modules.config.projects;
+  # TODO: delete the file after migrating to modules
+  projects-modules = import ./modules.nix {
+    inherit
+      lib
+      pkgs
+      raw-projects-modules
+      ;
+  };
 
   # TODO:
   # ===
