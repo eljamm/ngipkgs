@@ -10,6 +10,41 @@ let
     mkOption
     ;
 
+  nonEmtpyAttrs =
+    elemType:
+    with types;
+    (
+      (attrsOf elemType)
+      // {
+        name = "nonEmtpyAttrs";
+        description = "non-empty attribute set";
+        check = x: lib.isAttrs x && x != { };
+      }
+    );
+
+  exampleType =
+    with types;
+    submodule {
+      options = {
+        module = mkOption {
+          type = moduleType;
+        };
+        description = mkOption {
+          type = str;
+        };
+        tests = mkOption {
+          type = nonEmtpyAttrs testType;
+        };
+        links = mkOption {
+          type = attrsOf urlType;
+          default = { };
+        };
+      };
+    };
+
+  # NixOS tests are modules that boil down to a derivation
+  testType = with types; nullOr (either moduleType package);
+
   mkProject = name: value: {
     options.projects."${name}" = {
       name = mkOption {
