@@ -136,6 +136,8 @@ rec {
     };
   };
 
+  projects-modules = raw-projects-modules.config.projects;
+
   # TODO:
   # ===
 
