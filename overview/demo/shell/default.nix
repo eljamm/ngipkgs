@@ -2,7 +2,6 @@
   lib,
   pkgs,
   apps ? null,
-  command ? null,
 }:
 
 let
@@ -27,14 +26,13 @@ let
 
   appsList = getAppList apps;
   appsPath = if apps != null then "export PATH=${makeBinPath appsList}:$PATH" else "";
-
-  runCommand = if command != null then "-c '${command}'" else "";
+  # TODO: MANPATH
 
   activate = pkgs.writeShellScript "demo-shell" ''
     export PS1="\[\033[1m\][app-shell]\[\033[m\]\040\w >\040"
     ${appsPath}
 
-    ${pkgs.lib.getExe pkgs.bash} --norc ${runCommand}
+    ${pkgs.lib.getExe pkgs.bash} --norc "$@"
   '';
 in
 activate

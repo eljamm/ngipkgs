@@ -7,7 +7,7 @@ script_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd -P)
 
 usage() {
     cat <<EOF
-Usage: $(basename "${BASH_SOURCE[0]}") [options] -- [command]
+Usage: $(basename "${BASH_SOURCE[0]}") [options]
 
 Create a temporary shell environment containing specified applications.
 
@@ -15,8 +15,6 @@ Available options:
 
 -a, --apps            Comma separated list of applications to enable on PATH.
                       Example: gdal,qgis
-
-command               Command to execute in shell.
 EOF
     exit
 }
@@ -48,9 +46,6 @@ parse_params() {
         -a | --apps)
             apps="${2-}"
             shift
-            ;;
-        --)
-            command=("${@:2}")
             ;;
         -?*) die "Unknown option: $1" ;;
         *) break ;;
