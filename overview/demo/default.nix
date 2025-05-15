@@ -80,7 +80,7 @@ let
             };
           }
         )
-        ./shell.nix
+        ./shell/module.nix
       ] ++ extendedNixosModules;
       specialArgs = { inherit sources; };
     };
@@ -95,6 +95,6 @@ in
   demo-shell =
     module:
     pkgs.writeShellScript "demo-shell" ''
-      exec ${(demo-system module).config.app-shell.mitmproxy.shells.bash.activate} "$@"
+      exec ${(lib.head (lib.attrValues (demo-system module).config.app-shell)).shells.bash.activate} "$@"
     '';
 }

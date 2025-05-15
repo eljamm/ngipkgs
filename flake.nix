@@ -13,8 +13,6 @@
   inputs.sops-nix.url = "github:Mic92/sops-nix";
   inputs.buildbot-nix.inputs.nixpkgs.follows = "nixpkgs";
   inputs.buildbot-nix.url = "github:nix-community/buildbot-nix";
-  inputs.app-shell.inputs.nixpkgs.follows = "nixpkgs";
-  inputs.app-shell.url = "github:eljamm/app-shell?ref=refactors";
   inputs.yants.url = "git+https://code.tvl.fyi/depot.git:/nix/yants.git";
   inputs.yants.flake = false;
 

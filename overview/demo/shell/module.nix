@@ -27,14 +27,6 @@ in
                 };
                 default = { };
               };
-              libraries = mkOption {
-                type = attrsOf package;
-                description = "Set of libraries that will be installed in the shell.";
-                example = {
-                  zlib = pkgs.zlib;
-                };
-                default = { };
-              };
               shells = lib.mkOption {
                 type = submodule {
                   options = {
@@ -48,10 +40,9 @@ in
                     };
                   };
                   config = lib.mkIf config.shells.bash.enable {
-                    bash.activate = import "${sources.app-shell}/app-shell.nix" {
+                    bash.activate = import ./. {
                       apps = lib.attrValues config.programs;
-                      libs = lib.attrValues config.libraries;
-                      inherit pkgs;
+                      inherit pkgs lib;
                     };
                   };
                 };

@@ -58,7 +58,7 @@ rec {
 
               system.stateVersion = "23.05";
             }
-            ./overview/demo/shell.nix
+            ./overview/demo/shell/module.nix
           ] ++ lib.attrValues nixosModules;
         }).options;
     };
