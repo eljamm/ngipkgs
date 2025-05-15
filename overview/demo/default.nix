@@ -92,9 +92,5 @@ in
       exec ${(demo-system module).config.system.build.vm}/bin/run-nixos-vm "$@"
     '';
 
-  demo-shell =
-    module:
-    pkgs.writeShellScript "demo-shell" ''
-      exec ${(lib.head (lib.attrValues (demo-system module).config.app-shell)).shells.bash.activate} "$@"
-    '';
+  demo-shell = module: (demo-system module).config.shells.bash.activate;
 }

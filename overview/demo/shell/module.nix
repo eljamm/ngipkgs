@@ -50,7 +50,7 @@ in
         };
         config = lib.mkIf config.shells.bash.enable {
           bash.activate = import ./. {
-            apps = lib.attrValues config.programs;
+            apps = lib.flatten (map (name: lib.attrValues name.programs) (lib.attrValues config.app-shell));
             inherit pkgs lib;
           };
         };
