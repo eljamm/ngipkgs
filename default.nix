@@ -58,6 +58,7 @@ rec {
 
               system.stateVersion = "23.05";
             }
+            ./overview/demo/shell.nix
           ] ++ lib.attrValues nixosModules;
         }).options;
     };
@@ -262,4 +263,9 @@ rec {
       extendedNixosModules
       ;
   };
+
+  inherit (demo)
+    demo-vm
+    demo-shell
+    ;
 }

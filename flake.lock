@@ -1,5 +1,26 @@
 {
   "nodes": {
+    "app-shell": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1747300630,
+        "narHash": "sha256-qSlVpwnqtK3R372GarDTlGKW3KGm00oIw8EqpSKnFJQ=",
+        "owner": "eljamm",
+        "repo": "app-shell",
+        "rev": "aeb0f41882c943a03267f535c1e6ec6b6940b6a2",
+        "type": "github"
+      },
+      "original": {
+        "owner": "eljamm",
+        "ref": "refactors",
+        "repo": "app-shell",
+        "type": "github"
+      }
+    },
     "buildbot-nix": {
       "inputs": {
         "flake-parts": "flake-parts",
@@ -260,6 +281,7 @@
     },
     "root": {
       "inputs": {
+        "app-shell": "app-shell",
         "buildbot-nix": "buildbot-nix",
         "dream2nix": "dream2nix",
         "flake-utils": "flake-utils",
