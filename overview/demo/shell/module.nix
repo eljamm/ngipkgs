@@ -15,23 +15,18 @@ in
   options.app-shell =
     with types;
     mkOption {
-      type = attrsOf (
-        submodule (
-          { name, config, ... }:
-          {
-            options = {
-              programs = mkOption {
-                type = attrsOf package;
-                description = "Set of programs that will be installed in the shell.";
-                example = {
-                  geospatial = pkgs.qgis;
-                };
-                default = { };
-              };
+      type = attrsOf (submodule {
+        options = {
+          programs = mkOption {
+            type = attrsOf package;
+            description = "Set of programs that will be installed in the shell.";
+            example = {
+              geospatial = pkgs.qgis;
             };
-          }
-        )
-      );
+            default = { };
+          };
+        };
+      });
     };
 
   options.shells =
