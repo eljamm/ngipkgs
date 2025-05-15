@@ -1,5 +1,6 @@
 {
   sources,
+  config,
   pkgs,
   lib,
   ...
@@ -27,30 +28,33 @@ in
                 };
                 default = { };
               };
-              shells = lib.mkOption {
-                type = submodule {
-                  options = {
-                    bash.enable = mkOption {
-                      type = bool;
-                      default = true;
-                    };
-                    bash.activate = mkOption {
-                      type = nullOr package;
-                      default = null;
-                    };
-                  };
-                  config = lib.mkIf config.shells.bash.enable {
-                    bash.activate = import ./. {
-                      apps = lib.attrValues config.programs;
-                      inherit pkgs lib;
-                    };
-                  };
-                };
-                default = { };
-              };
             };
           }
         )
       );
+    };
+
+  options.shells =
+    with types;
+    lib.mkOption {
+      type = submodule {
+        options = {
+          bash.enable = mkOption {
+            type = bool;
+            default = true;
+          };
+          bash.activate = mkOption {
+            type = nullOr package;
+            default = null;
+          };
+        };
+        config = lib.mkIf config.shells.bash.enable {
+          bash.activate = import ./. {
+            apps = lib.attrValues config.programs;
+            inherit pkgs lib;
+          };
+        };
+      };
+      default = { };
     };
 }
