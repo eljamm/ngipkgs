@@ -21,6 +21,19 @@ let
       system = "x86_64-linux";
       modules = [
         module
+        {
+          imports = [
+            "${sources.nix-system-graphics}/system/modules/graphics.nix"
+            ./system-manager.nix
+          ];
+
+          # system-manager.allowAnyDistro = true;
+          system-graphics.enable = true;
+
+          environment.systemPackages = [
+            pkgs.mesa-demos
+          ];
+        }
         (sources.nixpkgs + "/nixos/modules/profiles/qemu-guest.nix")
         (sources.nixpkgs + "/nixos/modules/virtualisation/qemu-vm.nix")
         (
@@ -85,7 +98,7 @@ let
       specialArgs = { inherit sources; };
     };
 in
-{
+rec {
   demo-vm =
     module:
     pkgs.writeShellScript "demo-vm" ''
@@ -93,4 +106,6 @@ in
     '';
 
   demo-shell = module: (demo-system module).config.shells.bash.activate;
+
+  demo-test = demo-shell /home/kuroko/Files/System/Development/Git/Personal/nix/ngipkgs/projects/mitmproxy/example.nix;
 }

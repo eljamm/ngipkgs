@@ -19,6 +19,11 @@
   # See <https://github.com/ngi-nix/ngipkgs/issues/24> for plans to support Darwin.
   inputs.systems.url = "github:nix-systems/default-linux";
 
+  inputs.nix-system-graphics = {
+    url = "github:soupglasses/nix-system-graphics";
+    inputs.nixpkgs.follows = "nixpkgs";
+  };
+
   outputs =
     {
       self,
