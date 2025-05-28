@@ -2,45 +2,100 @@
 
 set -eo pipefail
 
+install_nix() {
+    # Debian/Ubuntu
+    if echo "$DISTRO" | grep --quiet "debian\|ubuntu"; then
+        apt update
+        apt install --yes curl git jq nix
+    # Archlinux
+    elif echo "$DISTRO" | grep --quiet archlinux; then
+        pacman --sync --refresh --noconfirm curl git jq nix
+    # Other
+    else
+        echo "ERROR: Unknown distro. Exiting ..."
+        exit 1
+    fi
+}
+
+nix_version() {
+    function fver { printf '%d%02d%02d' "${1}" "${2:-0}" "${3:-0}"; }
+    echo $(fver $(nix --version | grep -oP '([0-9]+\.?)+' | sed 's/\./ /g'))
+}
+
+nix_build() {
+    local file="$1" # points to a project's default.nix
+
+    command="nix-build --arg ngipkgs \"import /ngipkgs {}\" -o /result \"$file\""
+
+    # Nix versions < 2.24 don't work for our use case due to regression in
+    # closureInfo.
+    # https://github.com/NixOS/nix/issues/6820
+    if [ "$(nix_version)" -ge 22400 ]; then
+        echo "Using Nix installed by Linux package manager"
+        eval "$command"
+    else
+        echo "Using Nix from Nixpkgs unstable"
+
+        nixpkgs_revision=$(
+            nix-instantiate --eval --attr sources.nixpkgs.rev /ngipkgs |
+                jq --raw-output
+        )
+        export NIXPKGS="https://github.com/NixOS/nixpkgs/archive/$nixpkgs_revision.tar.gz"
+        nix-shell --include nixpkgs="$NIXPKGS" --packages nix --run "$command"
+    fi
+}
+
+# TODO: refactor
+test_demo() {
+    local name="$1"
+
+    test_vm() {
+        echo -e "\n---> Launching VM ..."
+        /result &
+    }
+
+    test_shell() {
+        echo -e "\n---> Entering Shell ..."
+        source /result
+    }
+
+    if [[ "$name" == "Cryptpad" ]]; then
+        test_vm
+        curl --retry 10 --retry-all-errors --fail localhost:9000 | grep CryptPad
+    elif [[ "$name" == "mitmproxy" ]]; then
+        test_shell
+        mitmproxy --version
+    else
+        echo "ERROR: Demo for $name not found. Exiting ..."
+        exit 1
+    fi
+}
+
+demo_projects() {
+    projects=()
+
+    for dir in /overview/project/*/; do
+        if [[ -f "${dir}default.nix" ]]; then
+            name=$(basename "$dir")
+            projects+=("$name")
+        fi
+    done
+
+    echo ${projects[@]}
+}
+
 echo -e "\n-> Installing Nix ..."
-# Debian/Ubuntu
-if echo "$DISTRO" | grep --quiet "debian\|ubuntu"; then
-    apt update
-    apt install --yes curl git jq nix
-# Archlinux
-elif echo "$DISTRO" | grep --quiet archlinux; then
-    pacman --sync --refresh --noconfirm curl git jq nix
-# Other
-else
-    echo "ERROR: Unknown distro. Exiting ..."
-    exit 1
-fi
+install_nix
 
 echo -e "\n-> Nix version ..."
-function fver { printf '%d%02d%02d' "${1}" "${2:-0}" "${3:-0}"; }
-NIX_VERSION=$(fver $(nix --version | grep -oP '([0-9]+\.?)+' | sed  's/\./ /g'))
-echo "Nix version: $NIX_VERSION"
+echo "Nix version: $(nix_version)"
 
-echo -e "\n-> Building VM ..."
-# Nix versions < 2.24 don't work for our use case due to regression in
-# closureInfo.
-# https://github.com/NixOS/nix/issues/6820
-if [ "$NIX_VERSION" -ge 22400 ]; then
-    echo "Using Nix installed by Linux package manager"
-    nix-build --arg ngipkgs "import /ngipkgs {}" /default.nix
-else
-    echo "Using Nix from Nixpkgs unstable"
+for project in $(demo_projects); do
+    echo -e "\n-> Testing $project ..."
 
-    nixpkgs_revision=$(
-        nix-instantiate --eval --attr sources.nixpkgs.rev /ngipkgs \
-        | jq --raw-output
-    )
-    NIXPKGS="https://github.com/NixOS/nixpkgs/archive/$nixpkgs_revision.tar.gz"
-    nix-shell --include nixpkgs="$NIXPKGS" --packages nix --run "nix-build --arg ngipkgs \"import /ngipkgs {}\" /default.nix"
-fi
+    echo -e "\n---> Building test ..."
+    nix_build /overview/project/$project/default.nix
 
-echo -e "\n-> Launching VM ..."
-./result &
-
-echo -e "\n-> Running test ..."
-curl --retry 10 --retry-all-errors --fail localhost:9000 | grep CryptPad
+    echo -e "\n---> Running test ..."
+    test_demo "$project"
+done
