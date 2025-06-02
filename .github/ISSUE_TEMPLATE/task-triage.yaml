@@ -16,8 +16,13 @@ body:
     attributes:
       label: Notes
       description: |
-        Anything worth mentioning that could help with this task? or needs to be done after the project has been triaged?
+        In the following text area, put any:
+
+        - Information that can help with the task
+        - Things that need to be done after the project has been triaged
+
+        If no such thing exists, you can leave it empty.
       placeholder: |
-        1. Do this.
-        2. Then do that.
-        3. Then do the other.
+        - Issue #123 has some data on the project
+        - Previous packaging attempt has been done in https://...
+        - After the project is triaged, close #42
