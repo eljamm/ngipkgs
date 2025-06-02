@@ -4,15 +4,10 @@ title: "Triage <PROJECT NAME>"
 labels: ["good first issue"]
 projects: ["Nix@NGI"]
 body:
-  - type: markdown
-    id: instructions_markdown
-    attributes:
-      value: |
-        ## Instructions
   - type: textarea
     id: instructions
     attributes:
-      label: Instructions
+      label: Task Instructions
       value: |
         ## Instructions
 
@@ -23,7 +18,7 @@ body:
     id: notes_markdown
     attributes:
       value: |
-        ## Notes
+        ## Additional information
 
         In the following text area, put:
 
