@@ -1,0 +1,20 @@
+name: "Triage Project"
+description: "Create a triaging task for an NGI project"
+title: "Triage <PROJECT NAME>"
+labels: ["good first issue"]
+projects: ["Nix@NGI"]
+body:
+  - type: "markdown"
+    id: instructions
+    attributes:
+      label: "Description"
+      value: |
+        ## Instructions
+
+        Collect relevant information about this project by following the instructions in the [NGI project issue template](https://github.com/ngi-nix/ngipkgs/issues/new?template=project-triaging.yaml).
+  - type: "markdown"
+    id: notes
+    attributes:
+      label: "Notes"
+      placeholder: |
+        ## Notes
