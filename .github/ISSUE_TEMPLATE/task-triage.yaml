@@ -7,7 +7,6 @@ body:
   - type: "markdown"
     id: instructions
     attributes:
-      label: "Description"
       value: |
         ## Instructions
 
@@ -15,6 +14,5 @@ body:
   - type: "markdown"
     id: notes
     attributes:
-      label: "Notes"
       placeholder: |
         ## Notes
