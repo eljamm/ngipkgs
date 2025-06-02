@@ -1,5 +1,5 @@
 ---
-name: Triage Project
+name: Triage Project Markdown
 about: Create a triaging task for an NGI project
 title: Triage [PROJECT NAME]
 labels: good first issue
