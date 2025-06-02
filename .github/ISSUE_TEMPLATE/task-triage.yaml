@@ -1,5 +1,5 @@
-name: "Triage Project"
-description: "Create a triaging task for an NGI project"
+name: Triage Project
+description: Create a triaging task for an NGI project
 title: "Triage <PROJECT NAME>"
 labels: ["good first issue"]
 projects: ["Nix@NGI"]
