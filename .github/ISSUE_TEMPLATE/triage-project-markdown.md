@@ -3,6 +3,7 @@ name: Triage Project Markdown
 about: Create a triaging task for an NGI project
 title: Triage [PROJECT NAME]
 labels: good first issue
+projects: Nix@NGI
 assignees: ''
 
 ---
@@ -13,9 +14,9 @@ Collect relevant information about this project by following the instructions in
 
 ## Notes
 
-<!-- In the following text area, put any:
+<!-- In the following text area, put:
 
-- Information that can help with the task
+- Any information that can help with the task
 - Things that need to be done after the project has been triaged
 
 If no such thing exists, you can leave it empty.
