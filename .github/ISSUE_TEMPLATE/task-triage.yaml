@@ -4,15 +4,20 @@ title: "Triage <PROJECT NAME>"
 labels: ["good first issue"]
 projects: ["Nix@NGI"]
 body:
-  - type: "markdown"
+  - type: markdown
     id: instructions
     attributes:
       value: |
         ## Instructions
 
         Collect relevant information about this project by following the instructions in the [NGI project issue template](https://github.com/ngi-nix/ngipkgs/issues/new?template=project-triaging.yaml).
-  - type: "markdown"
+  - type: textarea
     id: notes
     attributes:
+      label: Notes
+      description: |
+        Anything worth mentioning that could help with this task? or needs to be done after the project has been triaged?
       placeholder: |
-        ## Notes
+        1. Do this.
+        2. Then do that.
+        3. Then do the other.
