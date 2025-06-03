@@ -42,6 +42,7 @@ jobs:
           docker run
           --privileged
           --volume ./result/project/Cryptpad/default.nix:/default.nix
+          --volume ./result:/overview
           --volume "$(pwd):/ngipkgs"
           -e DISTRO="$DISTRO"
           "$DISTRO"
