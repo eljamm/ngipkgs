@@ -15,7 +15,7 @@
   nixos.modules.programs = {
     mitmproxy = {
       module = ./module.nix;
-      examples.demo = {
+      examples.demo-shell = {
         module = ./demo.nix;
         description = "";
         tests.demo = null;

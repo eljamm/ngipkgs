@@ -234,23 +234,26 @@ let
         ${render.options.many (pick.options project)}
         ${render.examples.many (pick.examples project)}
         ${optionalString (project.nixos.examples ? demo) (
-          render.serviceDemo.one project.nixos.modules project.nixos.examples.demo
+          render.serviceDemo.one "vm" project.nixos.modules project.nixos.examples.demo
+        )}
+        ${optionalString (project.nixos.examples ? demo-shell) (
+          render.serviceDemo.one "shell" project.nixos.modules project.nixos.examples.demo-shell
         )}
       </article>
     '';
 
-    demoGlue.one = exampleText: ''
+    demoGlue.one = demo-function: exampleText: ''
       # default.nix
       {
         ngipkgs ? import (fetchTarball "https://github.com/ngi-nix/ngipkgs/tarball/main") { },
       }:
-      ngipkgs.demo-vm (
+      ngipkgs.${demo-function} (
         ${toString (intersperse "\n " (splitString "\n" exampleText))}
       )
     '';
 
     serviceDemo.one =
-      modules: example:
+      type: modules: example:
       let
         demoSystem = import (nixpkgs + "/nixos/lib/eval-config.nix") {
           inherit system;
@@ -269,7 +272,7 @@ let
       ''
         ${heading 2 "demo" "Demo"}
         <details>
-        <summary>Run service in a VM</summary>
+        <summary>Run ${if type == "shell" then "program" else "service"} in a VM</summary>
 
         <ol>
           <li>
@@ -304,10 +307,17 @@ let
                   <pre><code>nix-shell -I nixpkgs=https://github.com/NixOS/nixpkgs/archive/$rev.tar.gz --packages nix --run "nix-build ./default.nix && ./result"</code></pre>
               </ul>
           </li>
-          <li>
-            <strong>Access the service</strong><br />
-              Open a web browser at <a href="http://localhost:${toString servicePort}">http://localhost:${toString servicePort}</a> .
-          </li>
+          ${
+            if servicePort != "" then
+              ''
+                <li>
+                  <strong>Access the service</strong><br />
+                    Open a web browser at <a href="http://localhost:${toString servicePort}">http://localhost:${toString servicePort}</a> .
+                </li>
+              ''
+            else
+              ""
+          }
         </ol>
         </details>
       '';
@@ -322,7 +332,13 @@ let
       summary = project.metadata.summary or null;
       demoFile =
         if project.nixos.examples ? demo then
-          (pkgs.writeText "default.nix" (render.demoGlue.one (readFile project.nixos.examples.demo.module)))
+          (pkgs.writeText "default.nix" (
+            render.demoGlue.one "demo-vm" (readFile project.nixos.examples.demo.module)
+          ))
+        else if project.nixos.examples ? demo-shell then
+          (pkgs.writeText "default.nix" (
+            render.demoGlue.one "demo-shell" (readFile project.nixos.examples.demo-shell.module)
+          ))
         else
           null;
     }
