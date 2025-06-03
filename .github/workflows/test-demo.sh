@@ -23,14 +23,15 @@ nix_version() {
 }
 
 nix_build() {
-    command='nix-build --arg ngipkgs "import /ngipkgs {}" /default.nix'
+    local file="$1" # points to a project's default.nix
+    command='nix-build --arg ngipkgs "import /ngipkgs {}"'
 
     # Nix versions < 2.24 don't work for our use case due to regression in
     # closureInfo.
     # https://github.com/NixOS/nix/issues/6820
     if [ "$NIX_VERSION" -ge 22400 ]; then
         echo "Using Nix installed by Linux package manager"
-        exec "$command"
+        exec "$command" "$file"
     else
         echo "Using Nix from Nixpkgs unstable"
 
@@ -39,16 +40,34 @@ nix_build() {
                 jq --raw-output
         )
         NIXPKGS="https://github.com/NixOS/nixpkgs/archive/$nixpkgs_revision.tar.gz"
-        nix-shell --include nixpkgs="$NIXPKGS" --packages nix --run "$command"
+        nix-shell --include nixpkgs="$NIXPKGS" --packages nix --run "$command" "$file"
     fi
 }
 
 test_demo() {
     local name="$1"
 
-    if [ "$name" == "Cryptpad" ]; then
+    if [[ "$name" == "Cryptpad" ]]; then
         curl --retry 10 --retry-all-errors --fail localhost:9000 | grep CryptPad
+    elif [[ "$name" == "mitmproxy" ]]; then
+        mitmproxy --version
+    else
+        echo "ERROR: Demo for $name not found. Exiting ..."
+        exit 1
     fi
+}
+
+demo_projects() {
+    projects=()
+
+    for dir in ./overview/project/*/; do
+        if [[ -f "${dir}default.nix" ]]; then
+            name=$(basename "$dir")
+            projects+=("$name")
+        fi
+    done
+
+    echo ${projects[@]}
 }
 
 echo -e "\n-> Installing Nix ..."
@@ -57,11 +76,15 @@ install_nix
 echo -e "\n-> Nix version ..."
 echo "Nix version: $(nix_version)"
 
-echo -e "\n-> Building VM ..."
-nix_build
+for project in $(demo_projects); do
+    echo -e "\n-> Testing $project ..."
 
-echo -e "\n-> Launching VM ..."
-./result &
+    echo -e "\n---> Building VM ..."
+    nix_build ./result/project/$project/default.nix
 
-echo -e "\n-> Running test ..."
-test_demo "Cryptpad"
+    echo -e "\n---> Launching VM ..."
+    ./result &
+
+    echo -e "\n---> Running test ..."
+    test_demo "$project"
+done
