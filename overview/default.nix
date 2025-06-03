@@ -272,7 +272,7 @@ let
       ''
         ${heading 2 "demo" "Demo"}
         <details>
-        <summary>Run ${if type == "shell" then "program" else "service"} in a VM</summary>
+        <summary>Run ${if type == "shell" then "program in a shell" else "service in a VM"}</summary>
 
         <ol>
           <li>
