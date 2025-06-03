@@ -52,9 +52,21 @@ nix_build() {
 test_demo() {
     local name="$1"
 
+    test_vm() {
+        echo -e "\n---> Launching VM ..."
+        ./result &
+    }
+
+    test_shell() {
+        echo -e "\n---> Entering Shell ..."
+        source ./result
+    }
+
     if [[ "$name" == "Cryptpad" ]]; then
+        test_vm
         curl --retry 10 --retry-all-errors --fail localhost:9000 | grep CryptPad
     elif [[ "$name" == "mitmproxy" ]]; then
+        test_shell
         mitmproxy --version
     else
         echo "ERROR: Demo for $name not found. Exiting ..."
@@ -84,11 +96,8 @@ echo "Nix version: $(nix_version)"
 for project in $(demo_projects); do
     echo -e "\n-> Testing $project ..."
 
-    echo -e "\n---> Building VM ..."
+    echo -e "\n---> Building test ..."
     nix_build /overview/project/$project/default.nix
-
-    echo -e "\n---> Launching VM ..."
-    ./result &
 
     echo -e "\n---> Running test ..."
     test_demo "$project"
