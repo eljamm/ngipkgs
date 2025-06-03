@@ -19,7 +19,7 @@ install_nix() {
 
 nix_version() {
     function fver { printf '%d%02d%02d' "${1}" "${2:-0}" "${3:-0}"; }
-    echo fver $(nix --version | grep -oP '([0-9]+\.?)+' | sed 's/\./ /g')
+    echo $(fver $(nix --version | grep -oP '([0-9]+\.?)+' | sed 's/\./ /g'))
 }
 
 nix_build() {
@@ -29,7 +29,7 @@ nix_build() {
     # Nix versions < 2.24 don't work for our use case due to regression in
     # closureInfo.
     # https://github.com/NixOS/nix/issues/6820
-    if [ "$NIX_VERSION" -ge 22400 ]; then
+    if [ "$(nix_version)" -ge 22400 ]; then
         echo "Using Nix installed by Linux package manager"
         exec "$command" "$file"
     else
@@ -40,7 +40,7 @@ nix_build() {
                 jq --raw-output
         )
         NIXPKGS="https://github.com/NixOS/nixpkgs/archive/$nixpkgs_revision.tar.gz"
-        nix-shell --include nixpkgs="$NIXPKGS" --packages nix --run "$command" "$file"
+        nix-shell --include nixpkgs="$NIXPKGS" --packages nix --run \""$command"\" "$file"
     fi
 }
 
