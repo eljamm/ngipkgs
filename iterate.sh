@@ -10,6 +10,4 @@ docker run \
     --volume "$(pwd):/ngipkgs" \
     --env DISTRO="$DISTRO" \
     "$DISTRO" \
-    /bin/bash
-
-# -c "bash /ngipkgs/.github/workflows/test-demo.sh"
+    /bin/bash -c "bash /ngipkgs/.github/workflows/test-demo.sh"
