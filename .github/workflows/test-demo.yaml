@@ -16,10 +16,10 @@ jobs:
       matrix:
         distro:
           - "archlinux:latest"
+          - "ubuntu:24.04"
           # TODO: disabled for faster feedback cycle. re-enable later
           # - "debian:12"
           # - "debian:unstable"
-          # - "ubuntu:24.04"
           # - "ubuntu:24.10"
           # - "ubuntu:25.04"
 
