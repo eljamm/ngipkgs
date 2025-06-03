@@ -44,8 +44,8 @@ nix_build() {
             nix-instantiate --eval --attr sources.nixpkgs.rev /ngipkgs |
                 jq --raw-output
         )
-        export NIX_PATH="https://github.com/NixOS/nixpkgs/archive/$nixpkgs_revision.tar.gz"
-        nix-shell --packages nix --run "$(declare -f run_command)"
+        export NIXPKGS="https://github.com/NixOS/nixpkgs/archive/$nixpkgs_revision.tar.gz"
+        nix-shell --include nixpkgs="$NIXPKGS" --packages nix --run "$(declare -f run_command)"
     fi
 }
 
