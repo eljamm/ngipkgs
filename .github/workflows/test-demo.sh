@@ -23,7 +23,7 @@ nix_version() {
 }
 
 nix_build() {
-    command="nix-build --arg ngipkgs "import /ngipkgs {}" /default.nix"
+    command='nix-build --arg ngipkgs "import /ngipkgs {}" /default.nix'
 
     # Nix versions < 2.24 don't work for our use case due to regression in
     # closureInfo.
