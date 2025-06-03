@@ -24,13 +24,19 @@ nix_version() {
 
 nix_build() {
     local file="$1" # points to a project's default.nix
-    local additional_args=()
+
+    run_command() {
+        nix-build \
+            --arg ngipkgs "import /ngipkgs {}" \
+            "$file"
+    }
 
     # Nix versions < 2.24 don't work for our use case due to regression in
     # closureInfo.
     # https://github.com/NixOS/nix/issues/6820
     if [ "$(nix_version)" -ge 22400 ]; then
         echo "Using Nix installed by Linux package manager"
+        run_command "$file"
     else
         echo "Using Nix from Nixpkgs unstable"
 
@@ -38,12 +44,9 @@ nix_build() {
             nix-instantiate --eval --attr sources.nixpkgs.rev /ngipkgs |
                 jq --raw-output
         )
-        NIXPKGS="https://github.com/NixOS/nixpkgs/archive/$nixpkgs_revision.tar.gz"
-
-        additional_args=(--include "nixpkgs=$NIXPKGS")
+        export NIX_PATH="https://github.com/NixOS/nixpkgs/archive/$nixpkgs_revision.tar.gz"
+        nix-shell --packages nix --run "$(declare -f run_command)"
     fi
-
-    nix-shell "${additional_args[@]}" --run "nix-build --arg ngipkgs 'import /ngipkgs {}' '$file'"
 }
 
 test_demo() {
