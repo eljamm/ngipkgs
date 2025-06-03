@@ -49,6 +49,7 @@ nix_build() {
     fi
 }
 
+# TODO: refactor
 test_demo() {
     local name="$1"
 

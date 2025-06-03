@@ -16,12 +16,11 @@ jobs:
       matrix:
         distro:
           - "archlinux:latest"
+          - "debian:12"
+          - "debian:unstable"
           - "ubuntu:24.04"
-          # TODO: disabled for faster feedback cycle. re-enable later
-          # - "debian:12"
-          # - "debian:unstable"
-          # - "ubuntu:24.10"
-          # - "ubuntu:25.04"
+          - "ubuntu:24.10"
+          - "ubuntu:25.04"
 
     runs-on: ubuntu-latest
     steps:
@@ -33,7 +32,7 @@ jobs:
       - name: Build projects overview
         run: nix build .#overview
 
-      - name: Run and test VM
+      - name: Run and test demo
         env:
           DISTRO: ${{ matrix.distro }}
           NIX_CONFIG: |
