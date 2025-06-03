@@ -28,6 +28,7 @@ nix_build() {
     run_command() {
         nix-build \
             --arg ngipkgs "import /ngipkgs {}" \
+            -o /result \
             "$file"
     }
 
@@ -55,12 +56,12 @@ test_demo() {
 
     test_vm() {
         echo -e "\n---> Launching VM ..."
-        ./result &
+        /result &
     }
 
     test_shell() {
         echo -e "\n---> Entering Shell ..."
-        source ./result
+        source /result
     }
 
     if [[ "$name" == "Cryptpad" ]]; then
