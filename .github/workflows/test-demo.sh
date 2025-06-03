@@ -60,7 +60,7 @@ test_demo() {
 demo_projects() {
     projects=()
 
-    for dir in ./overview/project/*/; do
+    for dir in /overview/project/*/; do
         if [[ -f "${dir}default.nix" ]]; then
             name=$(basename "$dir")
             projects+=("$name")
@@ -80,7 +80,7 @@ for project in $(demo_projects); do
     echo -e "\n-> Testing $project ..."
 
     echo -e "\n---> Building VM ..."
-    nix_build ./result/project/$project/default.nix
+    nix_build /overview/project/$project/default.nix
 
     echo -e "\n---> Launching VM ..."
     ./result &
