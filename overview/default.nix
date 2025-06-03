@@ -234,7 +234,7 @@ let
         ${render.options.many (pick.options project)}
         ${render.examples.many (pick.examples project)}
         ${optionalString (project.nixos.examples ? demo) (
-          render.serviceDemo.one project.nixos.modules.services project.nixos.examples.demo
+          render.serviceDemo.one project.nixos.modules project.nixos.examples.demo
         )}
       </article>
     '';
@@ -250,15 +250,21 @@ let
     '';
 
     serviceDemo.one =
-      services: example:
+      modules: example:
       let
         demoSystem = import (nixpkgs + "/nixos/lib/eval-config.nix") {
           inherit system;
-          modules = (attrValues services) ++ [ example.module ];
+          modules =
+            [
+              example.module
+              ./demo/shell.nix
+            ]
+            ++ (attrValues modules.services)
+            ++ (attrValues modules.programs);
         };
         openPorts = demoSystem.config.networking.firewall.allowedTCPPorts;
         # The port that is forwarded to the host so that the user can access the demo service.
-        servicePort = (builtins.head openPorts);
+        servicePort = if openPorts != [ ] then (builtins.head openPorts) else "";
       in
       ''
         ${heading 2 "demo" "Demo"}
