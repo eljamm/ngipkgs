@@ -177,26 +177,29 @@ Instead, write one sentence per line, as this makes it easier to review changes.
 1. After the build succeeds, verify that the package works, if possible.
    This means running package tests if they're available or at least verify that the built package is not broken with something like `program_name --help`.
 
-## Triaging an NGI project
+## Triaging an NGI application
 
-Triaging an NGI-funded project means collecting information and resources that are relevant in order to package it for NixOS.
-This information can be links to source repositories
+An NGI-funded application is triaged by collecting relevant information and resources related to its packaging, which can be in the form of links to source repositories, documentation, previous packaging attempts, ...
+This task helps us understand the current packaging completion, which deliverables we need to implement and to estimate the time and effort it would take us to do so.
 
 > [!NOTE]
 >
 > - This task should not exceed 1 Hour.
-> - For a full example, please see: 
+> - For some complete examples, please see:
 >   - [NGI Project: Kaidan](https://github.com/ngi-nix/ngipkgs/issues/1072)
 >   - [NGI Project: Galene](https://github.com/ngi-nix/ngipkgs/issues/663)
 
 ### Short summary
 
-    ```md
-    ### Short summary 
+Provide a short description of the project.
+This needs be brief and also capture the essence of what the project does.
 
-    <!-- A short description of the project -->
+   ```markdown
+   ### Short summary 
 
-    ```
+   <!-- A short description of the project -->
+
+   ```
 
 ### NLnet page(s)
 
@@ -205,7 +208,7 @@ This information can be links to source repositories
 3. Review all the entries returned by the search
 4. Collect the links to entries that relate to the project
 
-   ```md
+   ```markdown
    ### NLnet page(s)
 
    <!-- For example, for a project called `Foobar`, this can be something like:
@@ -219,7 +222,7 @@ This information can be links to source repositories
 
 ### Resources
 
-   ```md
+   ```markdown
    ### Website
 
    <!-- The main project website, as found in the NLnet pages. -->
@@ -251,7 +254,7 @@ This information can be links to source repositories
 > If you're uncertain about something, try using a search engine.
 > If you're still unsure after that, it's okay to leave it empty and move on.
 
-<!-- TODO: Refine this for better flow --> 
+<!-- TODO: Refine this for better flow -->
 
 The key information we need includes instructions for building the project from source and usage examples.
 
@@ -288,30 +291,30 @@ If no such page exists, check the source repositories, instead.
 > This information might be available in the source repositories as well.
 
 ### Artefacts
- 
+
 List all project components and include links to any relevant documentation or information you can find about each one.
 
-    ```md
-    ### Artefacts
+   ```markdown
+   ### Artefacts
 
-    <!-- Example for a project called `Foobar`:
+   <!-- Example for a project called `Foobar`:
 
-    - CLI:
-        - foobar:
-            - documentation: https://foo.bar/docs/dev/build
-            - examples: https://foo.bar/docs/usage
-            - tests: https://github.com/foo/foobar/tests
-    - Mobile Apps:
-        - foobar-mobile:
-            - documentation: https://foo.bar/docs/dev/mobile -->
+   - CLI:
+     - foobar:
+         - documentation: https://foo.bar/docs/dev/build
+         - examples: https://foo.bar/docs/usage
+         - tests: https://github.com/foo/foobar/tests
+   - Mobile Apps:
+     - foobar-mobile:
+         - documentation: https://foo.bar/docs/dev/mobile -->
 
-    - CLI:
-    - GUI:
-    - Services/daemons:
-    - Libraries:
-    - Extensions:
-    - Mobile Apps:
-    ```
+   - CLI:
+   - GUI:
+   - Services/daemons:
+   - Libraries:
+   - Extensions:
+   - Mobile Apps:
+   ```
 
 ### Previous packaging
 
@@ -321,30 +324,28 @@ To do this, please go and search for the project's name and note any results fro
     - The [ngipkgs/projects](https://github.com/ngi-nix/ngipkgs/tree/main/projects) and [pkgs/by-name](https://github.com/ngi-nix/ngipkgs/tree/main/pkgs/by-name) directories
     - **Non-archived** repositories in the [ngi-nix GitHub organisation](https://github.com/orgs/ngi-nix/repositories?language=&q=archived%3Afalse+&sort=&type=all)
 
-    ```md
-    ### NGIpkgs
+   ```markdown
+   ### NGIpkgs
 
-        <!-- For example, for `Liberaforms`:
-          - ngi-nix
-            - https://github.com/ngi-nix/liberaforms-flake
-          - Packages:
-            - https://github.com/ngi-nix/ngipkgs/tree/main/pkgs/by-name/liberaforms
-          - Services:
-            - https://github.com/ngi-nix/ngipkgs/tree/main/projects/Liberaforms/service.nix
-          - Programs:
-            - N/A
-          - Examples:
-            - https://github.com/ngi-nix/ngipkgs/tree/main/projects/Liberaforms/example.nix
-          - Tests:
-            - https://github.com/ngi-nix/ngipkgs/tree/main/projects/Liberaforms/test.nix -->
-    
-    - projects/:
-    - pkgs/by-name:
-    - ngi-nix repository:
-    ```
+   <!-- For example, for `Liberaforms`:
+   - project: https://github.com/ngi-nix/ngipkgs/tree/main/projects/Liberaforms
+     - programs/serivces:
+       - https://github.com/ngi-nix/ngipkgs/blob/main/projects/Liberaforms/service.nix
+     - examples:
+       - https://github.com/ngi-nix/ngipkgs/tree/main/projects/Liberaforms/example.nix
+     - tests:
+       - https://github.com/ngi-nix/ngipkgs/tree/main/projects/Liberaforms/test.nix
+   - pkgs/by-name:
+     - https://github.com/ngi-nix/ngipkgs/tree/main/pkgs/by-name/liberaforms
+   - ngi-nix repository
+     - https://github.com/ngi-nix/liberaforms-flake -->
+   
+   - project:
+   - pkgs/by-name:
+   - ngi-nix repository:
+   ```
 
-
-Go to the nixpkgs search pages for
+Next, go to the nixpkgs search pages for
 [packages](https://search.nixos.org/packages) and
 [services](https://search.nixos.org/options?) and check if anything
 related to the project is already packaged.
@@ -352,25 +353,25 @@ related to the project is already packaged.
 For packages, copy the package name along with the source URL.
 For services, click on the module name to reveal more details, then copy the name and the URL from the `Declared in` field.
 
-    ```md
-    ### Nixpkgs/NixOS
+   ```markdown
+   ### Nixpkgs/NixOS
 
-    <!-- Example:
-        - Packages:
-            - [canaille](https://github.com/NixOS/nixpkgs/blob/nixos-unstable/pkgs/by-name/ca/canaille/package.nix#L134)
-        - Services:
-            - [services.canaille](https://github.com/NixOS/nixpkgs/blob/nixos-unstable/nixos/modules/services/security/canaille.nix) -->
+   <!-- Example:
+       - Packages:
+           - [canaille](https://github.com/NixOS/nixpkgs/blob/nixos-unstable/pkgs/by-name/ca/canaille/package.nix#L134)
+       - Services:
+           - [services.canaille](https://github.com/NixOS/nixpkgs/blob/nixos-unstable/nixos/modules/services/security/canaille.nix) -->
 
-    - Packages:
-    - Services:
-    
-    ### Extra Information
+   - Packages:
+   - Services:
+   
+   ### Extra Information
 
-    <!-- Anything interesting or helpful for packaging the project like notes, issues or pull requests -->
-    ```
+   <!-- Anything interesting or helpful for packaging the project like notes, issues or pull requests -->
+   ```
 
 > [!NOTE]
-> Similar names will be returned by the search if no exact matches are found. 
+> Similar names will be returned by the search if no exact matches are found.
 > The most relevant entries at the top, so if you don't see anything that's related to the project there then it's likely not packaged in nixpkgs, yet.
 >
 > Example: Searching for Oku (web browser) might also return Okular (document viewver), which share a similar names, but which are totally unrelated.
