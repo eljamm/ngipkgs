@@ -222,6 +222,9 @@ This needs be brief and also capture the essence of what the project does.
 
 ### Resources
 
+Provide the project's website and the location where the source code is hosted.
+Additionally, include information about the programming languages, build tools used, as well as any dependency management systems in place.
+
    ```markdown
    ### Website
 
@@ -254,13 +257,7 @@ This needs be brief and also capture the essence of what the project does.
 > If you're uncertain about something, try using a search engine.
 > If you're still unsure after that, it's okay to leave it empty and move on.
 
-<!-- TODO: Refine this for better flow -->
-
-The key information we need includes instructions for building the project from source and usage examples.
-
-On the project's website, look for tabs or buttons that lead to the documentation.
-You can also use your favorite search engine to search for <PROJECT_NAME> documentation.
-If no such page exists, check the source repositories, instead.
+Next, provide any links to documentation and any other resource that can help with building the project from source or with configuring and using it.
 
    ```md
    ### Documentation
@@ -287,8 +284,11 @@ If no such page exists, check the source repositories, instead.
     - 
    ```
 
-> [!NOTE]
-> This information might be available in the source repositories as well.
+> [!TIP]
+>
+> On the project's website, look for tabs or buttons that lead to the documentation.
+> You can also use your favorite search engine to search for <PROJECT_NAME> documentation.
+> If no such page exists, check the source repositories, instead.
 
 ### Artefacts
 
