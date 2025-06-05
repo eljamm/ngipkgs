@@ -179,7 +179,97 @@ Instead, write one sentence per line, as this makes it easier to review changes.
 
 ## Triaging an NGI project
 
-The following information is needed to [open an issue for a new NGI project](https://github.com/ngi-nix/ngipkgs/issues/new?template=project-triaging.yaml):
+<!-- TODO: -->
+<!-- The following information is needed to [open an issue for a new NGI project](https://github.com/ngi-nix/ngipkgs/issues/new?template=project-triaging.yaml): -->
+
+### NLnet page(s)
+
+1. Navigate to the [NLnet project list](https://nlnet.nl/project/)
+2. Enter the project name in the search bar
+3. Review all the entries returned by the search
+4. Collect the links to entries that relate to the project
+
+   ```md
+   ### NLnet page(s)
+
+   <!-- For example, for a project called `Foobar`, this can be something like:
+
+   - <https://nlnet.nl/project/Foobar>
+   - <https://nlnet.nl/project/Foobar-mobile> -->
+
+   - 
+   - 
+   ```
+
+###
+
+   ```md
+   ### Website
+
+   <!-- The main project website, as found in the NLnet pages. -->
+
+   - 
+
+   ### Source repositories
+
+   <!-- For example, for a project called `Foobar`, this can be something like:
+
+    - https://github.com/foo/foobar
+      - Language/Framework: Python
+      - Dependency management: Nix
+      - Nix development environment: [default.nix](https://github.com/foo/foobar/default.nix)
+
+    - https://github.com/foo/foobar-mobile
+      - Language/Framework: Java
+      - Dependency management: Gradle
+      - Nix development environment: -->
+
+   - <REPOSITORY_LINK>
+    - Language/Framework:
+    - Dependency management:
+    - Nix development environment:
+   ```
+
+> [!NOTE]
+> Use your best judgment to gather information about the project.
+> If you're uncertain about something, try using a search engine.
+> If you're still unsure after that, it's okay to leave it empty and move on.
+
+### Documentation
+
+The key information we need includes instructions for building the project from source and usage examples.
+
+On the project's website, look for tabs or buttons that lead to the documentation.
+You can also use your favorite search engine to search for <PROJECT_NAME> documentation.
+If no such page exists, check the source repositories, instead.
+
+   ```md
+   ### Documentation
+
+   <!-- Example for a project called `Foobar`:
+
+   - Usage Examples:
+     - https://foo.bar/docs/quickstart
+   - Build from source/Development:
+     - foobar-cli: https://foo.bar/docs/dev/cli
+     - foobar-mobile: https://foo.bar/docs/dev/mobile
+   - Other:
+     - Wiki
+     - Notes -->
+
+   - Usage Examples:
+    - 
+    - 
+   - Build from source/Development:
+    - 
+    - 
+   - Other:
+    - 
+    - 
+   ```
+
+> [!NOTE]
+> This information might be available in the source repositories as well.
 
 1. Navigate to <https://nlnet.nl/project/>.
    In the search bar, type the project name and look for any related projects.
