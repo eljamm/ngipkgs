@@ -179,8 +179,13 @@ Instead, write one sentence per line, as this makes it easier to review changes.
 
 ## Triaging an NGI project
 
-<!-- TODO: -->
-<!-- The following information is needed to [open an issue for a new NGI project](https://github.com/ngi-nix/ngipkgs/issues/new?template=project-triaging.yaml): -->
+Triaging an NGI-funded project means collecting information and resources that are relevant in order to package it for NixOS.
+This information can be links to source repositories
+
+> [!NOTE]
+>
+> - This task should not exceed 1 Hour.
+> - For a full example, please see [NGI Project: Gnucap](https://github.com/ngi-nix/ngipkgs/issues/541)
 
 ### NLnet page(s)
 
