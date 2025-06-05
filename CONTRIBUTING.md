@@ -185,7 +185,18 @@ This information can be links to source repositories
 > [!NOTE]
 >
 > - This task should not exceed 1 Hour.
-> - For a full example, please see [NGI Project: Gnucap](https://github.com/ngi-nix/ngipkgs/issues/541)
+> - For a full example, please see: 
+>   - [NGI Project: Kaidan](https://github.com/ngi-nix/ngipkgs/issues/1072)
+>   - [NGI Project: Galene](https://github.com/ngi-nix/ngipkgs/issues/663)
+
+### Short summary
+
+    ```md
+    ### Short summary 
+
+    <!-- A short description of the project -->
+
+    ```
 
 ### NLnet page(s)
 
@@ -206,7 +217,7 @@ This information can be links to source repositories
    - 
    ```
 
-###
+### Resources
 
    ```md
    ### Website
@@ -240,7 +251,7 @@ This information can be links to source repositories
 > If you're uncertain about something, try using a search engine.
 > If you're still unsure after that, it's okay to leave it empty and move on.
 
-### Documentation
+<!-- TODO: Refine this for better flow --> 
 
 The key information we need includes instructions for building the project from source and usage examples.
 
@@ -276,44 +287,93 @@ If no such page exists, check the source repositories, instead.
 > [!NOTE]
 > This information might be available in the source repositories as well.
 
-1. Navigate to <https://nlnet.nl/project/>.
-   In the search bar, type the project name and look for any related projects.
+### Artefacts
+ 
+List all project components and include links to any relevant documentation or information you can find about each one.
 
-   ```md
-   - https://nlnet.nl/project/foobar
-   - https://nlnet.nl/project/foobar-core
-   ```
+    ```md
+    ### Artefacts
 
-   In the project pages, look for any `website` or `source code` links and open them.
+    <!-- Example for a project called `Foobar`:
 
-1. We'd like to know some information about the `framework` and `dependency management` tools the project is using which helps us to estimate the time and effort needed to package it. If possible, we'd also like to know about Nix development environments, if they exist in the repo.
+    - CLI:
+        - foobar:
+            - documentation: https://foo.bar/docs/dev/build
+            - examples: https://foo.bar/docs/usage
+            - tests: https://github.com/foo/foobar/tests
+    - Mobile Apps:
+        - foobar-mobile:
+            - documentation: https://foo.bar/docs/dev/mobile -->
 
-   ```md
-   - Language/Framework: Python/Django
-   - Dependency management: pip
-   - Development environment: [default.nix, shell.nix, flake.nix, devenv.nix, ...](<FILE_LINK>)
-   ```
+    - CLI:
+    - GUI:
+    - Services/daemons:
+    - Libraries:
+    - Extensions:
+    - Mobile Apps:
+    ```
 
-1. In the project's website, look for any tabs or buttons that lead to the documentation. You may also use your favorite search engine and look for `<PROJECT_NAME> documentation`.
-   The most important information we need are the instructions for building the project from source and examples for using it.
-   If the project has multiple components, it would be ideal to have this information for each one of them.
+### Previous packaging
 
-   ```md
-   - Usage Examples:
-     - https://foo.bar/docs/quickstart
-   - Build from source/Development:
-     - foobar-cli: https://foo.bar/docs/dev/cli
-     - foobar-mobile: https://foo.bar/docs/dev/mobile
-   ```
+To avoid duplicaiton of effort and to correctly track our packaging progress, we also want to know whether or not any prior work has gone through packaging the project.
 
-1. Go to the [nixpkgs search](https://search.nixos.org/packages) and [services search](https://search.nixos.org/options?) and check if anything related to the project is already packaged.
+To do this, please go and search for the project's name and note any results from the following places:
+    - The [ngipkgs/projects](https://github.com/ngi-nix/ngipkgs/tree/main/projects) and [pkgs/by-name](https://github.com/ngi-nix/ngipkgs/tree/main/pkgs/by-name) directories
+    - **Non-archived** repositories in the [ngi-nix GitHub organisation](https://github.com/orgs/ngi-nix/repositories?language=&q=archived%3Afalse+&sort=&type=all)
 
-   ```md
-   - Packages:
-     - [<NAME>](<SOURCE_LINK>)
-   - Services:
-     - [<NAME>](<SOURCE_LINK>)
-   ```
+    ```md
+    ### NGIpkgs
+
+        <!-- For example, for `Liberaforms`:
+          - ngi-nix
+            - https://github.com/ngi-nix/liberaforms-flake
+          - Packages:
+            - https://github.com/ngi-nix/ngipkgs/tree/main/pkgs/by-name/liberaforms
+          - Services:
+            - https://github.com/ngi-nix/ngipkgs/tree/main/projects/Liberaforms/service.nix
+          - Programs:
+            - N/A
+          - Examples:
+            - https://github.com/ngi-nix/ngipkgs/tree/main/projects/Liberaforms/example.nix
+          - Tests:
+            - https://github.com/ngi-nix/ngipkgs/tree/main/projects/Liberaforms/test.nix -->
+    
+    - projects/:
+    - pkgs/by-name:
+    - ngi-nix repository:
+    ```
+
+
+Go to the nixpkgs search pages for
+[packages](https://search.nixos.org/packages) and
+[services](https://search.nixos.org/options?) and check if anything
+related to the project is already packaged.
+
+For packages, copy the package name along with the source URL.
+For services, click on the module name to reveal more details, then copy the name and the URL from the `Declared in` field.
+
+    ```md
+    ### Nixpkgs/NixOS
+
+    <!-- Example:
+        - Packages:
+            - [canaille](https://github.com/NixOS/nixpkgs/blob/nixos-unstable/pkgs/by-name/ca/canaille/package.nix#L134)
+        - Services:
+            - [services.canaille](https://github.com/NixOS/nixpkgs/blob/nixos-unstable/nixos/modules/services/security/canaille.nix) -->
+
+    - Packages:
+    - Services:
+    
+    ### Extra Information
+
+    <!-- Anything interesting or helpful for packaging the project like notes, issues or pull requests -->
+    ```
+
+> [!NOTE]
+> Similar names will be returned by the search if no exact matches are found. 
+> The most relevant entries at the top, so if you don't see anything that's related to the project there then it's likely not packaged in nixpkgs, yet.
+>
+> Example: Searching for Oku (web browser) might also return Okular (document viewver), which share a similar names, but which are totally unrelated.
 
 ## Adding/Exposing an NGI project
 
