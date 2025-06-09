@@ -301,23 +301,38 @@ let
           ];
         };
         nix-config = eval {
-          imports = [ ./content-types/nix-config.nix ];
-          settings = [
-            {
-              name = "substituters";
-              value = [
-                "https://cache.nixos.org/"
-                "https://ngi.cachix.org/"
-              ];
-            }
-            {
-              name = "trusted-public-keys";
-              value = [
-                "cache.nixos.org-1:6nchdd59x431o0gwypbmraurkbj16zpmqfgspcdshjy="
-                "ngi.cachix.org-1:n+cal72roc3qqulxihpv+tw5t42whxmmhpragkrsrow="
-              ];
-            }
+          imports = [
+            ./content-types/nix-config.nix
+            (
+              {
+                lib,
+                pkgs,
+                config,
+                ...
+              }:
+              let
+                nix-module = import "${nixpkgs}/nixos/modules/config/nix.nix" { inherit config lib pkgs; };
+              in
+              {
+                options = {
+                  inherit (nix-module.options) nix;
+                };
+              }
+            )
           ];
+          _module.args = {
+            inherit pkgs;
+          };
+          settings = {
+            substituters = [
+              "https://cache.nixos.org/"
+              "https://ngi.cachix.org/"
+            ];
+            trusted-public-keys = [
+              "cache.nixos.org-1:6nchdd59x431o0gwypbmraurkbj16zpmqfgspcdshjy="
+              "ngi.cachix.org-1:n+cal72roc3qqulxihpv+tw5t42whxmmhpragkrsrow="
+            ];
+          };
         };
         set-nix-config = eval {
           imports = [ ./content-types/commands.nix ];
