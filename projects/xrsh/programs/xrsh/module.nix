@@ -9,12 +9,13 @@ let
 in
 {
   options.programs.xrsh = {
-    enable = lib.mkEnableOption "xrsh";
+    enable = lib.mkEnableOption "enable xrsh";
+    package = lib.mkPackageOption pkgs "xrsh" { };
   };
 
   config = lib.mkIf cfg.enable {
     environment.systemPackages = with pkgs; [
-      xrsh
+      cfg.package
     ];
   };
 }
