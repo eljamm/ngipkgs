@@ -71,31 +71,16 @@ test_demo() {
     fi
 }
 
-demo_projects() {
-    projects=()
-
-    for dir in /overview/project/*/; do
-        if [[ -f "${dir}default.nix" ]]; then
-            name=$(basename "$dir")
-            projects+=("$name")
-        fi
-    done
-
-    echo ${projects[@]}
-}
-
 echo -e "\n-> Installing Nix ..."
 install_nix
 
 echo -e "\n-> Nix version ..."
 echo "Nix version: $(nix_version)"
 
-for project in $(demo_projects); do
-    echo -e "\n-> Testing $project ..."
+echo -e "\n-> Testing $PROJECT ..."
 
-    echo -e "\n---> Building test ..."
-    nix_build /overview/project/$project/default.nix
+echo -e "\n---> Building test ..."
+nix_build "/overview/project/$PROJECT/default.nix"
 
-    echo -e "\n---> Running test ..."
-    test_demo "$project"
-done
+echo -e "\n---> Running test ..."
+test_demo "$PROJECT"

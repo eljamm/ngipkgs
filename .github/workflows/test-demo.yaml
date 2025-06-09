@@ -21,6 +21,9 @@ jobs:
           - "ubuntu:24.04"
           - "ubuntu:24.10"
           - "ubuntu:25.04"
+        project:
+          - "Cryptpad"
+          - "mitmproxy"
 
     runs-on: ubuntu-latest
     steps:
@@ -35,6 +38,7 @@ jobs:
       - name: Run and test demo
         env:
           DISTRO: ${{ matrix.distro }}
+          PROJECT: ${{ matrix.project }}
           NIX_CONFIG: |
             extra-substituters = https://ngi.cachix.org/
             extra-trusted-public-keys = ngi.cachix.org-1:n+CAL72ROC3qQuLxIHpV+Tw5t42WhXmMhprAGkRSrOw=
@@ -44,5 +48,6 @@ jobs:
           --volume ./result:/overview
           --volume "$(pwd):/ngipkgs"
           -e DISTRO="$DISTRO"
+          -e PROJECT="$PROJECT"
           "$DISTRO"
           /bin/bash -c "bash /ngipkgs/.github/workflows/test-demo.sh"
