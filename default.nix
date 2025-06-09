@@ -279,5 +279,6 @@ rec {
   inherit (demo)
     demo-vm
     demo-shell
+    test-demo
     ;
 }

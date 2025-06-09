@@ -12,15 +12,22 @@ let
     ;
 
   mapAppsToList =
-    demo-shell: lib.flatten (map (name: lib.attrValues name.programs) (lib.attrValues demo-shell));
+    demo-shell:
+    lib.flatten (
+      map (name: {
+        apps = name.programs;
+        envs = name.runtimeEnv;
+      }) (lib.attrValues demo-shell)
+    );
 
   makeManPath = lib.makeSearchPathOutput "man" "share/man";
 
   activate =
-    apps:
+    demo:
     pkgs.writeShellApplication rec {
       name = "demo-shell";
-      runtimeInputs = apps;
+      runtimeInputs = demo.apps;
+      runtimeEnv = demo.envs;
       passthru.inheritManPath = false;
       # HACK: start shell from ./result
       derivationArgs.postCheck = ''
@@ -52,6 +59,10 @@ in
               messaging = pkgs.briar-desktop;
             };
             default = { };
+          };
+          runtimeEnv = mkOption {
+            type = nullOr (attrsOf str);
+            default = null;
           };
         };
       });
