@@ -106,10 +106,7 @@ let
   markdownToHtml = markdown: "{{ markdown_to_html(${toJSON markdown}) }}";
 
   nix-config = eval {
-    imports = [
-      ./content-types/nix-config.nix
-      { _module.args.nixpkgs = nixpkgs; }
-    ];
+    imports = [ ./content-types/nix-config.nix ];
     settings = {
       substituters = [
         "https://cache.nixos.org/"

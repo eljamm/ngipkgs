@@ -2,15 +2,12 @@
   lib,
   config,
   options,
-  nixpkgs,
   pkgs,
   ...
 }:
 let
   inherit (lib) mkOption types;
-
-  nixOpts = options.nix.settings.type.getSubOptions { };
-  nix-module = import "${nixpkgs}/nixos/modules/config/nix.nix" { inherit config lib pkgs; };
+  nix-module = import "${pkgs.path}/nixos/modules/config/nix.nix" { inherit config lib pkgs; };
 in
 {
   options = {
@@ -59,12 +56,16 @@ in
     };
     settings = mkOption {
       type = types.submodule {
-        options = {
-          inherit (nixOpts)
-            substituters
-            trusted-public-keys
-            ;
-        };
+        options =
+          let
+            nixOpts = options.nix.settings.type.getSubOptions { };
+          in
+          {
+            inherit (nixOpts)
+              substituters
+              trusted-public-keys
+              ;
+          };
       };
     };
   };
