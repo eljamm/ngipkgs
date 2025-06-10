@@ -105,6 +105,38 @@ let
   # step.
   markdownToHtml = markdown: "{{ markdown_to_html(${toJSON markdown}) }}";
 
+  nix-config = eval {
+    imports = [
+      ./content-types/nix-config.nix
+      (
+        {
+          lib,
+          pkgs,
+          config,
+          ...
+        }:
+        let
+          nix-module = import "${nixpkgs}/nixos/modules/config/nix.nix" { inherit config lib pkgs; };
+        in
+        {
+          options = {
+            inherit (nix-module.options) nix;
+          };
+        }
+      )
+    ];
+    settings = {
+      substituters = [
+        "https://cache.nixos.org/"
+        "https://ngi.cachix.org/"
+      ];
+      trusted-public-keys = [
+        "cache.nixos.org-1:6nchdd59x431o0gwypbmraurkbj16zpmqfgspcdshjy="
+        "ngi.cachix.org-1:n+cal72roc3qqulxihpv+tw5t42whxmmhpragkrsrow="
+      ];
+    };
+  };
+
   render = {
     # A code snippet that is copyable and optionally downloadable
     codeSnippet.one =
@@ -299,40 +331,6 @@ let
               '';
             }
           ];
-        };
-        nix-config = eval {
-          imports = [
-            ./content-types/nix-config.nix
-            (
-              {
-                lib,
-                pkgs,
-                config,
-                ...
-              }:
-              let
-                nix-module = import "${nixpkgs}/nixos/modules/config/nix.nix" { inherit config lib pkgs; };
-              in
-              {
-                options = {
-                  inherit (nix-module.options) nix;
-                };
-              }
-            )
-          ];
-          _module.args = {
-            inherit pkgs;
-          };
-          settings = {
-            substituters = [
-              "https://cache.nixos.org/"
-              "https://ngi.cachix.org/"
-            ];
-            trusted-public-keys = [
-              "cache.nixos.org-1:6nchdd59x431o0gwypbmraurkbj16zpmqfgspcdshjy="
-              "ngi.cachix.org-1:n+cal72roc3qqulxihpv+tw5t42whxmmhpragkrsrow="
-            ];
-          };
         };
         set-nix-config = eval {
           imports = [ ./content-types/commands.nix ];
@@ -538,9 +536,10 @@ pkgs.runCommand "overview"
   }
   (
     ''
-      mkdir -pv $out
+      mkdir -pv $out/ci
       cat ${./style.css} ${highlightingCss} > $out/style.css
       ln -s ${fonts} $out/fonts
+      echo "${nix-config}" >> $out/ci/.env
       python3 ${./render-template.py} '${htmlFile "" indexPage}' "$out/index.html"
     ''
     + (concatLines (mapAttrsToList (path: page: writeProjectCommand path page) projectPages))
