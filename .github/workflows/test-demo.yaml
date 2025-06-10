@@ -35,13 +35,16 @@ jobs:
       - name: Build projects overview
         run: nix build .#overview
 
+      - name: Load Nix config
+        run: |
+          source ./result/ci/.env
+          echo "NIX_CONFIG=$NIX_CONFIG" >> "$GITHUB_ENV"
+
       - name: Run and test demo
         env:
           DISTRO: ${{ matrix.distro }}
           PROJECT: ${{ matrix.project }}
-          NIX_CONFIG: |
-            extra-substituters = https://ngi.cachix.org/
-            extra-trusted-public-keys = ngi.cachix.org-1:n+CAL72ROC3qQuLxIHpV+Tw5t42WhXmMhprAGkRSrOw=
+          NIX_CONFIG: ${{ env.NIX_CONFIG }}
         run: >
           docker run
           --privileged
