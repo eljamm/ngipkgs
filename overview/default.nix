@@ -8,6 +8,7 @@
   projects,
   self,
   system,
+  ci ? false,
 }:
 let
   inherit (builtins)
@@ -518,11 +519,14 @@ pkgs.runCommand "overview"
   }
   (
     ''
-      mkdir -pv $out/ci
+      mkdir -pv $out
       cat ${./style.css} ${highlightingCss} > $out/style.css
       ln -s ${fonts} $out/fonts
-      echo "${nix-config}" >> $out/ci/.env
       python3 ${./render-template.py} '${htmlFile "" indexPage}' "$out/index.html"
+    ''
+    + lib.optionalString ci ''
+      mkdir -pv $out/ci
+      echo "${nix-config}" >> $out/ci/.env
     ''
     + (concatLines (mapAttrsToList (path: page: writeProjectCommand path page) projectPages))
     + ''
