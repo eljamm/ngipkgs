@@ -108,22 +108,7 @@ let
   nix-config = eval {
     imports = [
       ./content-types/nix-config.nix
-      (
-        {
-          lib,
-          pkgs,
-          config,
-          ...
-        }:
-        let
-          nix-module = import "${nixpkgs}/nixos/modules/config/nix.nix" { inherit config lib pkgs; };
-        in
-        {
-          options = {
-            inherit (nix-module.options) nix;
-          };
-        }
-      )
+      { _module.args.nixpkgs = nixpkgs; }
     ];
     settings = {
       substituters = [

@@ -1,16 +1,21 @@
 {
-  pkgs,
-  options,
   lib,
+  config,
+  options,
+  nixpkgs,
+  pkgs,
   ...
 }:
 let
   inherit (lib) mkOption types;
 
   nixOpts = options.nix.settings.type.getSubOptions { };
+  nix-module = import "${nixpkgs}/nixos/modules/config/nix.nix" { inherit config lib pkgs; };
 in
 {
   options = {
+    inherit (nix-module.options) nix;
+
     __toString = mkOption {
       type = with types; functionTo str;
       readOnly = true;
