@@ -108,6 +108,7 @@ let
 
   nix-config = eval {
     imports = [ ./content-types/nix-config.nix ];
+    _module.args.pkgs = pkgs;
     settings = {
       substituters = [
         "https://cache.nixos.org/"
