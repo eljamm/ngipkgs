@@ -25,9 +25,9 @@ in
             };
             options.activate = mkOption {
               type = types.package;
-              default = config.shells.bash.activate; # TODO: more shells
+              default = config.demo.shells.bash.activate; # TODO: more shells
             };
-            projects = mkOption {
+            options.projects = mkOption {
               type =
                 with types;
                 attrsOf (submodule {

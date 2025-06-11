@@ -120,10 +120,11 @@ rec {
       ngipkgs =
         { ... }:
         {
-          demo = demo-module // {
-            demo.enable = false;
-          };
           nixpkgs.overlays = [ overlays.default ];
+        }
+        // demo-module
+        // {
+          demo.enable = lib.mkForce false;
         };
     }
     // foldl recursiveUpdate { } (map (project: project.nixos.modules) (attrValues projects));
@@ -270,5 +271,6 @@ rec {
     demo-vm
     demo-shell
     demo-module
+    xrsh
     ;
 }

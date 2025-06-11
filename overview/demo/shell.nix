@@ -37,7 +37,7 @@ let
     };
 in
 {
-  options.shells = mkOption {
+  options.demo.shells = mkOption {
     type =
       with types;
       submodule {
@@ -51,8 +51,8 @@ in
             default = null;
           };
         };
-        config = lib.mkIf config.shells.bash.enable {
-          bash.activate = activate config.demo-shell;
+        config = lib.mkIf config.demo.shells.bash.enable {
+          bash.activate = activate config.demo.shell.projects;
         };
       };
     default = { };
