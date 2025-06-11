@@ -5,24 +5,41 @@
   extendedNixosModules,
 }:
 let
-  demo-system =
-    demo-module:
-    import (sources.nixpkgs + "/nixos/lib/eval-config.nix") {
+  demo-modules = {
+    shell = ./shell.nix;
+    vm = ./vm.nix;
+  };
+
+  eval =
+    modules:
+    (import (sources.nixpkgs + "/nixos/lib/eval-config.nix") {
       system = "x86_64-linux";
-      modules = [
-        demo-module
-        ./shell.nix
-        ./vm
-      ] ++ extendedNixosModules;
-      specialArgs = { inherit sources; };
-    };
-in
-{
+      modules = modules ++ extendedNixosModules;
+      specialArgs.sources.inputs = sources;
+    }).config;
+
+  demo =
+    module: type:
+    let
+      demo-system = eval [
+        module
+        demo-modules.${type}
+      ];
+    in
+    if type == "vm" then demo-system.system.build.vm else demo-system.shells.bash.activate;
+
   demo-vm =
     module:
     pkgs.writeShellScript "demo-vm" ''
-      exec ${(demo-system module).config.system.build.vm}/bin/run-nixos-vm "$@"
+      exec ${demo module "vm"}/bin/run-nixos-vm "$@"
     '';
 
-  demo-shell = module: (demo-system module).config.shells.bash.activate;
+  demo-shell = module: demo module "shell";
+in
+{
+  inherit
+    demo-vm
+    demo-shell
+    demo-modules
+    ;
 }
