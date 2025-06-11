@@ -20,18 +20,21 @@ in
     };
   };
 
-  config = lib.mkIf cfg.enable {
-    environment.systemPackages = with pkgs; [
-      cfg.package
-    ];
-    environment.variables = {
-      XRSH_PORT = toString cfg.port;
-    };
-    demo.shell.projects.xrsh = {
-      programs = {
-        xrsh = cfg.package;
+  config =
+    lib.mkIf cfg.enable {
+      environment.systemPackages = with pkgs; [
+        cfg.package
+      ];
+      environment.variables = {
+        XRSH_PORT = toString cfg.port;
       };
-      env.XRSH_PORT = "8090";
+    }
+    // lib.mkIf (cfg.enable && config.demo.enable) {
+      demo.shell.projects.xrsh = {
+        programs = {
+          xrsh = cfg.package;
+        };
+        env.XRSH_PORT = "8090";
+      };
     };
-  };
 }

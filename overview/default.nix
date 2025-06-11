@@ -269,7 +269,7 @@ let
           modules =
             [
               example.module
-              ./demo/shell.nix
+              ./demo/demo.nix
             ]
             ++ (attrValues modules.services)
             ++ (attrValues modules.programs);
