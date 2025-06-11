@@ -120,6 +120,7 @@ rec {
       ngipkgs =
         { ... }:
         {
+          imports = [ demo-modules.shell ];
           nixpkgs.overlays = [ overlays.default ];
         };
     }
@@ -149,7 +150,6 @@ rec {
 
         system.stateVersion = "23.05";
       }
-      ./overview/demo/shell.nix
       raw-projects # for checks
     ] ++ extendedNixosModules;
     specialArgs = {
@@ -267,5 +267,6 @@ rec {
   inherit (demo)
     demo-vm
     demo-shell
+    demo-modules
     ;
 }
