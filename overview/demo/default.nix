@@ -11,8 +11,6 @@ let
       system = "x86_64-linux";
       modules = [
         demo-module
-        (sources.nixpkgs + "/nixos/modules/profiles/qemu-guest.nix")
-        (sources.nixpkgs + "/nixos/modules/virtualisation/qemu-vm.nix")
         ./shell.nix
         ./vm
       ] ++ extendedNixosModules;
