@@ -74,9 +74,7 @@ in
   config = lib.mkIf cfg.enable {
     users.users.openfire = {
       description = "openfire server daemon user";
-      home = cfg.stateDir;
-      createHome = false;
-      isSystemUser = true;
+      isNormalUser = true;
       group = "openfire";
     };
     users.groups.openfire = { };

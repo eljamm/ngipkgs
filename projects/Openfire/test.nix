@@ -18,12 +18,8 @@
         imports = [
           sources.modules.ngipkgs
           sources.modules.services.openfire-server
+          sources.examples.Openfire.openfire-server
         ];
-
-        services.openfire-server = {
-          enable = true;
-          openFirewall = true;
-        };
 
         services.openssh = {
           enable = true;
