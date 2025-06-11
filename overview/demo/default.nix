@@ -5,23 +5,24 @@
   extendedNixosModules,
 }:
 let
-  demo-module = {
-    imports = [
-      ./demo.nix
-      ./shell.nix
-    ];
-    demo.enable = true;
-  };
+  demo-modules = [
+    ./demo.nix
+    ./shell.nix
+    ./vm.nix
+  ];
 
   eval =
     module: type:
     (import (sources.nixpkgs + "/nixos/lib/eval-config.nix") {
       system = "x86_64-linux";
-      modules = [
-        module
-        demo-module
-      ] ++ extendedNixosModules;
-      specialArgs.sources.inputs = sources;
+      modules =
+        [
+          module
+          { demo.enable = true; }
+        ]
+        ++ demo-modules
+        ++ extendedNixosModules;
+      specialArgs.modulesPath = "${sources.nixpkgs}/nixos/modules";
     }).config;
 
   activate = module: type: (eval module type).demo.${type}.activate;
@@ -40,7 +41,7 @@ in
   inherit
     demo-vm
     demo-shell
-    demo-module
+    demo-modules
     xrsh
     ;
 }

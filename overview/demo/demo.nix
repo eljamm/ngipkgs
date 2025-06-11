@@ -51,6 +51,7 @@ in
                 });
             };
           };
+        default = { };
       };
       options.vm = mkOption {
         type = types.submodule {
@@ -63,6 +64,7 @@ in
             default = config.system.build.vm;
           };
         };
+        default = { };
       };
     };
     default = { };

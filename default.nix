@@ -116,15 +116,13 @@ rec {
     with lib;
     # TODO: this is a weird shape for what we need: ngipkgs, services, modules?
     {
-      # Allow using packages from `ngipkgs` to be used alongside regular `pkgs`
       ngipkgs =
         { ... }:
         {
+          # Import internal modules
+          imports = demo-modules;
+          # Allow using packages from `ngipkgs` to be used alongside regular `pkgs`
           nixpkgs.overlays = [ overlays.default ];
-        }
-        // demo-module
-        // {
-          demo.enable = lib.mkForce false;
         };
     }
     // foldl recursiveUpdate { } (map (project: project.nixos.modules) (attrValues projects));
@@ -270,7 +268,7 @@ rec {
   inherit (demo)
     demo-vm
     demo-shell
-    demo-module
+    demo-modules
     xrsh
     ;
 }
