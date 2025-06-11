@@ -11,30 +11,22 @@ let
   };
 
   eval =
-    modules:
+    module: type:
     (import (sources.nixpkgs + "/nixos/lib/eval-config.nix") {
       system = "x86_64-linux";
-      modules = modules ++ extendedNixosModules;
+      modules = module ++ demo-module ++ extendedNixosModules;
       specialArgs.sources.inputs = sources;
     }).config;
 
-  demo =
-    module: type:
-    let
-      demo-system = eval [
-        module
-        demo-module
-      ];
-    in
-    if type == "vm" then demo-system.system.build.vm else demo-system.shells.bash.activate;
+  activate = module: type: (eval module).demo.${type}.activate;
 
   demo-vm =
     module:
     pkgs.writeShellScript "demo-vm" ''
-      exec ${demo module "vm"}/bin/run-nixos-vm "$@"
+      exec ${activate module "vm"}/bin/run-nixos-vm "$@"
     '';
 
-  demo-shell = module: demo module "shell";
+  demo-shell = module: activate module "shell";
 in
 {
   inherit
