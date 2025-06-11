@@ -27,5 +27,11 @@ in
     environment.variables = {
       XRSH_PORT = toString cfg.port;
     };
+    ngipkgs.demo-shell.xrsh = {
+      programs = {
+        xrsh = cfg.package;
+      };
+      env.XRSH_PORT = "8090";
+    };
   };
 }

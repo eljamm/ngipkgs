@@ -5,11 +5,6 @@
   extendedNixosModules,
 }:
 let
-  demo-modules = {
-    shell = ./shell.nix;
-    vm = ./vm.nix;
-  };
-
   eval =
     modules:
     (import (sources.nixpkgs + "/nixos/lib/eval-config.nix") {
@@ -23,7 +18,11 @@ let
     let
       demo-system = eval [
         module
-        demo-modules.${type}
+        {
+          imports = [ ./demo.nix ];
+          demo = {
+          };
+        }
       ];
     in
     if type == "vm" then demo-system.system.build.vm else demo-system.shells.bash.activate;
