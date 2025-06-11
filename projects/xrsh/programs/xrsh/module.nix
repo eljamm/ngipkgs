@@ -27,7 +27,7 @@ in
     environment.variables = {
       XRSH_PORT = toString cfg.port;
     };
-    ngipkgs.demo-shell.xrsh = {
+    ngipkgs.demo.shell.projects.xrsh = {
       programs = {
         xrsh = cfg.package;
       };

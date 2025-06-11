@@ -18,7 +18,7 @@ in
       options.shell = mkOption {
         type =
           with types;
-          attrsOf (submodule {
+          submodule {
             options.module = mkOption {
               type = types.deferredModule;
               default = ./shell.nix;
@@ -27,38 +27,42 @@ in
               type = types.package;
               default = config.shells.bash.activate; # TODO: more shells
             };
-            options.programs = mkOption {
-              type = attrsOf package;
-              description = "Set of programs that will be installed in the shell.";
-              example = {
-                embedded = pkgs.icestudio;
-                messaging = pkgs.briar-desktop;
-              };
-              default = { };
+            projects = mkOption {
+              type =
+                with types;
+                attrsOf (submodule {
+                  options.programs = mkOption {
+                    type = attrsOf package;
+                    description = "Set of programs that will be installed in the shell.";
+                    example = {
+                      embedded = pkgs.icestudio;
+                      messaging = pkgs.briar-desktop;
+                    };
+                    default = { };
+                  };
+                  options.env = mkOption {
+                    type = attrsOf str;
+                    description = "Set of environment variables that will be passed to the shell.";
+                    example = {
+                      XRSH_PORT = "9090";
+                    };
+                    default = { };
+                  };
+                });
             };
-            options.env = mkOption {
-              type = attrsOf str;
-              description = "Set of environment variables that will be passed to the shell.";
-              example = {
-                XRSH_PORT = "9090";
-              };
-              default = { };
-            };
-          });
+          };
       };
       options.vm = mkOption {
-        type =
-          with types;
-          attrsOf (submodule {
-            options.module = mkOption {
-              type = types.deferredModule;
-              default = ./vm.nix;
-            };
-            options.activate = mkOption {
-              type = types.package;
-              default = config.system.build.vm;
-            };
-          });
+        type = types.submodule {
+          options.module = mkOption {
+            type = types.deferredModule;
+            default = ./vm.nix;
+          };
+          options.activate = mkOption {
+            type = types.package;
+            default = config.system.build.vm;
+          };
+        };
       };
     };
     default = { };

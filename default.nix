@@ -120,7 +120,9 @@ rec {
       ngipkgs =
         { ... }:
         {
-          imports = [ demo-modules.shell ];
+          demo = demo-module // {
+            demo.enable = false;
+          };
           nixpkgs.overlays = [ overlays.default ];
         };
     }
@@ -267,6 +269,6 @@ rec {
   inherit (demo)
     demo-vm
     demo-shell
-    demo-modules
+    demo-module
     ;
 }
