@@ -20,7 +20,11 @@ let
         module
         {
           imports = [ ./demo.nix ];
-          demo = {
+
+          demo.enable = true;
+          demo.shell = {
+          };
+          demo.vm = {
           };
         }
       ];

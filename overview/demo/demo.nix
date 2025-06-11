@@ -19,7 +19,14 @@ in
         type =
           with types;
           attrsOf (submodule {
-            options.module = mkOption { type = types.deferredModule; };
+            options.module = mkOption {
+              type = types.deferredModule;
+              default = ./shell.nix;
+            };
+            options.activate = mkOption {
+              type = types.package;
+              default = config.shells.bash.activate; # TODO: more shells
+            };
             options.programs = mkOption {
               type = attrsOf package;
               description = "Set of programs that will be installed in the shell.";
@@ -43,7 +50,14 @@ in
         type =
           with types;
           attrsOf (submodule {
-            options.module = mkOption { type = types.deferredModule; };
+            options.module = mkOption {
+              type = types.deferredModule;
+              default = ./vm.nix;
+            };
+            options.activate = mkOption {
+              type = types.package;
+              default = config.system.build.vm;
+            };
           });
       };
     };
