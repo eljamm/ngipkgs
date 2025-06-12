@@ -54,7 +54,7 @@ in
 
             isExtra = key: hasPrefix "extra-" key;
           in
-          "NIX_CONFIG='${lib.trim ''
+          "export NIX_CONFIG='${lib.trim ''
             ${mkKeyValuePairs (filterAttrs (key: value: !(isExtra key)) self.settings)}
             ${mkKeyValuePairs (filterAttrs (key: value: isExtra key) self.settings)}
           ''}'";
