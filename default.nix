@@ -116,12 +116,11 @@ rec {
     with lib;
     # TODO: this is a weird shape for what we need: ngipkgs, services, modules?
     {
+      # Allow using packages from `ngipkgs` to be used alongside regular `pkgs`
       ngipkgs =
         { ... }:
         {
-          # Import internal modules
           imports = demo-modules;
-          # Allow using packages from `ngipkgs` to be used alongside regular `pkgs`
           nixpkgs.overlays = [ overlays.default ];
         };
     }
@@ -155,6 +154,10 @@ rec {
     ] ++ extendedNixosModules;
     specialArgs = {
       modulesPath = "${sources.nixpkgs}/nixos/modules";
+      sources = {
+        inputs = sources;
+        modules = nixos-modules;
+      };
     };
   };
 
@@ -256,7 +259,7 @@ rec {
     ];
   };
 
-  demo = import ./overview/demo {
+  demo-wow = import ./overview/demo {
     inherit
       lib
       pkgs
@@ -265,10 +268,11 @@ rec {
       ;
   };
 
-  inherit (demo)
+  inherit (demo-wow)
     demo-vm
     demo-shell
     demo-modules
     xrsh
+    xrsh-eval
     ;
 }

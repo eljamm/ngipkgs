@@ -13,16 +13,10 @@ let
 
   eval =
     module: type:
-    (import (sources.nixpkgs + "/nixos/lib/eval-config.nix") {
-      system = "x86_64-linux";
-      modules =
-        [
-          module
-          { demo.enable = true; }
-        ]
-        ++ demo-modules
-        ++ extendedNixosModules;
+    (lib.evalModules {
+      modules = [ module ] ++ demo-modules ++ extendedNixosModules;
       specialArgs.modulesPath = "${sources.nixpkgs}/nixos/modules";
+      specialArgs.pkgs = pkgs;
     }).config;
 
   activate = module: type: (eval module type).demo.${type}.activate;
@@ -35,7 +29,8 @@ let
 
   demo-shell = module: activate module "shell";
 
-  xrsh = eval ../../projects/xrsh/programs/xrsh/examples/basic.nix "shell";
+  xrsh = demo-vm ../../projects/Cryptpad/demo.nix;
+  xrsh-eval = eval ../../projects/xrsh/programs/xrsh/examples/basic.nix "shell";
 in
 {
   inherit
@@ -43,5 +38,6 @@ in
     demo-shell
     demo-modules
     xrsh
+    xrsh-eval
     ;
 }

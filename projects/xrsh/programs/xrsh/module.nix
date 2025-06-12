@@ -1,11 +1,12 @@
 {
-  config,
   lib,
   pkgs,
+  config,
   ...
 }:
 let
   cfg = config.programs.xrsh;
+  demoEnabled = lib.mkIf (cfg.enable && config.demo.enable);
 in
 {
   options.programs.xrsh = {
@@ -22,14 +23,14 @@ in
 
   config =
     lib.mkIf cfg.enable {
-      environment.systemPackages = with pkgs; [
+      environment.systemPackages = [
         cfg.package
       ];
       environment.variables = {
         XRSH_PORT = toString cfg.port;
       };
     }
-    // lib.mkIf (cfg.enable && config.demo.enable) {
+    // lib.mkIf demoEnabled {
       demo.shell.projects.xrsh = {
         programs = {
           xrsh = cfg.package;

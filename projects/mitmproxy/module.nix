@@ -1,7 +1,7 @@
 {
-  config,
   lib,
   pkgs,
+  config,
   ...
 }:
 let
@@ -14,8 +14,8 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    demo.shell.projects.mitmproxy.programs = {
-      mitmproxy = cfg.package;
-    };
+    environment.systemPackages = [
+      cfg.package
+    ];
   };
 }
