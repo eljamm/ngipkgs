@@ -105,6 +105,21 @@ let
   # step.
   markdownToHtml = markdown: "{{ markdown_to_html(${toJSON markdown}) }}";
 
+  nix-config = eval {
+    imports = [ ./content-types/nix-config.nix ];
+    _module.args.pkgs = pkgs;
+    settings = {
+      substituters = [
+        "https://cache.nixos.org/"
+        "https://ngi.cachix.org/"
+      ];
+      trusted-public-keys = [
+        "cache.nixos.org-1:6nchdd59x431o0gwypbmraurkbj16zpmqfgspcdshjy="
+        "ngi.cachix.org-1:n+cal72roc3qqulxihpv+tw5t42whxmmhpragkrsrow="
+      ];
+    };
+  };
+
   render = {
     # A code snippet that is copyable and optionally downloadable
     codeSnippet.one =
@@ -297,25 +312,6 @@ let
               commands.bash.input = ''
                 apt install --yes curl git jq nix
               '';
-            }
-          ];
-        };
-        nix-config = eval {
-          imports = [ ./content-types/nix-config.nix ];
-          settings = [
-            {
-              name = "substituters";
-              value = [
-                "https://cache.nixos.org/"
-                "https://ngi.cachix.org/"
-              ];
-            }
-            {
-              name = "trusted-public-keys";
-              value = [
-                "cache.nixos.org-1:6nchdd59x431o0gwypbmraurkbj16zpmqfgspcdshjy="
-                "ngi.cachix.org-1:n+cal72roc3qqulxihpv+tw5t42whxmmhpragkrsrow="
-              ];
             }
           ];
         };
