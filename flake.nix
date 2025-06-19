@@ -42,7 +42,7 @@
 
       # Finally, define the system-agnostic outputs.
       systemAgnosticOutputs = {
-        lib = extension;
+        lib = lib.removeAttrs (lib.extend extension) (lib.attrNames inputs.nixpkgs.lib);
 
         nixosConfigurations = {
           makemake = import ./infra/makemake { inherit inputs; };
@@ -53,6 +53,12 @@
 
         # Overlays a package set (e.g. Nixpkgs) with the packages defined in this flake.
         overlays.default = overlay;
+        overlays.lib = final: prev: { lib = extension final.lib prev.lib; };
+
+        #   f = final: final.lib;
+        #   overlay = overlays.lib;
+        #   g = lib.fixedPoints.extends overlay f;
+        # in lib.fixedPoints.fix g
       };
 
       eachDefaultSystemOutputs = flake-utils.lib.eachDefaultSystem (

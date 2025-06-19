@@ -22,7 +22,7 @@ in
 let
   dream2nix = (import sources.dream2nix).overrideInputs { inherit (sources) nixpkgs; };
 
-  extension = rec {
+  extension = lib: final: {
     # Take an attrset of arbitrary nesting and make it flat
     # by concatenating the nested names with the given separator.
     flattenAttrs =
@@ -48,7 +48,7 @@ let
             # if eval fails
             if !(builtins.tryEval i).success then
               # recursively recurse into attrsets
-              if lib.isAttrs i then forceEvalRecursive i else (builtins.tryEval i).success
+              if lib.isAttrs i then final.forceEvalRecursive i else (builtins.tryEval i).success
             else
               (builtins.tryEval i).success
           ) v
@@ -97,7 +97,7 @@ let
       lib.head (collectFiles optAttrs);
   };
 
-  extended = lib.extend (_: _: extension);
+  extended = lib.extend extension;
 in
 rec {
   lib = extended;
