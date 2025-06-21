@@ -84,12 +84,6 @@ in
 
   public = {
     env = config.public.pyEnv;
-    meta = {
-      description = "Free form software";
-      homepage = "https://gitlab.com/liberaforms/liberaforms";
-      license = lib.licenses.agpl3Plus;
-      platforms = lib.platforms.all;
-    };
   };
 
   pip = {
@@ -99,11 +93,6 @@ in
       "faker"
       "polib"
       "pytest-dotenv"
-    ];
-    nativeBuildInputs = [
-      config.deps.postgresql
-      config.deps.libxml2.dev
-      config.deps.libxslt.dev
     ];
     pipFlags = [
       "--no-binary"
