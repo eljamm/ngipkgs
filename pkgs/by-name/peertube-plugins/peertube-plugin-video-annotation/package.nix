@@ -2,7 +2,6 @@
   lib,
   buildNpmPackage,
   fetchFromGitLab,
-  peertube-plugin-akismet,
 }:
 buildNpmPackage (finalAttrs: {
   pname = "peertube-plugin-video-annotation";
@@ -26,8 +25,6 @@ buildNpmPackage (finalAttrs: {
   sourceRoot = "${finalAttrs.src.name}/peertube-plugin-video-annotation";
 
   npmDepsHash = "sha256-1/9RQZHiUtZFFycIBewGUSImGKUJdv4flZv5EaIJ02E=";
-
-  passthru.updateScript = peertube-plugin-akismet.peertubeOfficialPluginsUpdateScript;
 
   meta = {
     description = "Add a field in the video form so users can set annotation to their video";

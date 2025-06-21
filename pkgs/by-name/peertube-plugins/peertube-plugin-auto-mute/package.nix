@@ -2,7 +2,6 @@
   lib,
   buildNpmPackage,
   fetchFromGitLab,
-  peertube-plugin-akismet,
 }:
 buildNpmPackage (finalAttrs: {
   pname = "peertube-plugin-auto-mute";
@@ -22,8 +21,6 @@ buildNpmPackage (finalAttrs: {
   npmDepsHash = "sha256-YbFEefvSLk9jf6g6FMmCahxqA+X+FD4MCc+c6luRZq4=";
 
   dontNpmBuild = true;
-
-  passthru.updateScript = peertube-plugin-akismet.peertubeOfficialPluginsUpdateScript;
 
   meta = {
     description = "Auto mute accounts or instances based on public blocklists";

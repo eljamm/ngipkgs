@@ -2,7 +2,6 @@
   lib,
   buildNpmPackage,
   fetchFromGitLab,
-  peertube-plugin-akismet,
 }:
 buildNpmPackage (finalAttrs: {
   pname = "peertube-plugin-auth-ldap";
@@ -22,8 +21,6 @@ buildNpmPackage (finalAttrs: {
   npmDepsHash = "sha256-Q3HDMv8Suac3y8yP+obnnMuhKS6gteHfmVZjfzCkUBY=";
 
   dontNpmBuild = true;
-
-  passthru.updateScript = peertube-plugin-akismet.peertubeOfficialPluginsUpdateScript;
 
   meta = {
     description = "Add LDAP support to login form in PeerTube";

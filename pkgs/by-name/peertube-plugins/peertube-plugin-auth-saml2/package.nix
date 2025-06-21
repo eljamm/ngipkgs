@@ -2,7 +2,6 @@
   lib,
   buildNpmPackage,
   fetchFromGitLab,
-  peertube-plugin-akismet,
 }:
 buildNpmPackage (finalAttrs: {
   pname = "peertube-plugin-auth-saml2";
@@ -22,8 +21,6 @@ buildNpmPackage (finalAttrs: {
   npmDepsHash = "sha256-Mkku+nu9WewKXzUcyaaekB3MgZ7mLeAOwGXLU5evdp8=";
 
   dontNpmBuild = true;
-
-  passthru.updateScript = peertube-plugin-akismet.peertubeOfficialPluginsUpdateScript;
 
   meta = {
     description = "Add SAML2 support to login form in PeerTube";

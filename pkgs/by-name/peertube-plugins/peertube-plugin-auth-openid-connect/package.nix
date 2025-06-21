@@ -2,7 +2,6 @@
   lib,
   buildNpmPackage,
   fetchFromGitLab,
-  peertube-plugin-akismet,
 }:
 buildNpmPackage (finalAttrs: {
   pname = "peertube-plugin-auth-openid-connect";
@@ -22,8 +21,6 @@ buildNpmPackage (finalAttrs: {
   npmDepsHash = "sha256-NXCjLPJvFZ05b3gHnhnGF58ULgfL23+r6b0IaMeIw60=";
 
   dontNpmBuild = true;
-
-  passthru.updateScript = peertube-plugin-akismet.peertubeOfficialPluginsUpdateScript;
 
   meta = {
     description = "Add OpenID Connect support to login form in PeerTube";

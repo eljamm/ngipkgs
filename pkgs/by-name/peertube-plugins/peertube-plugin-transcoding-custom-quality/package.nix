@@ -2,7 +2,6 @@
   lib,
   stdenvNoCC,
   fetchFromGitLab,
-  peertube-plugin-akismet,
 }:
 stdenvNoCC.mkDerivation (finalAttrs: {
   pname = "peertube-plugin-transcoding-custom-quality";
@@ -29,8 +28,6 @@ stdenvNoCC.mkDerivation (finalAttrs: {
 
     runHook postInstall
   '';
-
-  passthru.updateScript = peertube-plugin-akismet.peertubeOfficialPluginsUpdateScript;
 
   meta = {
     description = "Set a custom quality for transcoding";

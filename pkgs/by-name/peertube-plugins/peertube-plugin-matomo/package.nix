@@ -2,7 +2,6 @@
   lib,
   buildNpmPackage,
   fetchFromGitLab,
-  peertube-plugin-akismet,
 }:
 buildNpmPackage (finalAttrs: {
   pname = "peertube-plugin-matomo";
@@ -20,8 +19,6 @@ buildNpmPackage (finalAttrs: {
   sourceRoot = "${finalAttrs.src.name}/peertube-plugin-matomo";
 
   npmDepsHash = "sha256-s2vrUKMRF+VhBPAbv/RQ66UBNOBYEvi/axxJB132R9s=";
-
-  passthru.updateScript = peertube-plugin-akismet.peertubeOfficialPluginsUpdateScript;
 
   meta = {
     description = "Matomo plugin that tracks page views on a PeerTube instance";

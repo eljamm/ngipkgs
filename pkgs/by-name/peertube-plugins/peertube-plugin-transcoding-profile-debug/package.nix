@@ -2,7 +2,6 @@
   lib,
   stdenvNoCC,
   fetchFromGitLab,
-  peertube-plugin-akismet,
 }:
 stdenvNoCC.mkDerivation (finalAttrs: {
   pname = "peertube-plugin-transcoding-profile-debug";
@@ -29,8 +28,6 @@ stdenvNoCC.mkDerivation (finalAttrs: {
 
     runHook postInstall
   '';
-
-  passthru.updateScript = peertube-plugin-akismet.peertubeOfficialPluginsUpdateScript;
 
   meta = {
     description = "Allow admins to create custom transcoding profiles using the plugin settings";

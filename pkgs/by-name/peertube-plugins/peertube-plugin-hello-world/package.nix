@@ -2,7 +2,6 @@
   lib,
   buildNpmPackage,
   fetchFromGitLab,
-  peertube-plugin-akismet,
 }:
 buildNpmPackage (finalAttrs: {
   pname = "peertube-plugin-hello-world";
@@ -22,8 +21,6 @@ buildNpmPackage (finalAttrs: {
   npmDepsHash = "sha256-dNoVdDImF+KaOiMlW0tva4bOk2hMykHkzOZSSZWVEyw=";
 
   dontNpmBuild = true;
-
-  passthru.updateScript = peertube-plugin-akismet.peertubeOfficialPluginsUpdateScript;
 
   meta = {
     description = "Hello world PeerTube plugin example";
