@@ -1,28 +1,13 @@
 {
-  config,
   lib,
   pkgs,
+  config,
+  devlib,
   ...
 }:
 let
   cfg = config.services.nodebb;
   settingsFormat = pkgs.formats.json { };
-
-  # Similar to lib.mapAttrsRecursive but flattens the result
-  mapAttrsRecursive' =
-    f: set:
-    let
-      recurse =
-        acc: path:
-        lib.mapAttrsToList (
-          name: value:
-          let
-            path' = path ++ [ name ];
-          in
-          if lib.isAttrs value then recurse acc path' value else acc ++ [ (f path' value) ]
-        );
-    in
-    lib.listToAttrs (lib.flatten (recurse [ ] [ ] set));
 
   configFile =
     let
@@ -35,7 +20,7 @@ let
     settingsFormat.generate "config.json" (
       # { a = { b = 0; }; } -> { "a:b" = 0; }
       # https://github.com/NodeBB/NodeBB/blob/3e961257ec0904dbc3b3c64dab3d4cbdffcfbbd7/src/install.js#L177
-      settings // (mapAttrsRecursive' (path: lib.nameValuePair (lib.concatStringsSep ":" path)) settings)
+      settings // (devlib.flattenAttrs ":" settings)
     );
 in
 {

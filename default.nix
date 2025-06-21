@@ -144,7 +144,10 @@ rec {
         { ... }:
         {
           # TODO: properly separate the demo modules from production code
-          imports = [ ./overview/demo/shell.nix ];
+          imports = [
+            ./overview/demo/shell.nix
+            { _module.args.devlib = lib; }
+          ];
           nixpkgs.overlays = [ overlays.default ];
         };
     }
