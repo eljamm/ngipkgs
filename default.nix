@@ -101,18 +101,17 @@ let
 in
 rec {
   lib = extended;
-  inherit extension;
 
   inherit
     pkgs
     system
     sources
+    extension
     ;
 
   overview = import ./overview {
     inherit
       lib
-      system
       projects
       ;
     self = flake;

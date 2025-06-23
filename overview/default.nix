@@ -2,11 +2,9 @@
 {
   lib,
   options,
-  nixpkgs ? self.inputs.nixpkgs,
   pkgs,
   projects,
   self,
-  system,
 }:
 let
   inherit (builtins)
@@ -232,7 +230,7 @@ let
         '';
     };
 
-    metadata = rec {
+    metadata = {
       one =
         metadata:
         (optionalString (metadata ? summary) ''
