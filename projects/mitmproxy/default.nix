@@ -22,5 +22,8 @@
     module = ./demo.nix;
     description = "";
     tests.demo = null;
+    problem.broken.reason = ''
+      The shell does not have usage instructions.
+    '';
   };
 }
