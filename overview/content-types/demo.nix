@@ -1,64 +1,38 @@
 {
   lib,
-  name,
   config,
+  pkgs,
   ...
 }:
 let
   inherit (lib) mkOption types;
+
+  types' = import ../../projects/types.nix { inherit lib; };
 in
 {
+  imports = [ ./code-snippet.nix ];
+
   options = {
-    heading = mkOption {
+    inherit (types'.demo.getSubOptions { })
+      tests
+      problem
+      ;
+    module = mkOption {
+      type = types.path;
+    };
+    type = mkOption {
       type = types.str;
     };
-    installation-instructions = mkOption {
-      type = types.submodule ./shell-instructions.nix;
-    };
-    set-nix-config = mkOption {
-      type = types.submodule ./shell-instructions.nix;
-    };
-    build-instructions = mkOption {
-      type = types.submodule ./shell-instructions.nix;
-    };
-    demo-snippet = mkOption {
-      type = types.submodule ./demo-snippet.nix;
-    };
-    __toString = mkOption {
-      type = with types; functionTo str;
-      # TODO: refactor?
-      default =
-        self:
-        if (self.demo-snippet.problem == null) then
-          ''
-            ${self.heading}
-
-            <ol>
-              <li>
-                <strong>Install Nix</strong>
-                ${self.installation-instructions}
-              </li>
-              <li>
-                <strong>Download a configuration file</strong>
-                ${self.demo-snippet}
-              </li>
-              <li>
-                <strong>Enable binary substituters</strong>
-                ${self.set-nix-config}
-              </li>
-              <li>
-                <strong>Build and run a virtual machine</strong>
-                ${self.build-instructions}
-              </li>
-            </ol>
-          ''
-        else
-          ''
-            <dt>Problems:</dt>
-            <dd><span class="option-alert">Demo</span> ${
-              lib.concatMapAttrsStringSep "\n" (name: value: value.reason) self.demo-snippet.problem
-            }</dd>
-          '';
-    };
   };
+
+  config.filepath = pkgs.writeText "default.nix" config.snippet-text;
+  config.snippet-text = ''
+    # default.nix
+    {
+      ngipkgs ? import (fetchTarball "https://github.com/ngi-nix/ngipkgs/tarball/main") { },
+    }:
+    ngipkgs.demo-${config.type} (
+      ${toString (lib.intersperse "\n " (lib.splitString "\n" (builtins.readFile config.module)))}
+    )
+  '';
 }

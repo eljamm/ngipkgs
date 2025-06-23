@@ -240,7 +240,7 @@ let
     serviceDemo.one =
       type: demo:
       eval {
-        imports = [ ./content-types/demo.nix ];
+        imports = [ ./content-types/demo-instructions.nix ];
 
         heading = heading 2 "demo" (
           if type == "shell" then "Try the program in a shell" else "Try the service in a VM"
@@ -315,8 +315,9 @@ let
           }
         ];
 
-        demo-snippet = {
+        demo = {
           type = type;
+          tests = demo.tests;
           module = demo.module;
           problem = demo.problem or null;
           _module.args.pkgs = pkgs;
@@ -340,8 +341,9 @@ let
           demoFiles = lib.mapAttrs (
             type: demo:
             (eval {
-              imports = [ ./content-types/demo-snippet.nix ];
+              imports = [ ./content-types/demo.nix ];
               type = type;
+              tests = demo.tests;
               module = demo.module;
               problem = demo.problem or null;
               _module.args.pkgs = pkgs;
