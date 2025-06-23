@@ -237,16 +237,6 @@ let
       </article>
     '';
 
-    demoGlue.one = type: exampleText: ''
-      # default.nix
-      {
-        ngipkgs ? import (fetchTarball "https://github.com/ngi-nix/ngipkgs/tarball/main") { },
-      }:
-      ngipkgs.demo-${type} (
-        ${toString (intersperse "\n " (splitString "\n" exampleText))}
-      )
-    '';
-
     serviceDemo.one =
       type: demo:
       eval {
@@ -348,7 +338,14 @@ let
       demoFile =
         let
           demoFiles = lib.mapAttrs (
-            type: demo: (pkgs.writeText "default.nix" (render.demoGlue.one type (readFile demo.module)))
+            type: demo:
+            (eval {
+              imports = [ ./content-types/demo-snippet.nix ];
+              type = type;
+              module = demo.module;
+              problem = demo.problem or null;
+              _module.args.pkgs = pkgs;
+            }).filepath
           ) project.nixos.demo;
         in
         if project.nixos.demo ? vm then
