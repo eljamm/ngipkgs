@@ -27,28 +27,38 @@ in
     __toString = mkOption {
       type = with types; functionTo str;
       # TODO: refactor?
-      default = self: ''
-        ${self.heading}
+      default =
+        self:
+        if (self.demo-snippet.problem == null) then
+          ''
+            ${self.heading}
 
-        <ol>
-          <li>
-            <strong>Install Nix</strong>
-            ${self.installation-instructions}
-          </li>
-          <li>
-            <strong>Download a configuration file</strong>
-            ${self.demo-snippet}
-          </li>
-          <li>
-            <strong>Enable binary substituters</strong>
-            ${self.set-nix-config}
-          </li>
-          <li>
-            <strong>Build and run a virtual machine</strong>
-            ${self.build-instructions}
-          </li>
-        </ol>
-      '';
+            <ol>
+              <li>
+                <strong>Install Nix</strong>
+                ${self.installation-instructions}
+              </li>
+              <li>
+                <strong>Download a configuration file</strong>
+                ${self.demo-snippet}
+              </li>
+              <li>
+                <strong>Enable binary substituters</strong>
+                ${self.set-nix-config}
+              </li>
+              <li>
+                <strong>Build and run a virtual machine</strong>
+                ${self.build-instructions}
+              </li>
+            </ol>
+          ''
+        else
+          ''
+            <dt>Problems:</dt>
+            <dd><span class="option-alert">Demo</span> ${
+              lib.concatMapAttrsStringSep "\n" (name: value: value.reason) self.demo-snippet.problem
+            }</dd>
+          '';
     };
   };
 }
