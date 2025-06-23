@@ -275,7 +275,7 @@ let
     '';
 
     serviceDemo.one =
-      type: example:
+      type: demo:
       eval {
         imports = [ ./content-types/demo.nix ];
 
@@ -353,9 +353,10 @@ let
         ];
 
         demo-snippet = {
+          type = type;
+          module = demo.module;
+          problem = demo.problem or null;
           _module.args.pkgs = pkgs;
-          demo-type = type;
-          example-text = readFile example.module;
         };
       };
   };
