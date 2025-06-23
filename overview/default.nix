@@ -366,7 +366,7 @@ let
       deliverables = {
         service = project.nixos.modules ? services && project.nixos.modules.services != { };
         program = project.nixos.modules ? programs && project.nixos.modules.programs != { };
-        demo = project.nixos.demo != { };
+        demo = with project.nixos; demo != { } && demo.problem or null != null;
       };
     }) projects;
     inherit version;
