@@ -26,6 +26,7 @@ in
     };
     snippet-text = mkOption {
       type = types.str;
+      default = builtins.readFile config.filepath;
     };
     __toString = mkOption {
       type = with types; functionTo str;

@@ -118,34 +118,6 @@ let
   };
 
   render = {
-    # A code snippet that is copyable and optionally downloadable
-    codeSnippet.one =
-      {
-        filename,
-        language ? "nix",
-        relative ? false,
-        downloadable ? false,
-      }:
-      ''
-        <div class="code-block">
-          {{ include_code("${language}", "${filename}" ${optionalString relative ", relative_path=True"}) }}
-          <div class="code-buttons">
-            ${optionalString downloadable ''
-              <a class="button download" href="${filename}" download>Download</a>
-            ''}
-            <template scripted>
-              <button class="button copy" onclick="copyToClipboard(this, '${filename}')">
-                  ${optionalString (!relative) ''
-                    <script type="application/json">
-                      ${toJSON (readFile filename)}
-                    </script>
-                  ''}
-                  Copy
-              </button>
-            </template>
-          </div>
-        </div>
-      '';
     options = rec {
       one =
         prefixLength: option:
@@ -203,7 +175,10 @@ let
       one = example: ''
         <details><summary>${example.description}</summary>
 
-        ${render.codeSnippet.one { filename = example.module; }}
+        ${eval {
+          imports = [ ./content-types/code-snippet.nix ];
+          filepath = example.module;
+        }}
 
         </details>
       '';
