@@ -256,7 +256,7 @@ let
         ${render.metadata.one project.metadata}
         ${optionalString (project.nixos.demo != { }) (
           lib.concatMapAttrsStringSep "\n" (
-            type: demo: (render.serviceDemo.one type project.nixos.modules demo)
+            type: demo: toString (render.serviceDemo.one type demo)
           ) project.nixos.demo
         )}
         ${render.options.many (pick.options project)}
@@ -275,100 +275,89 @@ let
     '';
 
     serviceDemo.one =
-      type: modules: example:
-      toString (eval {
+      type: example:
+      eval {
         imports = [ ./content-types/demo.nix ];
 
         heading = heading 2 "demo" (
           if type == "shell" then "Try the program in a shell" else "Try the service in a VM"
         );
 
-        installation-instructions = toString (eval {
-          imports = [ ./content-types/shell-instructions.nix ];
-          instructions = [
-            {
-              platform = "Arch Linux";
-              shell-session.bash = [
-                {
-                  input = ''
-                    pacman --sync --refresh --noconfirm curl git jq nix
-                  '';
-                }
-              ];
-            }
-            {
-              platform = "Debian";
-              shell-session.bash = [
-                {
-                  input = ''
-                    apt install --yes curl git jq nix
-                  '';
-                }
-              ];
-            }
-            {
-              platform = "Ubuntu";
-              shell-session.bash = [
-                {
-                  input = ''
-                    apt install --yes curl git jq nix
-                  '';
-                }
-              ];
-            }
-          ];
-        });
+        installation-instructions.instructions = [
+          {
+            platform = "Arch Linux";
+            shell-session.bash = [
+              {
+                input = ''
+                  pacman --sync --refresh --noconfirm curl git jq nix
+                '';
+              }
+            ];
+          }
+          {
+            platform = "Debian";
+            shell-session.bash = [
+              {
+                input = ''
+                  apt install --yes curl git jq nix
+                '';
+              }
+            ];
+          }
+          {
+            platform = "Ubuntu";
+            shell-session.bash = [
+              {
+                input = ''
+                  apt install --yes curl git jq nix
+                '';
+              }
+            ];
+          }
+        ];
 
-        set-nix-config = toString (eval {
-          imports = [ ./content-types/shell-instructions.nix ];
-          instructions.bash = [
-            {
-              input = ''
-                export NIX_CONFIG='${nix-config}'
-              '';
-            }
-          ];
-        });
+        set-nix-config.instructions.bash = [
+          {
+            input = ''
+              export NIX_CONFIG='${nix-config}'
+            '';
+          }
+        ];
 
-        build-instructions = toString (eval {
-          imports = [ ./content-types/shell-instructions.nix ];
+        build-instructions.instructions = [
+          {
+            platform = "Arch Linux, Debian Sid and Ubuntu 25.04";
+            shell-session.bash = [
+              {
+                input = ''
+                  nix-build ./default.nix && ./result
+                '';
+              }
+            ];
+          }
+          {
+            platform = "Debian 12 and Ubuntu 24.04/24.10";
+            shell-session.bash = [
+              {
+                input = ''
+                  rev=$(nix-instantiate --eval --attr sources.nixpkgs.rev https://github.com/ngi-nix/ngipkgs/archive/master.tar.gz | jq --raw-output)
+                '';
+              }
+              {
+                input = ''
+                  nix-shell -I nixpkgs=https://github.com/NixOS/nixpkgs/archive/$rev.tar.gz --packages nix --run "nix-build ./default.nix && ./result"
+                '';
+              }
+            ];
+          }
+        ];
 
-          instructions = [
-            {
-              platform = "Arch Linux, Debian Sid and Ubuntu 25.04";
-              shell-session.bash = [
-                {
-                  input = ''
-                    nix-build ./default.nix && ./result
-                  '';
-                }
-              ];
-            }
-            {
-              platform = "Debian 12 and Ubuntu 24.04/24.10";
-              shell-session.bash = [
-                {
-                  input = ''
-                    rev=$(nix-instantiate --eval --attr sources.nixpkgs.rev https://github.com/ngi-nix/ngipkgs/archive/master.tar.gz | jq --raw-output)
-                  '';
-                }
-                {
-                  input = ''
-                    nix-shell -I nixpkgs=https://github.com/NixOS/nixpkgs/archive/$rev.tar.gz --packages nix --run "nix-build ./default.nix && ./result"
-                  '';
-                }
-              ];
-            }
-          ];
-        });
-
-        demo-snippet = toString (eval {
-          imports = [ ./content-types/demo-snippet.nix ];
+        demo-snippet = {
           _module.args.pkgs = pkgs;
           demo-type = type;
           example-text = readFile example.module;
-        });
-      });
+        };
+      };
   };
 
   # HTML project pages

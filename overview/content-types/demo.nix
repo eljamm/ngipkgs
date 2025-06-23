@@ -13,16 +13,16 @@ in
       type = types.str;
     };
     installation-instructions = mkOption {
-      type = types.str;
+      type = types.submodule ./shell-instructions.nix;
     };
     set-nix-config = mkOption {
-      type = types.str;
+      type = types.submodule ./shell-instructions.nix;
     };
     build-instructions = mkOption {
-      type = types.str;
+      type = types.submodule ./shell-instructions.nix;
     };
     demo-snippet = mkOption {
-      type = types.str;
+      type = types.submodule ./demo-snippet.nix;
     };
     __toString = mkOption {
       type = with types; functionTo str;
