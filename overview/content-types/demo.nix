@@ -25,6 +25,7 @@ in
     };
   };
 
+  # TODO: highlight strings instead of files?
   config.filepath = pkgs.writeText "default.nix" config.snippet-text;
   config.snippet-text = ''
     # default.nix

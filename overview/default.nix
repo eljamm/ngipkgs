@@ -316,9 +316,11 @@ let
         ];
 
         demo = {
-          type = type;
-          tests = demo.tests;
-          module = demo.module;
+          inherit type;
+          inherit (demo)
+            tests
+            module
+            ;
           problem = demo.problem or null;
           _module.args.pkgs = pkgs;
         };
@@ -342,10 +344,12 @@ let
             type: demo:
             (eval {
               imports = [ ./content-types/demo.nix ];
-              type = type;
-              tests = demo.tests;
-              module = demo.module;
-              problem = demo.problem or null;
+              inherit type;
+              inherit (demo)
+                tests
+                module
+                problem
+                ;
               _module.args.pkgs = pkgs;
             }).filepath
           ) project.nixos.demo;

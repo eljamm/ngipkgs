@@ -23,7 +23,7 @@
     description = "";
     tests.demo = null;
     problem.broken.reason = ''
-      The demo lacks a test.
+      The shell does not have usage instructions.
     '';
   };
 }
