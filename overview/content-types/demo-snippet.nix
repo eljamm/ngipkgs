@@ -1,13 +1,10 @@
 {
   lib,
-  name,
   config,
   ...
 }:
 let
   inherit (lib) mkOption types;
-
-  cfg = config.demo-snippet;
 in
 {
   imports = [ ./code-snippet.nix ];
@@ -15,7 +12,6 @@ in
   options = {
     demo-type = mkOption {
       type = types.str;
-      default = name;
     };
     example-text = mkOption {
       type = types.str;
@@ -27,8 +23,8 @@ in
     {
       ngipkgs ? import (fetchTarball "https://github.com/ngi-nix/ngipkgs/tarball/main") { },
     }:
-    ngipkgs.demo-${cfg.demo-type} (
-      ${toString (lib.intersperse "\n " (lib.splitString "\n" cfg.example-text))}
+    ngipkgs.demo-${config.demo-type} (
+      ${toString (lib.intersperse "\n " (lib.splitString "\n" config.example-text))}
     )
   '';
 }

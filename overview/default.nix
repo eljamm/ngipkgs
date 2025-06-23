@@ -276,21 +276,14 @@ let
 
     serviceDemo.one =
       type: modules: example:
-      let
-        demoSystem = import (nixpkgs + "/nixos/lib/eval-config.nix") {
-          inherit system;
-          modules =
-            [
-              example.module
-              ./demo/shell.nix
-            ]
-            ++ (attrValues modules.services)
-            ++ (attrValues modules.programs);
-        };
-        openPorts = demoSystem.config.networking.firewall.allowedTCPPorts;
-        # The port that is forwarded to the host so that the user can access the demo service.
-        servicePort = if openPorts != [ ] then (builtins.head openPorts) else "";
-        installation-instructions = eval {
+      eval {
+        imports = [ ./content-types/demo.nix ];
+
+        heading = heading 2 "demo" (
+          if type == "shell" then "Try the program in a shell" else "Try the service in a VM"
+        );
+
+        installation-instructions = toString (eval {
           imports = [ ./content-types/shell-instructions.nix ];
           instructions = [
             {
@@ -324,8 +317,9 @@ let
               ];
             }
           ];
-        };
-        set-nix-config = eval {
+        });
+
+        set-nix-config = toString (eval {
           imports = [ ./content-types/shell-instructions.nix ];
           instructions.bash = [
             {
@@ -334,8 +328,9 @@ let
               '';
             }
           ];
-        };
-        build-instructions = eval {
+        });
+
+        build-instructions = toString (eval {
           imports = [ ./content-types/shell-instructions.nix ];
 
           instructions = [
@@ -365,47 +360,15 @@ let
               ];
             }
           ];
-        };
-      in
-      ''
-        ${heading 2 "demo" (
-          if type == "shell" then "Try the program in a shell" else "Try the service in a VM"
-        )}
+        });
 
-        <ol>
-          <li>
-            <strong>Install Nix</strong>
-            ${installation-instructions}
-          </li>
-          <li>
-            <strong>Download a configuration file</strong>
-              ${render.codeSnippet.one {
-                filename = "default.nix";
-                relative = true;
-                downloadable = true;
-              }}
-          </li>
-          <li>
-            <strong>Enable binary substituters</strong>
-            ${set-nix-config}
-          </li>
-          <li>
-            <strong>Build and run a virtual machine</strong>
-            ${build-instructions}
-          </li>
-          ${
-            if servicePort != "" then
-              ''
-                <li>
-                  <strong>Access the service</strong><br />
-                    Open a web browser at <a href="http://localhost:${toString servicePort}">http://localhost:${toString servicePort}</a> .
-                </li>
-              ''
-            else
-              ""
-          }
-        </ol>
-      '';
+        demo-snippet = toString (eval {
+          imports = [ ./content-types/demo-snippet.nix ];
+          filename = "default.nix";
+          demo-type = type;
+          example-text = toString example.module;
+        });
+      };
   };
 
   # HTML project pages

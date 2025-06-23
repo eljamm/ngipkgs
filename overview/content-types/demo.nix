@@ -9,6 +9,9 @@ let
 in
 {
   options = {
+    heading = mkOption {
+      type = types.str;
+    };
     installation-instructions = mkOption {
       type = types.str;
     };
@@ -25,6 +28,8 @@ in
       type = with types; functionTo str;
       # TODO: refactor?
       default = self: ''
+        ${self.heading}
+
         <ol>
           <li>
             <strong>Install Nix</strong>
