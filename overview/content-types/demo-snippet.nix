@@ -1,6 +1,7 @@
 {
   lib,
   config,
+  pkgs,
   ...
 }:
 let
@@ -13,11 +14,16 @@ in
     demo-type = mkOption {
       type = types.str;
     };
+    demo-file = mkOption {
+      type = types.path;
+      default = pkgs.writeText "default.nix" config.snippet-text;
+    };
     example-text = mkOption {
       type = types.str;
     };
   };
 
+  config.filepath = config.demo-file;
   config.snippet-text = ''
     # default.nix
     {

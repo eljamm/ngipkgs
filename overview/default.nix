@@ -276,7 +276,7 @@ let
 
     serviceDemo.one =
       type: modules: example:
-      eval {
+      toString (eval {
         imports = [ ./content-types/demo.nix ];
 
         heading = heading 2 "demo" (
@@ -364,11 +364,11 @@ let
 
         demo-snippet = toString (eval {
           imports = [ ./content-types/demo-snippet.nix ];
-          filename = "default.nix";
+          _module.args.pkgs = pkgs;
           demo-type = type;
-          example-text = toString example.module;
+          example-text = readFile example.module;
         });
-      };
+      });
   };
 
   # HTML project pages

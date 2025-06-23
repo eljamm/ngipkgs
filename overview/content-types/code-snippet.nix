@@ -9,8 +9,8 @@ let
 in
 {
   options = {
-    filename = mkOption {
-      type = types.str;
+    filepath = mkOption {
+      type = types.path;
     };
     language = mkOption {
       type = types.str;
@@ -32,13 +32,13 @@ in
       default =
         self: with lib; ''
           <div class="code-block">
-            {{ include_code("${self.language}", "${self.filename}" ${optionalString self.relative ", relative_path=True"}) }}
+            {{ include_code("${self.language}", "${self.filepath}" ${optionalString self.relative ", relative_path=True"}) }}
             <div class="code-buttons">
               ${optionalString self.downloadable ''
-                <a class="button download" href="${self.filename}" download>Download</a>
+                <a class="button download" href="${self.filepath}" download>Download</a>
               ''}
               <template scripted>
-                <button class="button copy" onclick="copyToClipboard(this, '${self.filename}')">
+                <button class="button copy" onclick="copyToClipboard(this, '${self.filepath}')">
                     ${optionalString (!self.relative) ''
                       <script type="application/json">
                         ${strings.toJSON self.snippet-text}
