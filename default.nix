@@ -109,6 +109,56 @@ rec {
     sources
     ;
 
+  eval = module: (lib.evalModules { modules = [ module ]; }).config;
+
+  snippet = eval {
+    imports = [ ./overview/content-types/code-snippet.nix ];
+    filename = "hello.nix";
+    snippet-text = ''
+      { hello = "world"; }
+    '';
+  };
+
+  demo-snippet = eval {
+    imports = [ ./overview/content-types/demo-snippet.nix ];
+    filename = "demo.nix";
+    demo-type = "vm";
+    example-text = ''
+      { ... }:
+      {
+        programs.mitmproxy.enable = true;
+      }
+    '';
+  };
+
+  demo-section = eval {
+    options = {
+      demo-snippet = lib.mkOption {
+        type = lib.types.attrTag {
+          vm = lib.mkOption {
+            type = lib.types.submodule ./overview/content-types/demo-snippet.nix;
+          };
+          shell = lib.mkOption {
+            type = lib.types.submodule ./overview/content-types/demo-snippet.nix;
+          };
+        };
+      };
+      __toString = lib.mkOption {
+        type = with lib.types; functionTo str;
+        default = self: toString self.demo-snippet;
+      };
+    };
+    config.demo-snippet.shell = {
+      filename = "demo.nix";
+      example-text = ''
+        { ... }:
+        {
+          programs.mitmproxy.enable = true;
+        }
+      '';
+    };
+  };
+
   overview = import ./overview {
     inherit
       lib
