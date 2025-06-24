@@ -27,13 +27,23 @@
   # };
   nixos = {
     modules.programs.cryptolyzer = {
-      module = ./module.nix;
-      # TODO: this absolute basic example, which may show up just about anywhere, can probably extracted into a pattern with two parameters: the program module and the command to run for the smoke test
-      examples.basic = {
-        module = ./example.nix;
-        description = "";
-        tests.basic = import ./test.nix args;
-      };
+      module =
+        {
+          config,
+          lib,
+          pkgs,
+          ...
+        }:
+        let
+          cfg = config.programs.cryptolyzer;
+        in
+        {
+          options.programs.cryptolyzer = {
+            enable = lib.mkEnableOption "CryptoLyzer";
+            package = lib.mkPackageOption pkgs [ "python3Packages" "cryptolyzer" ] { };
+          };
+          config.environment.systemPackages = lib.mkIf cfg.enable [ cfg.package ];
+        };
       links = {
         development = {
           text = "Development environment with `pipenv`";
@@ -48,6 +58,12 @@
           url = "https://cryptolyzer.readthedocs.io/en/latest/installation/";
         };
       };
+    };
+    # TODO: this absolute basic example, which may show up just about anywhere, can probably extracted into a pattern with two parameters: the program module and the command to run for the smoke test
+    examples.basic = {
+      module = ./example.nix;
+      description = "";
+      tests.basic = import ./test.nix args;
     };
   };
 }

@@ -233,7 +233,7 @@ let
         with types;
         attrsOf (
           submodule (
-            { name, config, ... }:
+            { name, ... }:
             {
               options = {
                 name = mkOption {
