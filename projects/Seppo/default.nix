@@ -23,6 +23,6 @@
     };
   };
 
-  nixos.modules.programs.seppo = null;
-  nixos.modules.services.seppo = null;
+  nixos.modules.programs.seppo = { };
+  nixos.modules.services.seppo = { };
 }
