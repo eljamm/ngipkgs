@@ -109,39 +109,11 @@ rec {
     extension
     ;
 
-  join = lib.concatStringsSep;
-  pick.options =
-    project:
-    with lib;
-    let
-      # string comparison is faster than collecting attribute paths as lists
-      spec = attrNames (
-        lib.flattenAttrs "." (
-          foldl' recursiveUpdate { } (
-            remove null (
-              mapAttrsToList (
-                name: value: if value != null then { ${name} = value; } else null
-              ) project.nixos.modules
-            )
-          )
-        )
-      );
-    in
-    remove null (
-      mapAttrsToList (
-        name: value: if value != null then { ${name} = value; } else null
-      ) project.nixos.modules
-    );
-
-  filteropts = lib.filterAttrs (name: value: value != null) optionsDoc.optionsNix;
-
   overview = import ./overview {
     inherit
       lib
-      # projects
+      projects
       ;
-    projects = evaluated-modules.config.projects;
-    raw-projects = raw-projects.config.projects;
     self = flake;
     pkgs = pkgs // ngipkgs;
     options = optionsDoc.optionsNix;
@@ -271,7 +243,6 @@ rec {
         # TODO: encode this in types, either yants or the module system
         project: rec {
           metadata = empty-if-null (filterAttrs (_: m: m != null) (project.metadata or { }));
-          name = project.name;
           nixos.demo = filterAttrs (_: m: m != null) (empty-if-null (project.nixos.demo or { }));
           nixos.modules.services = filterAttrs (_: m: m != null) (
             lib.mapAttrs (name: value: value.module or null) project.nixos.modules.services or { }

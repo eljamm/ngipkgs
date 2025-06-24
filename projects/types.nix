@@ -237,7 +237,7 @@ let
             {
               options = {
                 name = mkOption {
-                  type = types.str;
+                  type = str;
                   default = name;
                 };
                 metadata = mkOption {
@@ -255,11 +255,11 @@ let
                       options = {
                         modules.programs = mkOption {
                           type = nullOr (attrsOf (nullOr types'.program));
-                          default = { };
+                          default = null;
                         };
                         modules.services = mkOption {
                           type = nullOr (attrsOf (nullOr types'.service));
-                          default = { };
+                          default = null;
                         };
                         demo = mkOption {
                           type = nullOr (attrTag {

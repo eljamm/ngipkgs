@@ -5,7 +5,6 @@
   pkgs,
   projects,
   self,
-  raw-projects,
 }:
 let
   inherit (builtins)
@@ -25,7 +24,6 @@ let
 
   join = concatStringsSep;
 
-  empty-if-null = x: if x != null then x else { };
   eval = module: (lib.evalModules { modules = [ module ]; }).config;
   inherit (lib) mkOption types;
 
@@ -44,7 +42,6 @@ let
     drop
     splitString
     intersperse
-    remove
     ;
 
   empty =
@@ -97,7 +94,7 @@ let
         );
       in
       filter (option: any ((flip hasPrefix) (join "." option.loc)) spec) (attrValues options);
-    examples = project: attrValues (empty-if-null project.nixos.examples);
+    examples = project: attrValues (filterAttrs (name: _: name != "demo") project.nixos.examples);
   };
 
   # This doesn't actually produce a HTML string but a Jinja2 template string
@@ -159,30 +156,19 @@ let
           </dd>
         '';
       many =
-        project:
+        projectOptions:
         let
-          projectOptions = pick.options project;
           # The length of the attrs path that is common to all options
           # TODO: calculate dynamically
           prefixLength = 2;
           commonPrefix = take prefixLength (head projectOptions).loc;
         in
-        ''
+        optionalString (!empty projectOptions) ''
           ${heading 2 "service" "Options"}
-        ''
-        + optionalString (project.nixos.modules.programs ? seppo) ''
-          <dt>Missing:</dt>
-          <dd>${
-            lib.concatMapAttrsStringSep "\n" (name: value: ''
-              <span class="option-alert">${name}</span>
-            '') project.nixos.modules.programs
-          }</dd>
+          <details><summary><code>${join "." commonPrefix}</code></summary><dl>
+          ${concatLines (map (one prefixLength) projectOptions)}
+          </dl></details>
         '';
-      # + optionalString (!empty projectOptions) ''
-      #   <details><summary><code>${join "." commonPrefix}</code></summary><dl>
-      #   ${concatLines (map (one prefixLength) projectOptions)}
-      #   </dl></details>
-      # '';
     };
 
     examples = rec {
@@ -224,9 +210,10 @@ let
         metadata:
         (optionalString (metadata ? summary) ''
           <p>
+            ${metadata.summary}
           </p>
         '')
-        + (optionalString (metadata ? subgrants && metadata.subgrants != null) ''
+        + (optionalString (metadata ? subgrants && metadata.subgrants != [ ]) ''
           <p>
             This project is funded by NLnet through these subgrants:
 
@@ -240,12 +227,12 @@ let
       <article class="page-width">
         ${heading 1 null name}
         ${render.metadata.one project.metadata}
-        ${optionalString (project.nixos.demo != null) (
+        ${optionalString (project.nixos.demo != { }) (
           lib.concatMapAttrsStringSep "\n" (
             type: demo: toString (render.serviceDemo.one type demo)
           ) project.nixos.demo
         )}
-        ${render.options.many project}
+        ${render.options.many (pick.options project)}
         ${render.examples.many (pick.examples project)}
       </article>
     '';
@@ -384,8 +371,8 @@ let
       description = project.metadata.summary or null;
       deliverables = {
         service = project.nixos.modules ? services && project.nixos.modules.services != { };
-        program = project.nixos.modules.programs != { };
-        demo = project.nixos ? demo && project.nixos.demo != { };
+        program = project.nixos.modules ? programs && project.nixos.modules.programs != { };
+        demo = with project.nixos; demo != { };
       };
     }) projects;
     inherit version;
