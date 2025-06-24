@@ -5,6 +5,7 @@
   pkgs,
   projects,
   self,
+  raw-projects,
 }:
 let
   inherit (builtins)
@@ -95,6 +96,10 @@ let
       in
       filter (option: any ((flip hasPrefix) (join "." option.loc)) spec) (attrValues options);
     examples = project: attrValues (filterAttrs (name: _: name != "demo") project.nixos.examples);
+    services =
+      project: (lib.mapAttrs (name: value: value.module or null) project.nixos.modules.services or { });
+    programs =
+      project: (lib.mapAttrs (name: value: value.module or null) project.nixos.modules.programs or { });
   };
 
   # This doesn't actually produce a HTML string but a Jinja2 template string
@@ -156,14 +161,28 @@ let
           </dd>
         '';
       many =
-        projectOptions:
+        name: project:
         let
+          projectOptions = pick.options project;
           # The length of the attrs path that is common to all options
           # TODO: calculate dynamically
           prefixLength = 2;
           commonPrefix = take prefixLength (head projectOptions).loc;
+
+          programs = pick.programs raw-projects.${name};
         in
-        optionalString (!empty projectOptions) ''
+        lib.concatMapAttrsStringSep "\n" (
+          name: value:
+          if value == null then
+            ''
+              <dd><span class="option-alert">${name}</span>
+                <a href="https://github.com/ngi-nix/ngipkgs/blob/main/CONTRIBUTING.md">Implement missing program</a>
+              </dd>
+            ''
+          else
+            ""
+        ) programs
+        + optionalString (!empty projectOptions) ''
           ${heading 2 "service" "Options"}
           <details><summary><code>${join "." commonPrefix}</code></summary><dl>
           ${concatLines (map (one prefixLength) projectOptions)}
@@ -232,7 +251,7 @@ let
             type: demo: toString (render.serviceDemo.one type demo)
           ) project.nixos.demo
         )}
-        ${render.options.many (pick.options project)}
+        ${render.options.many name project}
         ${render.examples.many (pick.examples project)}
       </article>
     '';

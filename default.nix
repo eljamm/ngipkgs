@@ -114,6 +114,7 @@ rec {
       lib
       projects
       ;
+    raw-projects = raw-projects.config.projects;
     self = flake;
     pkgs = pkgs // ngipkgs;
     options = optionsDoc.optionsNix;
