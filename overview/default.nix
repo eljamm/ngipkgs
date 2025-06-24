@@ -24,6 +24,8 @@ let
 
   join = concatStringsSep;
 
+  empty-if-null = x: if x != null then x else { };
+  empty-list-if-null = x: if x != null then x else [ ];
   eval = module: (lib.evalModules { modules = [ module ]; }).config;
   inherit (lib) mkOption types;
 
@@ -94,7 +96,12 @@ let
         );
       in
       filter (option: any ((flip hasPrefix) (join "." option.loc)) spec) (attrValues options);
-    examples = project: attrValues (filterAttrs (name: _: name != "demo") project.nixos.examples);
+    examples =
+      project:
+      if project.nixos.modules.programs != null then
+        attrValues (empty-list-if-null project.nixos.modules.programs.examples)
+      else
+        { };
   };
 
   # This doesn't actually produce a HTML string but a Jinja2 template string
@@ -184,7 +191,7 @@ let
       '';
       many =
         examples:
-        optionalString (!empty examples) ''
+        optionalString (examples != null) ''
           ${heading 2 "examples" "Examples"}
           ${concatLines (map one examples)}
         '';
@@ -210,7 +217,6 @@ let
         metadata:
         (optionalString (metadata ? summary) ''
           <p>
-            ${metadata.summary}
           </p>
         '')
         + (optionalString (metadata ? subgrants && metadata.subgrants != [ ]) ''
@@ -227,12 +233,6 @@ let
       <article class="page-width">
         ${heading 1 null name}
         ${render.metadata.one project.metadata}
-        ${optionalString (project.nixos.demo != { }) (
-          lib.concatMapAttrsStringSep "\n" (
-            type: demo: toString (render.serviceDemo.one type demo)
-          ) project.nixos.demo
-        )}
-        ${render.options.many (pick.options project)}
         ${render.examples.many (pick.examples project)}
       </article>
     '';
@@ -315,15 +315,6 @@ let
           }
         ];
 
-        demo = {
-          inherit type;
-          inherit (demo)
-            tests
-            module
-            ;
-          problem = demo.problem or null;
-          _module.args.pkgs = pkgs;
-        };
       };
   };
 
@@ -338,28 +329,28 @@ let
       # `default.nix` file in each project directory so CI would test those,
       # but we're not heading in that direction anymore as we're either gonna
       # use NixOS VM tests or not test the individual projects at all.
-      demoFile =
-        let
-          demoFiles = lib.mapAttrs (
-            type: demo:
-            (eval {
-              imports = [ ./content-types/demo.nix ];
-              inherit type;
-              inherit (demo)
-                tests
-                module
-                problem
-                ;
-              _module.args.pkgs = pkgs;
-            }).filepath
-          ) project.nixos.demo;
-        in
-        if project.nixos.demo ? vm then
-          demoFiles.vm
-        else if project.nixos.demo ? shell then
-          demoFiles.shell
-        else
-          null;
+      # demoFile =
+      #   let
+      #     demoFiles = lib.mapAttrs (
+      #       type: demo:
+      #       (eval {
+      #         imports = [ ./content-types/demo.nix ];
+      #         inherit type;
+      #         inherit (demo)
+      #           tests
+      #           module
+      #           problem
+      #           ;
+      #         _module.args.pkgs = pkgs;
+      #       }).filepath
+      #     ) project.nixos.demo;
+      #   in
+      #   if project.nixos.demo ? vm then
+      #     demoFiles.vm
+      #   else if project.nixos.demo ? shell then
+      #     demoFiles.shell
+      #   else
+      #     null;
     }
   ) projects;
 
@@ -372,7 +363,7 @@ let
       deliverables = {
         service = project.nixos.modules ? services && project.nixos.modules.services != { };
         program = project.nixos.modules ? programs && project.nixos.modules.programs != { };
-        demo = with project.nixos; demo != { };
+        demo = project.nixos.demo != null;
       };
     }) projects;
     inherit version;
@@ -460,11 +451,11 @@ let
     ''
       mkdir -p "$out/${path}"
     ''
-    + optionalString (page.demoFile != null) ''
-      cp '${page.demoFile}' "$out/${path}/default.nix"
-      chmod +w "$out/${path}/default.nix"
-      nixfmt "$out/${path}/default.nix"
-    ''
+    # + optionalString (page.demoFile != null) ''
+    #   cp '${page.demoFile}' "$out/${path}/default.nix"
+    #   chmod +w "$out/${path}/default.nix"
+    #   nixfmt "$out/${path}/default.nix"
+    # ''
     + ''
       python3 ${./render-template.py} '${htmlFile path page}' "$out/${path}/index.html"
     '';

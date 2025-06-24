@@ -12,7 +12,7 @@
     # the namecoind service module does not add namecoin commands to the environment
     modules.programs.namecoin = null;
 
-    examples.tor-browser-temporary = {
+    modules.services.examples.tor-browser-temporary = {
       description = ''
         To enable experimental Namecoin resolution with Tor Browser, run:
 
@@ -26,7 +26,7 @@
       tests.tor-browser-temporary = null;
     };
 
-    examples.tor-browser-permanent = {
+    modules.services.examples.tor-browser-permanent = {
       description = ''
         It is also possible to permanently enable experimental Namecoin resolution with Tor Browser.
       '';

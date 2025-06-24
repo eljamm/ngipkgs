@@ -112,8 +112,8 @@ rec {
   overview = import ./overview {
     inherit
       lib
-      projects
       ;
+    projects = evaluated-modules.config.projects;
     self = flake;
     pkgs = pkgs // ngipkgs;
     options = optionsDoc.optionsNix;
