@@ -11,11 +11,12 @@ let
   getTests =
     attrs: prefix:
     lib.pipe attrs [
-      (lib.concatMapAttrs (name: value: value.tests or { }))
+      (lib.concatMapAttrs (_: value: value.tests or { }))
+      (lib.filterAttrs (_: test: (!test ? problem.broken) && (test ? module && test.module != null)))
       (lib.mapAttrs' (
         name: value: {
           name = "${prefix}/${name}";
-          inherit value;
+          value = lib.evalTest value;
         }
       ))
     ];

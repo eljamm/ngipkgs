@@ -42,33 +42,42 @@ let
         (lib.filterAttrs (_: v: v != null))
       ];
 
-    getTests =
+    nixosTest =
+      test:
       let
-        nixosTest =
-          test:
-          let
-            # Amenities for interactive tests
-            tools =
-              { pkgs, ... }:
-              {
-                environment.systemPackages = with pkgs; [
-                  vim
-                  tmux
-                  jq
-                ];
-                # Use kmscon <https://www.freedesktop.org/wiki/Software/kmscon/>
-                # to provide a slightly nicer console.
-                # kmscon allows zooming with [Ctrl] + [+] and [Ctrl] + [-]
-                services.kmscon = {
-                  enable = true;
-                  autologinUser = "root";
-                };
-              };
-            debugging.interactive.nodes = lib.mapAttrs (_: _: tools) test.nodes;
-            args = debugging // test;
-          in
-          if lib.isDerivation test then test else pkgs.nixosTest args;
+        # Amenities for interactive tests
+        tools =
+          { pkgs, ... }:
+          {
+            environment.systemPackages = with pkgs; [
+              vim
+              tmux
+              jq
+            ];
+            # Use kmscon <https://www.freedesktop.org/wiki/Software/kmscon/>
+            # to provide a slightly nicer console.
+            # kmscon allows zooming with [Ctrl] + [+] and [Ctrl] + [-]
+            services.kmscon = {
+              enable = true;
+              autologinUser = "root";
+            };
+          };
+        debugging.interactive.nodes = lib.mapAttrs (_: _: tools) test.nodes;
+        args = debugging // test;
       in
+      if lib.isDerivation test then test else pkgs.nixosTest args;
+    evalTest =
+      value:
+      if lib.isString value.module then
+        nixosTest (
+          import value.module {
+            inherit pkgs lib;
+            inherit (pkgs) system;
+          }
+        )
+      else
+        nixosTest value.module;
+    getTests =
       attrs: input: prefix:
       lib.pipe attrs [
         (lib.concatMapAttrs (_: value: value.${input} or { }))
