@@ -42,6 +42,42 @@ let
         (lib.filterAttrs (_: v: v != null))
       ];
 
+    evalTest = lib.mapAttrs (
+      _: test:
+      if lib.isString test.module then
+        nixosTest (
+          import test.module {
+            inherit pkgs lib;
+            inherit (pkgs) system;
+          }
+        )
+      else
+        nixosTest test.module
+    );
+    nixosTest =
+      test:
+      let
+        # Amenities for interactive tests
+        tools =
+          { pkgs, ... }:
+          {
+            environment.systemPackages = with pkgs; [
+              vim
+              tmux
+              jq
+            ];
+            # Use kmscon <https://www.freedesktop.org/wiki/Software/kmscon/>
+            # to provide a slightly nicer console.
+            # kmscon allows zooming with [Ctrl] + [+] and [Ctrl] + [-]
+            services.kmscon = {
+              enable = true;
+              autologinUser = "root";
+            };
+          };
+        debugging.interactive.nodes = lib.mapAttrs (_: _: tools) test.nodes;
+      in
+      if lib.isDerivation test then test else pkgs.nixosTest debugging // test;
+
     # Recursively evaluate attributes for an attribute set.
     # Coupled with an evaluated nixos configuration, this presents an efficient
     # way for checking module types.
@@ -268,30 +304,6 @@ rec {
       ))
     ];
 
-  nixosTest =
-    test:
-    let
-      # Amenities for interactive tests
-      tools =
-        { pkgs, ... }:
-        {
-          environment.systemPackages = with pkgs; [
-            vim
-            tmux
-            jq
-          ];
-          # Use kmscon <https://www.freedesktop.org/wiki/Software/kmscon/>
-          # to provide a slightly nicer console.
-          # kmscon allows zooming with [Ctrl] + [+] and [Ctrl] + [-]
-          services.kmscon = {
-            enable = true;
-            autologinUser = "root";
-          };
-        };
-      debugging.interactive.nodes = lib.mapAttrs (_: _: tools) test.nodes;
-    in
-    if lib.isDerivation test then test else pkgs.nixosTest debugging // test;
-
   tests =
     let
       # nixosTest =
@@ -321,14 +333,14 @@ rec {
       getTest = lib.mapAttrs (
         _: test:
         if lib.isString test.module then
-          nixosTest (
+          lib.nixosTest (
             import test.module {
               inherit pkgs lib;
               inherit (pkgs) system;
             }
           )
         else
-          nixosTest test.module
+          lib.nixosTest test.module
       );
     in
     lib.concatMapAttrs (name: value: getTest value.nixos.tests) evaluated-modules.config.projects;
