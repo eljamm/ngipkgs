@@ -133,20 +133,6 @@ let
         '';
     };
 
-    examples = rec {
-      one =
-        example:
-        toString (eval {
-          imports = [ ./content-types/example.nix ];
-          inherit example;
-        });
-      many = examples: ''
-        ${heading 2 "examples" "Examples"}
-        ${concatLines (map one examples)}
-        <button class="button example"><a class = "heading" href="https://github.com/ngi-nix/ngipkgs/blob/main/CONTRIBUTING.md#how-to-add-an-example">Add an example</a></button>
-      '';
-    };
-
     subgrants = rec {
       one = subgrant: ''
         <li>
@@ -183,6 +169,17 @@ let
     projects.one =
       name: project:
       let
+        examples = eval {
+          imports = [ ./content-types/examples.nix ];
+          examples = map (value: {
+            inherit (value)
+              description
+              module
+              tests
+              ;
+          }) (pick.examples project);
+        };
+
         optionsRender =
           lib.concatMapStringsSep "\n"
             (
@@ -215,7 +212,7 @@ let
           )}
           ${optionalString (lib.trim optionsRender != "") "${heading 2 "service" "Options"}"}
           ${optionsRender}
-          ${render.examples.many (pick.examples project)}
+          ${examples}
         </article>
       '';
 

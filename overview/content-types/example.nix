@@ -16,16 +16,18 @@ let
 in
 {
   options = {
-    example = mkOption {
-      type = types'.example;
-    };
+    inherit (types'.example.getSubOptions { })
+      description
+      module
+      tests
+      ;
     example-snippet = mkOption {
       type = types.submodule ./code-snippet.nix;
-      default.filepath = config.example.module;
+      default.filepath = config.module;
     };
     button-missing-test = mkOption {
       type = types.str;
-      default = optionalString (any (test: test.module == null) (attrValues config.example.tests)) ''
+      default = optionalString (any (test: test.module == null) (attrValues config.tests)) ''
         <button class="button example">
         <a class = "heading" href="https://github.com/ngi-nix/ngipkgs/blob/main/CONTRIBUTING.md">Add example test</a>
         </button>
@@ -34,7 +36,7 @@ in
     __toString = mkOption {
       type = with types; functionTo str;
       default = self: ''
-        <details><summary>${self.example.description}</summary>
+        <details><summary>${self.description}</summary>
         ${self.example-snippet}
         ${self.button-missing-test}
         </details>
