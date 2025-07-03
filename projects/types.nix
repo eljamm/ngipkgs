@@ -8,6 +8,18 @@ let
     mkOption
     ;
 
+  getTests =
+    attrs: prefix:
+    lib.pipe attrs [
+      (lib.concatMapAttrs (name: value: value.tests or { }))
+      (lib.mapAttrs' (
+        name: value: {
+          name = "${prefix}/${name}";
+          inherit value;
+        }
+      ))
+    ];
+
   types' = {
     metadata =
       with types;
@@ -96,7 +108,7 @@ let
     program =
       with types;
       submodule (
-        { name, ... }:
+        { name, config, ... }:
         {
           options = {
             name = mkOption {
@@ -109,6 +121,11 @@ let
             examples = mkOption {
               type = attrsOf types'.example;
               default = { };
+            };
+            tests = mkOption {
+              type = attrsOf types'.test;
+              readOnly = true;
+              default = getTests config.examples name;
             };
             extensions = mkOption {
               type = attrsOf (nullOr types'.plugin);
@@ -126,7 +143,7 @@ let
     service =
       with types;
       submodule (
-        { name, ... }:
+        { name, config, ... }:
         {
           options = {
             name = mkOption {
@@ -139,6 +156,11 @@ let
             examples = mkOption {
               type = attrsOf types'.example;
               default = { };
+            };
+            tests = mkOption {
+              type = attrsOf types'.test;
+              readOnly = true;
+              default = getTests config.examples name;
             };
             extensions = mkOption {
               type = nullOr (attrsOf (nullOr types'.plugin));
@@ -254,47 +276,54 @@ let
                 nixos = mkOption {
                   type =
                     with types;
-                    submodule {
-                      options = {
-                        modules = {
-                          programs = mkOption {
-                            type = attrsOf types'.program;
-                            description = "Software that can be run in the shell";
+                    submodule (
+                      { config, ... }:
+                      {
+                        options = {
+                          modules = {
+                            programs = mkOption {
+                              type = attrsOf types'.program;
+                              description = "Software that can be run in the shell";
+                              default = { };
+                            };
+                            services = mkOption {
+                              type = attrsOf types'.service;
+                              description = "Software that runs as a background process";
+                              default = { };
+                            };
+                          };
+                          demo = mkOption {
+                            type = nullOr (attrTag {
+                              vm = mkOption { type = types'.demo; };
+                              shell = mkOption { type = types'.demo; };
+                            });
+                            default = null;
+                          };
+                          # An application component may have examples using it in isolation,
+                          # but examples may involve multiple application components.
+                          # Having examples at both layers allows us to trace coverage more easily.
+                          # If this tends to be too cumbersome for package authors and we find a way obtain coverage information programmatically,
+                          # we can still reduce granularity and move all examples to the application level.
+                          examples = mkOption {
+                            type = attrsOf types'.example;
+                            description = "A configuration of an existing application module that illustrates how to use it";
                             default = { };
                           };
-                          services = mkOption {
-                            type = attrsOf types'.service;
-                            description = "Software that runs as a background process";
-                            default = { };
+                          # TODO: Tests should really only be per example, in order to clarify that we care about tested examples more than merely tests.
+                          #       But reality is such that most NixOS tests aren't based on self-contained, minimal examples, or if they are they can't be extracted easily.
+                          #       Without this field, many applications will appear entirely untested although there's actually *some* assurance that *something* works.
+                          #       Eventually we want to move to documentable tests exclusively, and then remove this field, but this may take a very long time.
+                          tests = mkOption {
+                            type = attrsOf types'.test;
+                            default =
+                              getTests config.modules.programs "programs"
+                              // getTests config.modules.services "services"
+                              // getTests config.demo.vm or { } "demo/vm"
+                              // getTests config.demo.shell or { } "demo/shell";
                           };
                         };
-                        demo = mkOption {
-                          type = nullOr (attrTag {
-                            vm = mkOption { type = types'.demo; };
-                            shell = mkOption { type = types'.demo; };
-                          });
-                          default = null;
-                        };
-                        # An application component may have examples using it in isolation,
-                        # but examples may involve multiple application components.
-                        # Having examples at both layers allows us to trace coverage more easily.
-                        # If this tends to be too cumbersome for package authors and we find a way obtain coverage information programmatically,
-                        # we can still reduce granularity and move all examples to the application level.
-                        examples = mkOption {
-                          type = attrsOf types'.example;
-                          description = "A configuration of an existing application module that illustrates how to use it";
-                          default = { };
-                        };
-                        # TODO: Tests should really only be per example, in order to clarify that we care about tested examples more than merely tests.
-                        #       But reality is such that most NixOS tests aren't based on self-contained, minimal examples, or if they are they can't be extracted easily.
-                        #       Without this field, many applications will appear entirely untested although there's actually *some* assurance that *something* works.
-                        #       Eventually we want to move to documentable tests exclusively, and then remove this field, but this may take a very long time.
-                        tests = mkOption {
-                          type = attrsOf types'.test;
-                          default = { };
-                        };
-                      };
-                    };
+                      }
+                    );
                 };
               };
             }

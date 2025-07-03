@@ -260,11 +260,7 @@ rec {
                 in
                 if lib.isDerivation test then test else pkgs.nixosTest args;
               # TODO: refactor
-              tests =
-                (empty-if-null project.nixos.tests or { })
-                // (filter-map (nixos.examples or { }) "tests")
-                // (filter-map (nixos.demo.vm or { }) "tests")
-                // (filter-map (nixos.demo.shell or { }) "tests");
+              tests = empty-if-null project.nixos.tests or { };
               filtered-tests = filterAttrs (
                 _: test: (!test ? problem.broken) && (test ? module && test.module != null)
               ) tests;
