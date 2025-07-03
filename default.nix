@@ -256,34 +256,69 @@ rec {
     in
     mapAttrs (name: project: hydrate project) projects;
 
+  getTests =
+    attrs: prefix:
+    lib.pipe attrs [
+      (lib.concatMapAttrs (name: value: value.tests or { }))
+      (lib.mapAttrs' (
+        name: value: {
+          name = "${prefix}/${name}";
+          inherit value;
+        }
+      ))
+    ];
+
+  nixosTest =
+    test:
+    let
+      # Amenities for interactive tests
+      tools =
+        { pkgs, ... }:
+        {
+          environment.systemPackages = with pkgs; [
+            vim
+            tmux
+            jq
+          ];
+          # Use kmscon <https://www.freedesktop.org/wiki/Software/kmscon/>
+          # to provide a slightly nicer console.
+          # kmscon allows zooming with [Ctrl] + [+] and [Ctrl] + [-]
+          services.kmscon = {
+            enable = true;
+            autologinUser = "root";
+          };
+        };
+      debugging.interactive.nodes = lib.mapAttrs (_: _: tools) test.nodes;
+    in
+    if lib.isDerivation test then test else pkgs.nixosTest debugging // test;
+
   tests =
     let
-      nixosTest =
-        test:
-        let
-          # Amenities for interactive tests
-          tools =
-            { pkgs, ... }:
-            {
-              environment.systemPackages = with pkgs; [
-                vim
-                tmux
-                jq
-              ];
-              # Use kmscon <https://www.freedesktop.org/wiki/Software/kmscon/>
-              # to provide a slightly nicer console.
-              # kmscon allows zooming with [Ctrl] + [+] and [Ctrl] + [-]
-              services.kmscon = {
-                enable = true;
-                autologinUser = "root";
-              };
-            };
-          debugging.interactive.nodes = lib.mapAttrs (_: _: tools) test.nodes;
-          args = debugging // test;
-        in
-        if lib.isDerivation test then test else pkgs.nixosTest args;
+      # nixosTest =
+      #   test:
+      #   let
+      #     # Amenities for interactive tests
+      #     tools =
+      #       { pkgs, ... }:
+      #       {
+      #         environment.systemPackages = with pkgs; [
+      #           vim
+      #           tmux
+      #           jq
+      #         ];
+      #         # Use kmscon <https://www.freedesktop.org/wiki/Software/kmscon/>
+      #         # to provide a slightly nicer console.
+      #         # kmscon allows zooming with [Ctrl] + [+] and [Ctrl] + [-]
+      #         services.kmscon = {
+      #           enable = true;
+      #           autologinUser = "root";
+      #         };
+      #       };
+      #     debugging.interactive.nodes = lib.mapAttrs (_: _: tools) test.nodes;
+      #   in
+      #   if lib.isDerivation test then test else pkgs.nixosTest debugging // test;
 
-      makeTest = lib.mapAttrs (
+      getTest = lib.mapAttrs (
         _: test:
         if lib.isString test.module then
           nixosTest (
@@ -296,7 +331,7 @@ rec {
           nixosTest test.module
       );
     in
-    lib.concatMapAttrs (name: value: makeTest value.nixos.tests) evaluated-modules.config.projects;
+    lib.concatMapAttrs (name: value: getTest value.nixos.tests) evaluated-modules.config.projects;
 
   shell = pkgs.mkShellNoCC {
     packages = [
