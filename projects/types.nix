@@ -317,9 +317,7 @@ let
                             type = attrsOf types'.test;
                             default =
                               getTests config.modules.programs "programs"
-                              // getTests config.modules.services "services"
-                              // getTests config.demo.vm or { } "demo/vm"
-                              // getTests config.demo.shell or { } "demo/shell";
+                              // getTests config.modules.services "services";
                           };
                         };
                       }
