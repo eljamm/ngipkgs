@@ -134,16 +134,12 @@ let
     };
 
     examples = rec {
-      one = example: ''
-        <details><summary>${example.description}</summary>
-
-        ${eval {
-          imports = [ ./content-types/code-snippet.nix ];
-          filepath = example.module;
-        }}
-
-        </details>
-      '';
+      one =
+        example:
+        toString (eval {
+          imports = [ ./content-types/example.nix ];
+          inherit example;
+        });
       many = examples: ''
         ${heading 2 "examples" "Examples"}
         ${concatLines (map one examples)}
