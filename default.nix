@@ -42,41 +42,54 @@ let
         (lib.filterAttrs (_: v: v != null))
       ];
 
-    evalTest = lib.mapAttrs (
-      _: test:
-      if lib.isString test.module then
-        nixosTest (
-          import test.module {
-            inherit pkgs lib;
-            inherit (pkgs) system;
-          }
-        )
-      else
-        nixosTest test.module
-    );
-    nixosTest =
-      test:
+    getTests =
       let
-        # Amenities for interactive tests
-        tools =
-          { pkgs, ... }:
-          {
-            environment.systemPackages = with pkgs; [
-              vim
-              tmux
-              jq
-            ];
-            # Use kmscon <https://www.freedesktop.org/wiki/Software/kmscon/>
-            # to provide a slightly nicer console.
-            # kmscon allows zooming with [Ctrl] + [+] and [Ctrl] + [-]
-            services.kmscon = {
-              enable = true;
-              autologinUser = "root";
-            };
-          };
-        debugging.interactive.nodes = lib.mapAttrs (_: _: tools) test.nodes;
+        nixosTest =
+          test:
+          let
+            # Amenities for interactive tests
+            tools =
+              { pkgs, ... }:
+              {
+                environment.systemPackages = with pkgs; [
+                  vim
+                  tmux
+                  jq
+                ];
+                # Use kmscon <https://www.freedesktop.org/wiki/Software/kmscon/>
+                # to provide a slightly nicer console.
+                # kmscon allows zooming with [Ctrl] + [+] and [Ctrl] + [-]
+                services.kmscon = {
+                  enable = true;
+                  autologinUser = "root";
+                };
+              };
+            debugging.interactive.nodes = lib.mapAttrs (_: _: tools) test.nodes;
+            args = debugging // test;
+          in
+          if lib.isDerivation test then test else pkgs.nixosTest args;
       in
-      if lib.isDerivation test then test else pkgs.nixosTest debugging // test;
+      attrs: input: prefix:
+      lib.pipe attrs [
+        (lib.concatMapAttrs (_: value: value.${input} or { }))
+        (lib.concatMapAttrs (_: value: value.tests or { }))
+        (lib.filterAttrs (_: test: (!test ? problem.broken) && (test ? module && test.module != null)))
+        (lib.mapAttrs' (
+          name: value: {
+            name = "${prefix}/${name}";
+            value =
+              if lib.isString value.module then
+                nixosTest (
+                  import value.module {
+                    inherit pkgs lib;
+                    inherit (pkgs) system;
+                  }
+                )
+              else
+                nixosTest value.module;
+          }
+        ))
+      ];
 
     # Recursively evaluate attributes for an attribute set.
     # Coupled with an evaluated nixos configuration, this presents an efficient
@@ -242,6 +255,8 @@ rec {
 
   projects = make-projects raw-projects.config.projects;
 
+  test = lib.getTests raw-projects.config.projects.holo.nixos.modules.services.holo-daemon.examples "services";
+
   # TODO: find a better place for this
   make-projects =
     projects:
@@ -270,80 +285,13 @@ rec {
             // (filter-map (project.nixos.modules.services or { }) "examples")
           );
           nixos.tests =
-            let
-              # TODO: refactor
-              filtered-tests = filterAttrs (
-                _: test: (!test ? problem.broken) && (test ? module && test.module != null)
-              ) tests;
-            in
-            mapAttrs (
-              _: test:
-              if lib.isString test.module then
-                nixosTest (
-                  import test.module {
-                    inherit pkgs lib;
-                    inherit (pkgs) system;
-                  }
-                )
-              else
-                nixosTest test.module
-            ) filtered-tests;
+            lib.getTests project.nixos.modules.programs or { } "examples" "programs"
+            // lib.getTests project.nixos.modules.services or { } "examples" "services"
+            // lib.getTests project.nixos.demo or { } "shell" "demo/shell"
+            // lib.getTests project.nixos.demo or { } "vm" "demo/vm";
         };
     in
     mapAttrs (name: project: hydrate project) projects;
-
-  getTests =
-    attrs: prefix:
-    lib.pipe attrs [
-      (lib.concatMapAttrs (name: value: value.tests or { }))
-      (lib.mapAttrs' (
-        name: value: {
-          name = "${prefix}/${name}";
-          inherit value;
-        }
-      ))
-    ];
-
-  tests =
-    let
-      # nixosTest =
-      #   test:
-      #   let
-      #     # Amenities for interactive tests
-      #     tools =
-      #       { pkgs, ... }:
-      #       {
-      #         environment.systemPackages = with pkgs; [
-      #           vim
-      #           tmux
-      #           jq
-      #         ];
-      #         # Use kmscon <https://www.freedesktop.org/wiki/Software/kmscon/>
-      #         # to provide a slightly nicer console.
-      #         # kmscon allows zooming with [Ctrl] + [+] and [Ctrl] + [-]
-      #         services.kmscon = {
-      #           enable = true;
-      #           autologinUser = "root";
-      #         };
-      #       };
-      #     debugging.interactive.nodes = lib.mapAttrs (_: _: tools) test.nodes;
-      #   in
-      #   if lib.isDerivation test then test else pkgs.nixosTest debugging // test;
-
-      getTest = lib.mapAttrs (
-        _: test:
-        if lib.isString test.module then
-          lib.nixosTest (
-            import test.module {
-              inherit pkgs lib;
-              inherit (pkgs) system;
-            }
-          )
-        else
-          lib.nixosTest test.module
-      );
-    in
-    lib.concatMapAttrs (name: value: getTest value.nixos.tests) evaluated-modules.config.projects;
 
   shell = pkgs.mkShellNoCC {
     packages = [
