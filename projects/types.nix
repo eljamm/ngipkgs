@@ -255,33 +255,27 @@ rec {
     );
 
   /**
-    ### Demo {#sec-contributing-demo}
-
     The `module` option is meant for setting up the application, while `demo-config` is for demo-specific things, like [demo-shell](./overview/demo/shell.nix) configuration.
 
-    :::{.example #ex-demo}
+    :::{.example}
 
-    # Demo example
+    Replace `TYPE` with either `vm` or `shell`.
+    This indicates the preferred environment for running the application: NixOS VM or a terminal shell.
 
-     Replace `TYPE` with either `vm` or `shell`.
+    ```nix
+    nixos.demo.TYPE = {
+      module = ./path/to/application/configuration.nix;
+      module-demo = ./path/to/demo/only/configuration.nix;
+      description = ''
+        Instructions for using the application
 
-     This indicates the preferred environment for running the application:
-     NixOS VM or a terminal shell.
-
-     ```nix
-     nixos.demo.TYPE = {
-       module = ./path/to/application/configuration.nix;
-       module-demo = ./path/to/demo/only/configuration.nix;
-       description = ''
-         Instructions for using the application
-
-         1.
-         2.
-         3.
-       '';
-       tests = { };
-     };
-     ```
+        1.
+        2.
+        3.
+      '';
+      tests = { };
+    };
+    ```
     :::
   */
   demo = types.submodule {
@@ -331,106 +325,103 @@ rec {
   };
 
   /**
-    # Project
+    NGI-funded software application.
   */
-  projects = mkOption {
-    type =
-      with types;
-      attrsOf (
-        submodule (
-          { name, ... }:
-          {
-            options = {
-              name = mkOption {
-                type = str;
-                default = name;
-              };
-              metadata = mkOption {
-                type = with types; nullOr metadata;
-                default = null;
-              };
-              binary = mkOption {
-                type = with types; attrsOf binary;
-                default = { };
-              };
-              nixos = mkOption {
-                type =
-                  with types;
-                  submodule {
-                    options = {
-                      modules = {
-                        /**
-                          ## Programs
+  project =
+    { name, ... }:
+    {
+      options = {
+        name = mkOption {
+          type = types.str;
+          default = name;
+        };
+        metadata = mkOption {
+          type = types.nullOr metadata;
+          default = null;
+        };
+        binary = mkOption {
+          type = types.attrsOf binary;
+          default = { };
+        };
+        nixos = mkOption {
+          type =
+            with types;
+            submodule {
+              options = {
+                modules = {
+                  /**
+                    ## Programs
 
-                          A program is a software applications that can be executed in the user's shell, which may have a Command-Line Interface (CLI), Terminal User Interface (TUI), or Graphical User Interface (GUI).
-                        */
-                        programs = mkOption {
-                          type = attrsOf program;
-                          description = "Software that can be run in the shell";
-                          example = lib.literalExpression ''
-                            nixos.modules.programs.foobar = {
-                              module = ./programs/foobar/module.nix;
-                              examples.basic = {
-                                module = ./programs/foobar/examples/basic.nix;
-                                description = "Basic configuration example for foobar";
-                                tests.basic.module = import ./programs/foobar/tests/basic.nix args;
-                              };
-                            };
-                          '';
-                          default = { };
-                        };
-                        /**
-                          ## Services
-
-                          TODO
-                        */
-                        services = mkOption {
-                          type = attrsOf service;
-                          description = "Software that runs as a background process";
-                          default = { };
+                    A program is a software applications that can be executed in the user's shell, which may have a Command-Line Interface (CLI), Terminal User Interface (TUI), or Graphical User Interface (GUI).
+                  */
+                  programs = mkOption {
+                    type = attrsOf program;
+                    description = "Software that can be run in the shell";
+                    example = lib.literalExpression ''
+                      nixos.modules.programs.foobar = {
+                        module = ./programs/foobar/module.nix;
+                        examples.basic = {
+                          module = ./programs/foobar/examples/basic.nix;
+                          description = "Basic configuration example for foobar";
+                          tests.basic.module = import ./programs/foobar/tests/basic.nix args;
                         };
                       };
-                      /**
-                        ## Demos
-
-                        A [demo](#sec-contributing-demo) is a practical demonstration of an application.
-                        It provides an easy way for users to test its functionality and assess its suitability for their use cases.
-                      */
-                      demo = mkOption {
-                        type = nullOr (attrTag {
-                          vm = mkOption { type = demo; };
-                          shell = mkOption { type = demo; };
-                        });
-                        default = null;
-                      };
-                      /**
-                        ## Examples
-
-                        An application component may have examples using it in isolation,
-                        but examples may involve multiple application components.
-                        Having examples at both layers allows us to trace coverage more easily.
-                        If this tends to be too cumbersome for package authors and we find a way obtain coverage information programmatically,
-                        we can still reduce granularity and move all examples to the application level.
-                      */
-                      examples = mkOption {
-                        type = attrsOf example;
-                        description = "A configuration of an existing application module that illustrates how to use it";
-                        default = { };
-                      };
-                      # TODO: Tests should really only be per example, in order to clarify that we care about tested examples more than merely tests.
-                      #       But reality is such that most NixOS tests aren't based on self-contained, minimal examples, or if they are they can't be extracted easily.
-                      #       Without this field, many applications will appear entirely untested although there's actually *some* assurance that *something* works.
-                      #       Eventually we want to move to documentable tests exclusively, and then remove this field, but this may take a very long time.
-                      tests = mkOption {
-                        type = attrsOf test;
-                        default = { };
-                      };
-                    };
+                    '';
+                    default = { };
                   };
+                  /**
+                    ## Services
+
+                    TODO
+                  */
+                  services = mkOption {
+                    type = attrsOf service;
+                    description = "Software that runs as a background process";
+                    default = { };
+                  };
+                };
+                /**
+                  ## Demos
+
+                  A [demo](#sec-contributing-demo) is a practical demonstration of an application.
+                  It provides an easy way for users to test its functionality and assess its suitability for their use cases.
+                */
+                demo = mkOption {
+                  type = nullOr (attrTag {
+                    vm = mkOption { type = demo; };
+                    shell = mkOption { type = demo; };
+                  });
+                  default = null;
+                };
+                /**
+                  ## Examples
+
+                  An application component may have examples using it in isolation,
+                  but examples may involve multiple application components.
+                  Having examples at both layers allows us to trace coverage more easily.
+                  If this tends to be too cumbersome for package authors and we find a way obtain coverage information programmatically,
+                  we can still reduce granularity and move all examples to the application level.
+                */
+                examples = mkOption {
+                  type = attrsOf example;
+                  description = "A configuration of an existing application module that illustrates how to use it";
+                  default = { };
+                };
+                # TODO: Tests should really only be per example, in order to clarify that we care about tested examples more than merely tests.
+                #       But reality is such that most NixOS tests aren't based on self-contained, minimal examples, or if they are they can't be extracted easily.
+                #       Without this field, many applications will appear entirely untested although there's actually *some* assurance that *something* works.
+                #       Eventually we want to move to documentable tests exclusively, and then remove this field, but this may take a very long time.
+                tests = mkOption {
+                  type = attrsOf test;
+                  default = { };
+                };
               };
             };
-          }
-        )
-      );
+        };
+      };
+    };
+
+  projects = mkOption {
+    type = with types; attrsOf (submodule project);
   };
 }
