@@ -21,6 +21,7 @@ in
 }:
 let
   dream2nix = (import sources.dream2nix).overrideInputs { inherit (sources) nixpkgs; };
+  nixdoc-to-github = pkgs.callPackage sources.nixdoc-to-github { };
 
   extension = rec {
     # Take an attrset of arbitrary nesting and make it flat
@@ -91,7 +92,8 @@ let
                   nixpkgs.hostPlatform = builtins.currentSystem or "x86_64-linux";
                 };
               }
-            ] ++ import "${sources.nixpkgs}/nixos/modules/module-list.nix";
+            ]
+            ++ import "${sources.nixpkgs}/nixos/modules/module-list.nix";
           })
           options
           ;
@@ -125,6 +127,13 @@ rec {
     sources
     extension
     ;
+
+  update-readme = nixdoc-to-github.lib.nixdoc-to-github.run {
+    description = "Types";
+    category = "types";
+    file = "${toString ./projects/types.nix}";
+    output = "${toString ./README-TYPES.md}";
+  };
 
   overview = import ./overview {
     inherit lib;
@@ -192,7 +201,8 @@ rec {
       }
       ./overview/demo/shell.nix
       raw-projects # for checks
-    ] ++ extendedNixosModules;
+    ]
+    ++ extendedNixosModules;
     specialArgs = {
       modulesPath = "${sources.nixpkgs}/nixos/modules";
     };
