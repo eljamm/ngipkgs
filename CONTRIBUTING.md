@@ -487,9 +487,15 @@ A demo is a practical demonstration of an application, providing an easy way for
 1. To start, implement a NixOS module that adheres to the [demo type](./projects/types.nix):
 
    ```nix
+   /**
+     Replace `TYPE` with either `vm` or `shell`.
+
+     This indicates the preferred environment for running the application:
+     NixOS VM or a terminal shell.
+   */
    nixos.demo.TYPE = {
      module = ./path/to/application/configuration.nix;
-     demo-stuff = ./path/to/demo/only/configuration.nix;
+     module-demo = ./path/to/demo/only/configuration.nix;
      description = ''
        Instructions for using the application
 
@@ -501,8 +507,7 @@ A demo is a practical demonstration of an application, providing an easy way for
    };
    ```
 
-   - `TYPE` can be either `vm` or `shell`, indicating the preferred environment for running the application: a NixOS VM or a terminal shell.
-   - `module` is meant for setting up the application, while `demo-stuff` is for demo-specific things, like [demo-shell](./overview/demo/shell.nix) configuration.
+   - `module` is meant for setting up the application, while `module-demo` is for demo-specific things, like [demo-shell](./overview/demo/shell.nix) configuration.
 
 1. Test the demo locally, with:
 

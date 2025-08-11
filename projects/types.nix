@@ -8,6 +8,9 @@ let
     mkOption
     ;
 
+  /**
+    # Types
+  */
   types' = {
     metadata =
       with types;
@@ -253,6 +256,36 @@ let
         }
       );
 
+    /**
+      ### Demo {#sec-contributing-demo}
+
+      The `module` option is meant for setting up the application, while `demo-config` is for demo-specific things, like [demo-shell](./overview/demo/shell.nix) configuration.
+
+      :::{.example #ex-demo}
+
+      # Demo example
+
+       Replace `TYPE` with either `vm` or `shell`.
+
+       This indicates the preferred environment for running the application:
+       NixOS VM or a terminal shell.
+
+       ```nix
+       nixos.demo.TYPE = {
+         module = ./path/to/application/configuration.nix;
+         module-demo = ./path/to/demo/only/configuration.nix;
+         description = ''
+           Instructions for using the application
+
+           1.
+           2.
+           3.
+         '';
+         tests = { };
+       };
+       ```
+      :::
+    */
     demo = types.submodule {
       options = {
         inherit (types'.example.getSubOptions { })
@@ -299,6 +332,9 @@ let
       };
     };
 
+    /**
+      # Project
+    */
     projects = mkOption {
       type =
         with types;
@@ -325,6 +361,11 @@ let
                     submodule {
                       options = {
                         modules = {
+                          /**
+                            ## Programs
+
+                            A program is a software applications that can be executed in the user's shell, which may have a Command-Line Interface (CLI), Terminal User Interface (TUI), or Graphical User Interface (GUI).
+                          */
                           programs = mkOption {
                             type = attrsOf types'.program;
                             description = "Software that can be run in the shell";
@@ -340,12 +381,23 @@ let
                             '';
                             default = { };
                           };
+                          /**
+                            ## Services
+
+                            TODO
+                          */
                           services = mkOption {
                             type = attrsOf types'.service;
                             description = "Software that runs as a background process";
                             default = { };
                           };
                         };
+                        /**
+                          ## Demos
+
+                          A [demo](#sec-contributing-demo) is a practical demonstration of an application.
+                          It provides an easy way for users to test its functionality and assess its suitability for their use cases.
+                        */
                         demo = mkOption {
                           type = nullOr (attrTag {
                             vm = mkOption { type = types'.demo; };
@@ -353,11 +405,15 @@ let
                           });
                           default = null;
                         };
-                        # An application component may have examples using it in isolation,
-                        # but examples may involve multiple application components.
-                        # Having examples at both layers allows us to trace coverage more easily.
-                        # If this tends to be too cumbersome for package authors and we find a way obtain coverage information programmatically,
-                        # we can still reduce granularity and move all examples to the application level.
+                        /**
+                          ## Examples
+
+                          An application component may have examples using it in isolation,
+                          but examples may involve multiple application components.
+                          Having examples at both layers allows us to trace coverage more easily.
+                          If this tends to be too cumbersome for package authors and we find a way obtain coverage information programmatically,
+                          we can still reduce granularity and move all examples to the application level.
+                        */
                         examples = mkOption {
                           type = attrsOf types'.example;
                           description = "A configuration of an existing application module that illustrates how to use it";

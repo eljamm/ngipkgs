@@ -13,18 +13,19 @@
   metadata = {
     summary = "Short summary that describes the project";
     subgrants = [
-      # 1. Navigate to the [NLnet project list](https://nlnet.nl/project/)
-      # 2. Enter the project name in the search bar
-      # 3. Review all the entries returned by the search
-      # 4. Collect the links to entries that relate to the project
-      #
-      # For example, for a project called `Foobar`, this can be something like:
-      #
-      #   - https://nlnet.nl/project/Foobar
-      #   - https://nlnet.nl/project/Foobar-mobile
-      #
-      # The subgrants will then be:
-      #
+      /**
+        1. Navigate to the [NLnet project list](https://nlnet.nl/project/)
+        2. Enter the project name in the search bar
+        3. Review all the entries returned by the search
+        4. Collect the links to entries that relate to the project
+
+        For example, for a project called `Foobar`, this can be something like:
+
+          - https://nlnet.nl/project/Foobar
+          - https://nlnet.nl/project/Foobar-mobile
+
+        The subgrants will then be:
+      */
       "Foobar"
       "Foobar-mobile"
     ];
@@ -74,23 +75,24 @@
   nixos.modules.services = {
     _serviceName_ = {
       name = "service name";
-      # Check if the service exists in https://search.nixos.org/options?
-      # If it does, click on one of its options and copy the text in the `Name` field
-      # into the `module` attribute (use the root option name):
-      #
-      # ```nix
-      # module = lib.moduleLocFromOptionString "<NAME>";
-      # ```
-      #
-      # Example (Cryptpad):
-      #
-      # ```nix
-      # module = lib.moduleLocFromOptionString "services.cryptpad";
-      # ```
-      #
-      # Note: we can either use the module in nixpkgs or make one ourselves
-      # inside a `module.nix` file, but we can't do both at the same time.
-      #
+      /**
+          Check if the service exists in https://search.nixos.org/options?
+          If it does, click on one of its options and copy the text in the `Name` field
+          into the `module` attribute (use the root option name):
+
+          ```nix
+          module = lib.moduleLocFromOptionString "<NAME>";
+          ```
+
+          Example (Cryptpad):
+
+          ```nix
+          module = lib.moduleLocFromOptionString "services.cryptpad";
+          ```
+
+          Note: we can either use the module in nixpkgs or make one ourselves
+          inside a `module.nix` file, but we can't do both at the same time.
+      */
       module = ./services/_serviceName_/module.nix;
       examples."Enable _serviceName_" = {
         module = ./services/_serviceName_/examples/basic.nix;
@@ -116,5 +118,22 @@
         };
       };
     };
+  };
+
+  /**
+    Replace `TYPE` with either `vm` or `shell`.
+    This indicates the preferred environment for running the application: a NixOS VM or a terminal shell.
+  */
+  nixos.demo.TYPE = {
+    module = ./path/to/application/configuration.nix;
+    module-demo = ./path/to/demo/only/configuration.nix;
+    description = ''
+      Instructions for using the application
+
+      1.
+      2.
+      3.
+    '';
+    tests = { };
   };
 }
