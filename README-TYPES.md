@@ -3,8 +3,6 @@
 
 ## `lib.types.demo`
 
-The `module` option is meant for setting up the application, while `demo-config` is for demo-specific things, like [demo-shell](./overview/demo/shell.nix) configuration.
-
 > **Example**
 >
 > Replace `TYPE` with either `vm` or `shell`.
@@ -24,6 +22,8 @@ The `module` option is meant for setting up the application, while `demo-config`
 >   tests = { };
 > };
 > ```
+>
+> The `module` option is meant for setting up the application, while `demo-config` is for demo-specific things, like [demo-shell](./overview/demo/shell.nix) configuration.
 
 ## `lib.types.project`
 

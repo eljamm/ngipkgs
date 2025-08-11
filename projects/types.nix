@@ -255,8 +255,6 @@ rec {
     );
 
   /**
-    The `module` option is meant for setting up the application, while `demo-config` is for demo-specific things, like [demo-shell](./overview/demo/shell.nix) configuration.
-
     :::{.example}
 
     Replace `TYPE` with either `vm` or `shell`.
@@ -276,6 +274,8 @@ rec {
       tests = { };
     };
     ```
+
+    The `module` option is meant for setting up the application, while `demo-config` is for demo-specific things, like [demo-shell](./overview/demo/shell.nix) configuration.
     :::
   */
   demo = types.submodule {
@@ -310,10 +310,17 @@ rec {
 
   test = types.submodule {
     options = {
+      /**
+        - null:
+          needed, but not available
+
+        - deferredModule:
+          something that nixosTest will run
+
+        - package:
+          derivation from NixOS
+      */
       module = mkOption {
-        # - null: needed, but not available
-        # - deferredModule: something that nixosTest will run
-        # - package: derivation from NixOS
         type = with types; nullOr (either deferredModule package);
         default = null;
       };
@@ -350,40 +357,41 @@ rec {
               options = {
                 modules = {
                   /**
-                    ## Programs
+                    Software that can be run in the shell.
 
-                    A program is a software applications that can be executed in the user's shell, which may have a Command-Line Interface (CLI), Terminal User Interface (TUI), or Graphical User Interface (GUI).
+                    :::{.example}
+
+                    ```nix
+                    nixos.modules.programs.foobar = {
+                      module = ./programs/foobar/module.nix;
+                      examples.basic = {
+                        module = ./programs/foobar/examples/basic.nix;
+                        description = "Basic configuration example for foobar";
+                        tests.basic.module = import ./programs/foobar/tests/basic.nix args;
+                      };
+                    };
+                    ```
+
+                    :::
                   */
                   programs = mkOption {
                     type = attrsOf program;
-                    description = "Software that can be run in the shell";
-                    example = lib.literalExpression ''
-                      nixos.modules.programs.foobar = {
-                        module = ./programs/foobar/module.nix;
-                        examples.basic = {
-                          module = ./programs/foobar/examples/basic.nix;
-                          description = "Basic configuration example for foobar";
-                          tests.basic.module = import ./programs/foobar/tests/basic.nix args;
-                        };
-                      };
-                    '';
                     default = { };
                   };
+
                   /**
-                    ## Services
+                    Software that runs as a background process.
 
                     TODO
                   */
                   services = mkOption {
                     type = attrsOf service;
-                    description = "Software that runs as a background process";
                     default = { };
                   };
                 };
                 /**
-                  ## Demos
+                  Practical demonstration of an application.
 
-                  A [demo](#sec-contributing-demo) is a practical demonstration of an application.
                   It provides an easy way for users to test its functionality and assess its suitability for their use cases.
                 */
                 demo = mkOption {
@@ -394,7 +402,7 @@ rec {
                   default = null;
                 };
                 /**
-                  ## Examples
+                  Configuration of an existing application module that illustrates how to use it.
 
                   An application component may have examples using it in isolation,
                   but examples may involve multiple application components.
@@ -404,7 +412,6 @@ rec {
                 */
                 examples = mkOption {
                   type = attrsOf example;
-                  description = "A configuration of an existing application module that illustrates how to use it";
                   default = { };
                 };
                 # TODO: Tests should really only be per example, in order to clarify that we care about tested examples more than merely tests.
