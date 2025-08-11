@@ -93,6 +93,53 @@ rec {
       }
     );
 
+  /**
+      The following information applies to both services and programs.
+
+      :::{.example}
+      ```nix
+      nixos.modules.foobar.examples.basic = {
+        module = ./programs/foobar/examples/basic.nix;
+        description = "Basic configuration example for foobar";
+        tests.foobar-basic.module = import ./programs/foobar/tests/basic.nix args;
+      };
+      ```
+      :::
+
+      > [!NOTE]
+      > Each program must include at least one example, so users get an idea of what to do with it.
+
+      For modules that reside in NixOS, use:
+
+      ```nix
+      {
+        module = lib.moduleLocFromOptionString "programs.PROGRAM_NAME";
+      }
+      ```
+
+      If you want to extend such modules, you can import them in a new module:
+
+      ```nix
+      {
+        module = ./module.nix;
+      }
+      ```
+
+      Where `module.nix` contains:
+
+      ```nix
+      { lib, ... }:
+      {
+        imports = [
+          (lib.moduleLocFromOptionString "programs.PROGRAM_NAME")
+        ];
+
+        options.programs.PROGRAM_NAME = {
+          extra-option = lib.mkEnableOption "extra option";
+        };
+      }
+      ```
+  */
   # TODO: port modular services to programs
   program =
     with types;
@@ -108,54 +155,12 @@ rec {
             type = nullOr deferredModule;
             description = ''
               Contains the path to the NixOS module for the program.
-
-              For modules that reside in NixOS, use:
-
-              ```nix
-              {
-                module = lib.moduleLocFromOptionString "programs.PROGRAM_NAME";
-              }
-              ```
-
-              If you want to extend such modules, you can import them in a new module:
-
-              ```nix
-              {
-                module = ./module.nix;
-              }
-              ```
-
-              Where `module.nix` contains:
-
-              ```nix
-              { lib, ... }:
-              {
-                imports = [
-                  (lib.moduleLocFromOptionString "programs.PROGRAM_NAME")
-                ];
-
-                options.programs.PROGRAM_NAME = {
-                  extra-option = lib.mkEnableOption "extra option";
-                };
-              }
-              ```
             '';
           };
           examples = mkOption {
             type = attrsOf example;
             description = ''
               Configurations that illustrate how to set up the program.
-
-              ::: {.note}
-              Each program must include at least one example, so users get an idea of what to do with it.
-              :::
-            '';
-            example = lib.literalExpression ''
-              nixos.modules.foobar.examples.basic = {
-                module = ./programs/foobar/examples/basic.nix;
-                description = "Basic configuration example for foobar";
-                tests.foobar-basic.module = import ./programs/foobar/tests/basic.nix args;
-              };
             '';
             default = { };
           };
@@ -308,18 +313,20 @@ rec {
     };
   };
 
+  /**
+    The test module can be one of:
+
+      - null:
+        Test is needed, but not available.
+
+      - NixOS module:
+        Will be evaluated to a NixOS test derivation.
+
+      - Package:
+        Derivation (e.g. nixosTests.foobar), which can be used directly.
+  */
   test = types.submodule {
     options = {
-      /**
-        - null:
-          needed, but not available
-
-        - deferredModule:
-          something that nixosTest will run
-
-        - package:
-          derivation from NixOS
-      */
       module = mkOption {
         type = with types; nullOr (either deferredModule package);
         default = null;
