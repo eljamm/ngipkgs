@@ -92,6 +92,28 @@ let
         }
       );
 
+    /**
+        Software that runs in the shell.
+
+        :::{.example}
+        ```nix
+        nixos.modules.programs.PROGRAM_NAME = {
+          module = ./path/to/module.nix;
+          examples."Enable foobar" = {
+            module = ./path/to/examples/basic.nix;
+            description = "Basic configuration example for foobar";
+            tests.basic.module = import ./path/to/tests/basic.nix args;
+          };
+        };
+        ```
+        :::
+
+        ::: {.note}
+        Each program must include at least one example, so users get an idea of what to do with it.
+        :::
+
+        After implementing the program, run the [checks](#checks) to make sure that everything is correct.
+    */
     # TODO: port modular services to programs
     program =
       with types;
@@ -144,13 +166,9 @@ let
               type = attrsOf types'.example;
               description = ''
                 Configurations that illustrate how to set up the program.
-
-                ::: {.note}
-                Each program must include at least one example, so users get an idea of what to do with it.
-                :::
               '';
               example = lib.literalExpression ''
-                nixos.modules.foobar.examples.basic = {
+                nixos.modules.programs.examples."Enable foobar" = {
                   module = ./programs/foobar/examples/basic.nix;
                   description = "Basic configuration example for foobar";
                   tests.foobar-basic.module = import ./programs/foobar/tests/basic.nix args;
@@ -183,6 +201,28 @@ let
         }
       );
 
+    /**
+        Software that runs as a background process.
+
+        :::{.example}
+        ```nix
+        nixos.modules.services.SERVICE_NAME = {
+          module = ./path/to/module.nix;
+          examples."Enable foobar" = {
+            module = ./path/to/examples/basic.nix;
+            description = "Basic configuration example for foobar";
+            tests.basic.module = import ./path/to/tests/basic.nix args;
+          };
+        };
+        ```
+        :::
+
+        ::: {.note}
+        Each service must include at least one example, so users get an idea of what to do with it.
+        :::
+
+        After implementing the service, run the [checks](#checks) to make sure that everything is correct.
+    */
     # TODO: make use of modular services https://github.com/NixOS/nixpkgs/pull/372170
     service =
       with types;
@@ -196,6 +236,40 @@ let
             };
             module = mkOption {
               type = nullOr deferredModule;
+              description = ''
+                Contains the path to the NixOS module for the service.
+
+                For modules that reside in NixOS, use:
+
+                ```nix
+                {
+                  module = lib.moduleLocFromOptionString "services.SERVICE_NAME";
+                }
+                ```
+
+                If you want to extend such modules, you can import them in a new module:
+
+                ```nix
+                {
+                  module = ./module.nix;
+                }
+                ```
+
+                Where `module.nix` contains:
+
+                ```nix
+                { lib, ... }:
+                {
+                  imports = [
+                    (lib.moduleLocFromOptionString "services.SERVICE_NAME")
+                  ];
+
+                  options.services.SERVICE_NAME = {
+                    extra-option = lib.mkEnableOption "extra option";
+                  };
+                }
+                ```
+              '';
             };
             examples = mkOption {
               type = attrsOf types'.example;
@@ -255,6 +329,58 @@ let
         }
       );
 
+    /**
+      Practical demonstration of an application.
+
+      It provides an easy way for users to test its functionality and assess its suitability for their use cases.
+
+      :::{.example}
+      ```nix
+      nixos.demo.TYPE = {
+        module = ./path/to/application/configuration.nix;
+        module-demo = ./path/to/demo/only/configuration.nix;
+        description = ''
+          Instructions for using the application
+
+          1.
+          2.
+          3.
+        '';
+        tests = { };
+      };
+      ```
+      :::
+
+      - Replace `TYPE` with either `vm` or `shell`.
+      This indicates the preferred environment for running the application: NixOS VM or terminal shell.
+
+      - Use `module` for the application configuration and `module-demo` for demo-specific things, like [demo-shell](./overview/demo/shell.nix).
+      For the latter, it could be something like:
+
+      ::: {.example}
+      ```nix
+      # ./path/to/demo/only/configuration.nix
+      {
+        lib,
+        config,
+        ...
+      }:
+      let
+        cfg = config.programs.foobar;
+      in
+      {
+        config = lib.mkIf cfg.enable {
+          demo-shell = {
+            programs.foobar = cfg.package;
+            env.TEST_PORT = toString cfg.port;
+          };
+        };
+      }
+      ```
+      :::
+
+      After implementing the demo, run the [checks](#checks) to make sure that everything is correct.
+    */
     demo = types.submodule (
       { name, ... }:
       {
@@ -306,9 +432,6 @@ let
     test = types.submodule {
       options = {
         module = mkOption {
-          # - null: needed, but not available
-          # - deferredModule: something that nixosTest will run
-          # - package: derivation from NixOS
           type = with types; nullOr (either deferredModule package);
           default = null;
         };
@@ -319,6 +442,29 @@ let
       };
     };
 
+    /**
+        NGI-funded software application.
+
+        ### Checks
+
+        After implementing one of a project's components:
+
+        1. Verify that its checks are successful:
+
+          ```shellSession
+          nix-build -A checks.PROJECT_NAME
+          ```
+
+        1. Run the tests, if they exist, and make sure they pass:
+
+          ```shellSession
+          nix-build -A projects.PROJECT_NAME.nixos.tests.TEST_NAME
+          ```
+
+        1. [Run the overview locally](#running-and-testing-the-overview-locally), navigate to the project page and make sure that the program options and examples shows up correctly
+
+        1. [Make a Pull Request on GitHub](#how-to-create-pull-requests-to-ngipkgs)
+    */
     projects = mkOption {
       type =
         with types;
@@ -373,11 +519,15 @@ let
                           });
                           default = null;
                         };
-                        # An application component may have examples using it in isolation,
-                        # but examples may involve multiple application components.
-                        # Having examples at both layers allows us to trace coverage more easily.
-                        # If this tends to be too cumbersome for package authors and we find a way obtain coverage information programmatically,
-                        # we can still reduce granularity and move all examples to the application level.
+                        /**
+                          Configuration of an existing application module that illustrates how to use it.
+
+                          An application component may have examples using it in isolation,
+                          but examples may involve multiple application components.
+                          Having examples at both layers allows us to trace coverage more easily.
+                          If this tends to be too cumbersome for package authors and we find a way obtain coverage information programmatically,
+                          we can still reduce granularity and move all examples to the application level.
+                        */
                         examples = mkOption {
                           type = attrsOf types'.example;
                           description = "A configuration of an existing application module that illustrates how to use it";
