@@ -129,8 +129,8 @@ rec {
     ;
 
   update-readme = nixdoc-to-github.lib.nixdoc-to-github.run {
-    description = "Types";
-    category = "types";
+    description = "";
+    category = "";
     file = "${toString ./projects/types.nix}";
     output = "${toString ./README-TYPES.md}";
   };
@@ -145,6 +145,10 @@ rec {
 
   optionsDoc = pkgs.nixosOptionsDoc {
     inherit (evaluated-modules) options;
+  };
+
+  optionsDoc2 = pkgs.nixosOptionsDoc {
+    options = evee.options;
   };
 
   overlays.default =
@@ -180,6 +184,11 @@ rec {
     in
     nixosModules ++ ngipkgsModules;
 
+  evee = lib.evalModules {
+    modules = [
+      raw-projects # for checks
+    ];
+  };
   evaluated-modules = lib.evalModules {
     class = "nixos";
     modules = [
