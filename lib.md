@@ -1,21 +1,20 @@
-# Types
 
-
-## `lib.types.program`
+## `program` {#program}
 
 Software that runs in the shell.
 
-> **Example**
-> ```nix
-> nixos.modules.programs.foobar = {
->   module = ./programs/foobar/module.nix;
->   examples.basic = {
->     module = ./programs/foobar/examples/basic.nix;
->     description = "Basic configuration example for foobar";
->     tests.basic.module = import ./programs/foobar/tests/basic.nix args;
->   };
-> };
-> ```
+:::{.example}
+```nix
+nixos.modules.programs.foobar = {
+  module = ./programs/foobar/module.nix;
+  examples.basic = {
+    module = ./programs/foobar/examples/basic.nix;
+    description = "Basic configuration example for foobar";
+    tests.basic.module = import ./programs/foobar/tests/basic.nix args;
+  };
+};
+```
+:::
 
 ::: {.note}
 Each program must include at least one example, so users get an idea of what to do with it.
@@ -52,42 +51,43 @@ Where `module.nix` contains:
 }
 ```
 
-## `lib.types.demo`
+## `demo` {#demo}
 
 Practical demonstration of an application.
 
 It provides an easy way for users to test its functionality and assess its suitability for their use cases.
 
-> **Example**
->
-> Replace `TYPE` with either `vm` or `shell`.
-> This indicates the preferred environment for running the application: NixOS VM or a terminal shell.
->
-> ```nix
-> nixos.demo.TYPE = {
->   module = ./path/to/application/configuration.nix;
->   module-demo = ./path/to/demo/only/configuration.nix;
->   description = \'\'
->     Instructions for using the application
->
->     1.
->     2.
->     3.
->   \'\';
->   tests = {
->     # see
->   };
-> };
-> ```
->
-> - Replace `TYPE` with either `vm` or `shell`.
-> This indicates the preferred environment for running the application: NixOS VM or terminal shell.
->
-> - Use `module` for the application configuration and `module-demo` for demo-specific things, like [demo-shell](./overview/demo/shell.nix).
-> For the latter, it could be something like:
->
+:::{.example}
 
-## `lib.types.project`
+Replace `TYPE` with either `vm` or `shell`.
+This indicates the preferred environment for running the application: NixOS VM or a terminal shell.
+
+```nix
+nixos.demo.TYPE = {
+  module = ./path/to/application/configuration.nix;
+  module-demo = ./path/to/demo/only/configuration.nix;
+  description = \'\'
+    Instructions for using the application
+
+    1.
+    2.
+    3.
+  \'\';
+  tests = {
+    # see
+  };
+};
+```
+
+- Replace `TYPE` with either `vm` or `shell`.
+This indicates the preferred environment for running the application: NixOS VM or terminal shell.
+
+- Use `module` for the application configuration and `module-demo` for demo-specific things, like [demo-shell](./overview/demo/shell.nix).
+For the latter, it could be something like:
+
+:::
+
+## `project` {#project}
 
 NGI-funded software application.
 

@@ -148,7 +148,12 @@ rec {
   };
 
   optionsDoc2 = pkgs.nixosOptionsDoc {
-    options = evee.options;
+    options =
+      (lib.evalModules {
+        modules = [
+          raw-projects
+        ];
+      }).options;
   };
 
   overlays.default =
