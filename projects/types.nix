@@ -12,13 +12,16 @@ rec {
   /**
     # Options
 
-    summary:
+    - `summary`
+
       Short description of the project
 
-    subgrants:
+    - `subgrants`
+
       Funding that projects receive from NLnet (see [subgrant](#subgrant))
 
-    links:
+    - `links`
+
       Resources that may help with packaging (see [link](#link))
   */
   metadata =
@@ -44,10 +47,30 @@ rec {
   /**
     Funding that projects receive from NLnet.
 
+    To add subgrants, navigate to the [NLNet project page](https://nlnet.nl/project/index.html) and search for a project.
+    Results are what we call subgrants, and are related to certain funds.
+
+    :::{.example}
+
+    For the Nitrokey project, the subgrants are:
+
+    ```nix
+    subgrants = {
+      Review = [ "Nitrokey" ];
+      Entrust = [ "Nitrokey-3" ];
+      Commons = [
+        "Nitrokey-Storage"
+        "Nitrokey3-FIDO-L2"
+      ];
+    };
+    ```
+
+    :::
+
     `Commons`, `Core` and `Entrust` are current fund themes.
     Everything else should be under `Review`.
 
-    https://nlnet.nl/themes/
+    See [Thematics Funds](https://nlnet.nl/themes/) for more information.
   */
   subgrant =
     with types;
@@ -360,16 +383,20 @@ rec {
 
     # Options
 
-    module:
+    - `module`
+
       File path to a NixOS module that contains the application configuration
 
-    description:
+    - `description`
+
       Description of the example, ideally with further instructions on how to use it
 
-    tests:
+    - `tests`
+
       At least one test for the example (see [test](#test))
 
-    links:
+    - `links`
+
       Links to related resources (see [link](#link))
   */
   example =

@@ -21,10 +21,27 @@
 
 Funding that projects receive from NLnet.
 
+To add subgrants, navigate to the [NLNet project page](https://nlnet.nl/project/index.html) and search for a project.
+Results are what we call subgrants, and are related to certain funds.
+
+> **Example**
+> For the Nitrokey project, the subgrants are:
+>
+> ```nix
+> subgrants = {
+>   Review = [ "Nitrokey" ];
+>   Entrust = [ "Nitrokey-3" ];
+>   Commons = [
+>     "Nitrokey-Storage"
+>     "Nitrokey3-FIDO-L2"
+>   ];
+> };
+> ```
+
 `Commons`, `Core` and `Entrust` are current fund themes.
 Everything else should be under `Review`.
 
-https://nlnet.nl/themes/
+See [Thematics Funds](https://nlnet.nl/themes/) for more information.
 
 ## `lib.types.link`
 
