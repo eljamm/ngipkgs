@@ -25,6 +25,7 @@ To add subgrants, navigate to the [NLNet project page](https://nlnet.nl/project/
 Results are what we call subgrants, and are related to certain funds.
 
 > **Example**
+>
 > For the Nitrokey project, the subgrants are:
 >
 > ```nix
@@ -37,6 +38,7 @@ Results are what we call subgrants, and are related to certain funds.
 >   ];
 > };
 > ```
+>
 
 `Commons`, `Core` and `Entrust` are current fund themes.
 Everything else should be under `Review`.
@@ -89,9 +91,8 @@ Software that runs in the shell.
 > };
 > ```
 
-:::{.note}
-Each program must include at least one example, so users get an idea of what to do with it.
-:::
+> **Note**
+> Each program must include at least one example, so users get an idea of what to do with it.
 
 After implementing the program, run the [checks](#checks) to make sure that everything is correct.
 
@@ -111,9 +112,8 @@ Software that runs as a background process.
 > };
 > ```
 
-:::{.note}
-Each service must include at least one example, so users get an idea of what to do with it.
-:::
+> **Note**
+> Each service must include at least one example, so users get an idea of what to do with it.
 
 After implementing the service, run the [checks](#checks) to make sure that everything is correct.
 
