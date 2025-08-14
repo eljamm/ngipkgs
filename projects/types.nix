@@ -9,6 +9,18 @@ let
     ;
 
   types' = {
+    /**
+      # Options
+
+      summary:
+        Short description of the project
+
+      subgrants:
+        Funding that projects receive from NLnet (see [subgrant](#subgrant))
+
+      links:
+        Resources that may help with packaging (see [link](#link))
+    */
     metadata =
       with types;
       submodule {
@@ -29,6 +41,14 @@ let
         };
       };
 
+    /**
+      Funding that projects receive from NLnet.
+
+      `Commons`, `Core` and `Entrust` are current fund themes.
+      Everything else should be under `Review`.
+
+      https://nlnet.nl/themes/
+    */
     subgrant =
       with types;
       submodule {
@@ -50,6 +70,24 @@ let
             );
       };
 
+    /**
+      Resources that may help with packaging.
+
+      :::{.example}
+      ```nix
+      metadata.links = {
+        source = {
+          text = "Project repository";
+          url = "https://github.com/ngi-nix/ngipkgs/";
+        };
+        docs = {
+          text = "Documentation";
+          url = "https://github.com/ngi-nix/ngipkgs/blob/main/CONTRIBUTING.md";
+        };
+      };
+      ```
+      :::
+    */
     link =
       with types;
       submodule (
@@ -74,6 +112,18 @@ let
         }
       );
 
+    /**
+      Binary files (raw, firmware, schematics, ...)
+
+      :::{.example}
+      ```nix
+      binary = {
+        "nitrokey-fido2-firmware".data = pkgs.nitrokey-fido2-firmware;
+        "nitrokey-pro-firmware".data = pkgs.nitrokey-pro-firmware;
+      };
+      ```
+      :::
+    */
     binary =
       with types;
       submodule (
@@ -108,7 +158,7 @@ let
         ```
         :::
 
-        ::: {.note}
+        :::{.note}
         Each program must include at least one example, so users get an idea of what to do with it.
         :::
 
@@ -217,7 +267,7 @@ let
         ```
         :::
 
-        ::: {.note}
+        :::{.note}
         Each service must include at least one example, so users get an idea of what to do with it.
         :::
 
@@ -294,6 +344,34 @@ let
     # TODO: implement this, now that we're using the module system
     plugin = with types; anything;
 
+    /**
+      Configuration of an application module that illustrates how to use it.
+
+      :::{.example}
+      ```nix
+      nixos.modules.services.some-service.examples = {
+        "Basic mail server setup with default ports" = {
+          module = ./services/some-service/examples/basic.nix;
+          description = "Send email via SMTP to port 587 to check that it works";
+        };
+      };
+      ```
+      :::
+
+      # Options
+
+      module:
+        File path to a NixOS module that contains the application configuration
+
+      description:
+        Description of the example, ideally with further instructions on how to use it
+
+      tests:
+        At least one test for the example (see [test](#test))
+
+      links:
+        Links to related resources (see [link](#link))
+    */
     example =
       with types;
       submodule (
@@ -357,7 +435,7 @@ let
       - Use `module` for the application configuration and `module-demo` for demo-specific things, like [demo-shell](./overview/demo/shell.nix).
       For the latter, it could be something like:
 
-      ::: {.example}
+      :::{.example}
       ```nix
       # ./path/to/demo/only/configuration.nix
       {
@@ -445,7 +523,7 @@ let
     /**
         NGI-funded software application.
 
-        ### Checks
+        # Checks
 
         After implementing one of a project's components:
 
