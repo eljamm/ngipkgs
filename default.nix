@@ -21,6 +21,7 @@ in
 }:
 let
   dream2nix = (import sources.dream2nix).overrideInputs { inherit (sources) nixpkgs; };
+  nixdoc-to-github = pkgs.callPackage sources.nixdoc-to-github { };
   mkSbtDerivation =
     x:
     import sources.sbt-derivation (
@@ -139,6 +140,13 @@ rec {
     sources
     extension
     ;
+
+  update-readme = nixdoc-to-github.lib.nixdoc-to-github.run {
+    description = "Types";
+    category = "types";
+    file = "${toString ./projects/types.nix}";
+    output = "${toString ./README-TYPES.md}";
+  };
 
   overview = import ./overview {
     inherit lib;
