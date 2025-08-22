@@ -161,15 +161,21 @@ rec {
 
   examples =
     with lib;
+    let
+      project-examples =
+        project:
+        mergeAttrsList [
+          project.nixos.examples
+          (filter-map project.nixos.modules.programs "examples")
+          (filter-map project.nixos.modules.services "examples")
+        ];
+      example-modules = examples: mapAttrs (_: value: value.module) examples;
+    in
     mapAttrs (
       _: project:
-      mergeAttrsList [
-        (mapAttrs' (
-          name: value: nameValuePair "programs/${name}" value.examples
-        ) project.nixos.modules.programs)
-        (mapAttrs' (
-          name: value: nameValuePair "services/${name}" value.examples
-        ) project.nixos.modules.services)
+      pipe project [
+        project-examples
+        example-modules
       ]
     ) evaluated-modules.config.projects;
 
@@ -278,7 +284,7 @@ rec {
           );
           nixos.tests = import ./projects/tests.nix {
             inherit lib pkgs project;
-            inherit (nixos) examples;
+            inherit examples;
           };
         };
     in
