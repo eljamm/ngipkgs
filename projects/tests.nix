@@ -1,8 +1,8 @@
 {
   lib,
   pkgs,
-  project,
-  examples,
+  sources,
+  tests,
   ...
 }:
 let
@@ -38,24 +38,16 @@ let
     in
     if lib.isDerivation test then test else pkgs.testers.runNixOSTest args;
 
-  # TODO: refactor
-  tests = lib.mergeAttrsList [
-    (project.nixos.tests or { })
-    (project.nixos.demo.vm.tests or { })
-    (project.nixos.demo.shell.tests or { })
-    (lib.filter-map examples "tests")
-  ];
-
   filtered-tests = lib.filterAttrs (
     _: test: (!test ? problem.broken) && (test ? module && test.module != null)
   ) tests;
 in
 lib.mapAttrs (
   _: test:
-  if lib.isString test.module then
+  if lib.isPath test.module then
     nixosTest (
       import test.module {
-        inherit pkgs lib;
+        inherit pkgs lib sources;
         inherit (pkgs) system;
       }
     )

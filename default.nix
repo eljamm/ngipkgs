@@ -179,6 +179,19 @@ rec {
       ]
     ) evaluated-modules.config.projects;
 
+  tests = lib.mapAttrs (
+    _: project:
+    import ./projects/tests.nix {
+      inherit lib pkgs;
+      inherit (project.nixos) tests;
+      sources = {
+        inputs = sources;
+        modules = nixos-modules;
+        inherit examples;
+      };
+    }
+  ) evaluated-modules.config.projects;
+
   nixos-modules =
     with lib;
     # TODO: this is a weird shape for what we need: ngipkgs, services, modules?

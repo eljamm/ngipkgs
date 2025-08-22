@@ -96,7 +96,7 @@ let
     program =
       with types;
       submodule (
-        { name, ... }:
+        { name, config, ... }:
         {
           options = {
             name = mkOption {
@@ -158,6 +158,11 @@ let
               '';
               default = { };
             };
+            tests = mkOption {
+              internal = true;
+              type = attrsOf types'.test;
+              default = lib.concatMapAttrs (_: v: v.tests) config.examples;
+            };
             links = mkOption {
               type = attrsOf types'.link;
               description = ''
@@ -187,7 +192,7 @@ let
     service =
       with types;
       submodule (
-        { name, ... }:
+        { name, config, ... }:
         {
           options = {
             name = mkOption {
@@ -200,6 +205,11 @@ let
             examples = mkOption {
               type = attrsOf types'.example;
               default = { };
+            };
+            tests = mkOption {
+              internal = true;
+              type = attrsOf types'.test;
+              default = lib.concatMapAttrs (_: v: v.tests) config.examples;
             };
             extensions = mkOption {
               type = nullOr (attrsOf (nullOr types'.plugin));
@@ -321,7 +331,7 @@ let
           # - null: needed, but not available
           # - deferredModule: something that nixosTest will run
           # - package: derivation from NixOS
-          type = with types; nullOr (either deferredModule package);
+          type = with types; nullOr (either path package);
           default = null;
         };
         problem = mkOption {
@@ -336,7 +346,7 @@ let
         with types;
         attrsOf (
           submodule (
-            { name, ... }:
+            { name, config, ... }:
             {
               options = {
                 name = mkOption {
@@ -404,6 +414,13 @@ let
                           default = { };
                         };
                       };
+                      config.tests = lib.mkDefault (
+                        (lib.concatMapAttrs (_: v: v.tests) (
+                          config.nixos.modules.programs // config.nixos.modules.services
+                        ))
+                        // (config.nixos.demo.shell.tests or { })
+                        // (config.nixos.demo.vm.tests or { })
+                      );
                     };
                 };
               };
