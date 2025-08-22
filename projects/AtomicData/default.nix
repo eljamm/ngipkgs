@@ -13,7 +13,7 @@
       module = ./service.nix;
       examples."Enable Atomic Server" = {
         module = ./example.nix;
-        tests.atomic-server.module = import ./test.nix args;
+        tests.atomic-server.module = ./test.nix;
       };
     };
   };

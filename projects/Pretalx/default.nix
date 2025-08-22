@@ -6,7 +6,7 @@
 }@args:
 let
   pretalx-test = {
-    module = import ./test args;
+    module = ./test;
     problem.broken.reason = ''
       django.urls.exceptions.NoReverseMatch: Reverse for 'organiser.teams.view' not found. 'organiser.teams.view' is not a valid view function or pattern name.
     '';

@@ -31,7 +31,7 @@
         description = ''
           This example shows how to enable xrsh and run a terminal inside WebXR.
         '';
-        tests.basic.module = import ./programs/xrsh/tests/basic.nix args;
+        tests.basic.module = ./programs/xrsh/tests/basic.nix;
       };
     };
   };
@@ -46,6 +46,6 @@
 
       To change the web service port, set the environment variable `XRSH_PORT` before running the demo shell.
     '';
-    tests.basic.module = import ./programs/xrsh/tests/basic.nix args;
+    tests.basic.module = ./programs/xrsh/tests/basic.nix;
   };
 }

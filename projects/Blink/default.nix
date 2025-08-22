@@ -23,7 +23,7 @@
       module = ./module.nix;
       examples."Enable Blink" = {
         module = ./examples/basic.nix;
-        tests.basic.module = import ./tests/basic.nix args;
+        tests.basic.module = ./tests/basic.nix;
       };
     };
 
@@ -36,7 +36,7 @@
       '';
       module = ./examples/basic.nix;
       module-demo = ./module-demo.nix;
-      tests.basic.module = import ./tests/basic.nix args;
+      tests.basic.module = ./tests/basic.nix;
     };
   };
 }

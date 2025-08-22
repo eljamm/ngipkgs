@@ -29,7 +29,7 @@
       module = ./programs/ethersync/module.nix;
       examples."Enable Ethersync" = {
         module = ./programs/ethersync/examples/basic.nix;
-        tests.basic.module = import ./programs/ethersync/tests/basic.nix args;
+        tests.basic.module = ./programs/ethersync/tests/basic.nix;
         tests.basic.problem.broken.reason = ''
           Needs a self-hosted relay server to work non-interactively (without internet).
           Requires: https://github.com/ethersync/ethersync/issues/344
@@ -57,7 +57,7 @@
       configured with the Ethersync plugin, so you can try using :EthersyncInfo and
       :EthersyncJumpToCursor.
     '';
-    tests.demo.module = import ./programs/ethersync/tests/basic.nix args;
+    tests.demo.module = ./programs/ethersync/tests/basic.nix;
     tests.demo.problem.broken.reason = ''
       Needs a self-hosted relay server to work non-interactively (without internet).
       Requires: https://github.com/ethersync/ethersync/issues/344

@@ -38,7 +38,7 @@
             description = ''
               Enable peertube-cli, a tool for remotely managing PeerTube instances
             '';
-            tests.basic-cli.module = import ./programs/peertube-cli/tests/basic.nix args;
+            tests.basic-cli.module = ./programs/peertube-cli/tests/basic.nix;
           };
           links = {
             docs = {
@@ -55,8 +55,8 @@
           examples.basic-server = {
             module = ./services/peertube/examples/basic.nix;
             description = "Basic server configuration";
-            tests.peertube-plugins.module = import ./services/peertube/tests/peertube-plugins.nix args;
-            tests.peertube-plugin-livechat.module = import ./services/peertube/tests/peertube-plugin-livechat.nix args;
+            tests.peertube-plugins.module = ./services/peertube/tests/peertube-plugins.nix;
+            tests.peertube-plugin-livechat.module = ./services/peertube/tests/peertube-plugin-livechat.nix;
           };
         };
         peertube-runner = {
@@ -64,7 +64,7 @@
           examples.basic-runner = {
             module = ./services/peertube-runner/examples/basic.nix;
             description = "Basic peertube-runner configuration";
-            tests.basic-runner.module = import ./services/peertube-runner/tests/basic.nix args;
+            tests.basic-runner.module = ./services/peertube-runner/tests/basic.nix;
           };
           links = {
             docs = {
@@ -86,8 +86,8 @@
           - username: root
           - password: changeme
       '';
-      tests.peertube-plugins.module = import ./services/peertube/tests/peertube-plugins.nix args;
-      tests.peertube-plugin-livechat.module = import ./services/peertube/tests/peertube-plugin-livechat.nix args;
+      tests.peertube-plugins.module = ./services/peertube/tests/peertube-plugins.nix;
+      tests.peertube-plugin-livechat.module = ./services/peertube/tests/peertube-plugin-livechat.nix;
     };
   };
 }

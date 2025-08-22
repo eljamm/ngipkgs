@@ -53,7 +53,7 @@
           2.
           3.
         '';
-        tests.basic.module = import ./programs/_programName_/tests/basic.nix args;
+        tests.basic.module = ./programs/_programName_/tests/basic.nix;
       };
       # Add relevant links to the program (if they're available)
       # else, remove the `links` attribute below
@@ -101,7 +101,7 @@
           2.
           3.
         '';
-        tests.basic.module = import ./services/_serviceName_/tests/basic.nix args;
+        tests.basic.module = ./services/_serviceName_/tests/basic.nix;
       };
       # Add relevant links to the service (if they're available)
       # else, remove the `links` attribute below

@@ -42,7 +42,7 @@
           description = "Enables manually starting Libervia's backend and the use of its CLI and TUI clients.";
           module = ./examples/backend.nix;
           tests.backend = {
-            module = import ./tests/backend.nix args;
+            module = ./tests/backend.nix;
             problem.broken.reason = ''
               Fetching times out given the slow source repo: https://repos.goffi.org
 
@@ -56,7 +56,7 @@
           module = ./examples/desktop.nix;
           # FIX:
           tests.desktop = {
-            module = import ./tests/desktop.nix args;
+            module = ./tests/desktop.nix;
             problem.broken.reason = ''
               https://buildbot.ngi.nixos.org/#/builders/473/builds/1182
             '';

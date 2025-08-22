@@ -153,7 +153,7 @@ let
                 nixos.modules.foobar.examples.basic = {
                   module = ./programs/foobar/examples/basic.nix;
                   description = "Basic configuration example for foobar";
-                  tests.foobar-basic.module = import ./programs/foobar/tests/basic.nix args;
+                  tests.foobar-basic.module = ./programs/foobar/tests/basic.nix;
                 };
               '';
               default = { };
@@ -376,7 +376,7 @@ let
                                 examples.basic = {
                                   module = ./programs/foobar/examples/basic.nix;
                                   description = "Basic configuration example for foobar";
-                                  tests.basic.module = import ./programs/foobar/tests/basic.nix args;
+                                  tests.basic.module = ./programs/foobar/tests/basic.nix;
                                 };
                               };
                             '';

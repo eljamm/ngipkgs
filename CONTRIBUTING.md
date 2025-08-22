@@ -100,7 +100,7 @@ Instead, write one sentence per line, as this makes it easier to review changes.
      For example:
 
      ```nix
-     nixos.tests.some-test = import ./test.nix args;
+     nixos.tests.some-test.module = ./test.nix;
      ```
 
      The module tests will then be accessible from `checks.<system>.some-project`.
@@ -193,7 +193,7 @@ A program is a software applications that can be executed in the user's shell, w
        examples."Enable foobar" = {
          module = ./programs/foobar/examples/basic.nix;
          description = "Usage instructions for foobar";
-         tests.basic.module = import ./programs/foobar/tests/basic.nix args;
+         tests.basic.module = ./programs/foobar/tests/basic.nix;
        };
      };
    }
@@ -454,12 +454,14 @@ To add an example:
 1. Figure out the application module options and how they are configured. For instace, this can be done by looking at the module's source code.
 
 2. Create a new `.nix` file to contain the valid example configuration.
+
 > [!NOTE]
 >
 > - Examples should work as-is without requiring additional configuration outside of what's shown.
 > - Include all necessary options and dependent services.
 
 3. In the project's `default.nix`, reference the example with a clear description:
+
 > [!NOTE]
 >
 > - Descriptions are for instructions on playing with the example.
@@ -474,6 +476,7 @@ To add an example:
      };
    };
    ```
+
 4. Ensure the example works by building and running its test.
 <!--TODO: Reference the tests section when it is written -->
 

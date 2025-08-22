@@ -34,7 +34,7 @@
       examples."Kaidan with local XMPP server and self-signed certs" = {
         module = ./programs/kaidan/examples/demo.nix;
         description = "Kaidan example with local XMPP Server";
-        tests.kaidan.module = import ./programs/kaidan/tests/kaidan.nix args;
+        tests.kaidan.module = ./programs/kaidan/tests/kaidan.nix;
         tests.kaidan.problem.broken.reason = ''
           Prosody hangs for a long time:
 
@@ -49,7 +49,7 @@
   nixos.demo.vm = {
     module = ./programs/kaidan/examples/demo.nix;
     module-demo = ./module-demo.nix;
-    tests.demo.module = import ./programs/kaidan/tests/kaidan.nix args;
+    tests.demo.module = ./programs/kaidan/tests/kaidan.nix;
     tests.demo.problem.broken.reason = ''
       Prosody hangs for a long time:
 

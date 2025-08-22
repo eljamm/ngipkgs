@@ -54,7 +54,7 @@
       examples.basic = {
         module = ./services/eris-server/examples/basic.nix;
         description = "";
-        tests.basic.module = import ./services/eris-server/tests/basic.nix args;
+        tests.basic.module = ./services/eris-server/tests/basic.nix;
       };
       links = {
         build = {

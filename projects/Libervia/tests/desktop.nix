@@ -7,7 +7,7 @@
 
 # We need all the same setup as the libervia-backend test, so just extend that one with desktop things
 let
-  backendTest = import ./backend.nix args;
+  backendTest = ./backend.nix;
 in
 backendTest
 // {

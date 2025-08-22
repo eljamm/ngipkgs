@@ -25,7 +25,7 @@
       '';
       # FIX:
       tests.test = {
-        module = import ./test.nix args;
+        module = ./test.nix;
         problem.broken.reason = ''
           https://buildbot.ngi.nixos.org/#/builders/193/builds/1789
         '';

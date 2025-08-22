@@ -7,7 +7,7 @@ lib.attrsets.concatMapAttrs (
   name: type:
   if type == "directory" then
     {
-      "${name}" = import (./. + "/${name}") args;
+      "${name}" = (./. + "/${name}");
     }
   else
     { }
