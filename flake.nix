@@ -98,7 +98,7 @@
                     let
                       checksForNixosTests = concatMapAttrs (testName: test: {
                         "projects/${projectName}/nixos/tests/${testName}" = test;
-                      }) project.nixos.tests;
+                      }) classic.tests.${projectName};
                       checksForNixosTypes = {
                         "projects/${projectName}/nixos/check" = classic.checks.${projectName};
                       };
