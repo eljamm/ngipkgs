@@ -161,7 +161,17 @@ rec {
 
   examples =
     with lib;
-    mapAttrs (_: project: mapAttrs (_: example: example.module) project.nixos.examples) projects;
+    mapAttrs (
+      _: project:
+      mergeAttrsList [
+        (mapAttrs' (
+          name: value: nameValuePair "programs/${name}" value.examples
+        ) project.nixos.modules.programs)
+        (mapAttrs' (
+          name: value: nameValuePair "services/${name}" value.examples
+        ) project.nixos.modules.services)
+      ]
+    ) evaluated-modules.config.projects;
 
   nixos-modules =
     with lib;
