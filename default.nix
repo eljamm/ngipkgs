@@ -140,6 +140,34 @@ rec {
     extension
     ;
 
+  eval = module: (lib.evalModules { modules = [ module ]; }).config;
+
+  extracted-survey =
+    let
+      survey = lib.importJSON ./NGI-form.json;
+    in
+    eval {
+      imports = [ ./survey-list.nix ];
+
+      projects = map (s: {
+        project = s.q1;
+
+        artefacts = {
+          programs-cli = s.q28 or null;
+          programs-gui = s.q29 or null;
+          services = s.q32 or null;
+          libraries = s.q26 or null;
+          extensions = s.q36 or null;
+          mobile = s.q31 or null;
+        };
+
+        feedback = s.q45;
+        nix-help = s.q20;
+      }) survey.responses;
+    };
+
+  survey-result = pkgs.writeText "survey-result.md" (toString extracted-survey);
+
   overview = import ./overview {
     inherit lib;
     projects = evaluated-modules.config.projects;
