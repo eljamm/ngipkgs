@@ -151,6 +151,7 @@ rec {
 
       projects = map (s: {
         project = s.q1;
+        repositories = s.q42;
 
         artefacts = {
           programs-cli = s.q28 or null;

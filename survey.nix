@@ -29,6 +29,9 @@ in
       type = types.lines;
       description = "Parts of the authors' projects that Nix/NixOS can help with";
     };
+    repositories = mkOption {
+      type = types.lines;
+    };
     artefacts = mkOption {
       type = types.submodule {
         options = {
@@ -64,18 +67,23 @@ in
       default =
         self:
         ''
-          ## ${self.project}
+          # ${self.project}
 
         ''
+        + lib.optionalString (self.repositories != "") ''
+          ## Code Repositories
 
+          ${self.repositories}
+
+        ''
         + lib.optionalString (self.nix-help != "") ''
-          ### Parts Nix can help with
+          ## Parts Nix can help with
 
           ${self.nix-help}
 
         ''
         + lib.optionalString (self.feedback != "") ''
-          ### Feedback
+          ## Feedback
 
           ${self.feedback}
 
