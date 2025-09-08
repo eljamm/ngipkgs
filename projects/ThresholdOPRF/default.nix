@@ -24,6 +24,11 @@
         description = "";
         tests.basic.module = null;
       };
+      examples."Development shell (Python)" = {
+        module = ./programs/ThresholdOPRF/examples/python.nix;
+        description = "";
+        tests.basic.module = null;
+      };
     };
   };
 
