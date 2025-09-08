@@ -16,17 +16,10 @@
   };
 
   nixos.modules.programs = {
-    ThresholdOPRF = {
-      name = "ThresholdOPRF";
-      module = ./programs/ThresholdOPRF/module.nix;
-      examples."Enable ThresholdOPRF" = {
-        module = ./programs/ThresholdOPRF/examples/basic.nix;
-        description = "";
-        tests.basic.module = null;
-      };
-      examples."Development shell (Python)" = {
-        module = ./programs/ThresholdOPRF/examples/python.nix;
-        description = "";
+    pwdsphinx = {
+      module = ./programs/pwdsphinx/module.nix;
+      examples."Enable pwdsphinx" = {
+        module = ./programs/pwdsphinx/examples/basic.nix;
         tests.basic.module = null;
       };
     };
@@ -34,4 +27,13 @@
 
   # pwdsphinx needs a module
   nixos.modules.services.ThresholdOPRF.module = null;
+
+  nixos.examples."Development shell (C)" = {
+    module = ./libraries/shells/c.nix;
+    tests.basic.module = null;
+  };
+  nixos.examples."Development shell (Python)" = {
+    module = ./libraries/shells/python.nix;
+    tests.basic.module = null;
+  };
 }

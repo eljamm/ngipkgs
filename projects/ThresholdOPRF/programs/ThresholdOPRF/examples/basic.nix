@@ -1,5 +1,0 @@
-{ ... }:
-
-{
-  programs.ThresholdOPRF.enable = true;
-}
