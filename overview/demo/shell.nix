@@ -11,6 +11,16 @@ let
     ;
 
   makeManPath = lib.makeSearchPathOutput "man" "share/man";
+  makePythonPath =
+    inputs:
+    let
+      inherit (lib) filter map concatStringsSep;
+      pyEnvs = filter (drv: drv ? sitePackages) inputs;
+      pyModules = filter (drv: drv ? pythonModule) inputs;
+      envPaths = map (e: "${e}/${e.sitePackages}") pyEnvs;
+      modulePath = pkgs.python3Packages.makePythonPath pyModules;
+    in
+    concatStringsSep ":" (envPaths ++ [ modulePath ]);
 
   activate =
     demo-shell:
@@ -19,6 +29,7 @@ let
       runtimeInputs = lib.attrValues demo-shell.programs;
       runtimeEnv = demo-shell.env;
       passthru.inheritManPath = false;
+      passthru.inheritPythonPath = false;
       # HACK: start shell from ./result
       derivationArgs.postCheck = ''
         mv $out/bin/$name /tmp/$name
@@ -30,6 +41,9 @@ let
         ''
         + ''
           export PS1="\[\033[1m\][demo-shell]\[\033[m\]\040\w >\040"
+          export PYTHONPATH="${
+            makePythonPath (config.environment.systemPackages ++ runtimeInputs)
+          }${lib.optionalString passthru.inheritPythonPath ":$PYTHONPATH"}"
 
           ${pkgs.lib.getExe pkgs.bash} --norc "$@"
         '';
