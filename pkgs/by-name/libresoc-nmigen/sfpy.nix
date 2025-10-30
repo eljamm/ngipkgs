@@ -19,10 +19,13 @@ python3Packages.buildPythonPackage rec {
   postPatch = ''
     substituteInPlace Makefile \
       --replace-fail "make pic" "make"
+
+    substituteInPlace sfpy/posit.pyx \
+      --replace-fail "cpdef cposit.posit" "cdef cposit.posit"
   '';
 
   build-system = with python3Packages; [
-    cython_0
+    cython
     setuptools
   ];
 
