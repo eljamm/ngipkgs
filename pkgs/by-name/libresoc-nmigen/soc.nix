@@ -73,6 +73,8 @@ python3Packages.buildPythonPackage rec {
   # FIX:
   doCheck = false;
 
+  passthru = { inherit fetchFromLibresoc; };
+
   meta = {
     description = "A nmigen-based OpenPOWER multi-issue Hybrid 3D CPU-VPU-GPU";
     homepage = "https://git.libre-soc.org/?p=soc.git;a=summary";

@@ -3,7 +3,7 @@
   python3Packages,
   fetchFromLibresoc,
   bigfloat,
-  sfpy,
+  sby,
   symbiyosys,
   nmutil,
   nmigen,
@@ -37,7 +37,7 @@ python3Packages.buildPythonPackage rec {
     pytest-output-to-files
     nmigen
     symbiyosys
-    sfpy
+    sby
     bigfloat
   ]
   ++ (with python3Packages; [

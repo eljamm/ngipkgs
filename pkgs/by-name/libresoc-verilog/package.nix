@@ -3,9 +3,10 @@
   libresoc-nmigen,
 }:
 let
-  lib = callPackage ../libresoc-nmigen/lib.nix { };
-  inherit (lib) fetchFromLibresoc;
+  inherit (libresoc-nmigen.passthru) fetchFromLibresoc;
 
   pinmux = callPackage ./pinmux.nix { inherit fetchFromLibresoc; };
 in
-callPackage ./verilog.nix { inherit pinmux libresoc-nmigen; }
+callPackage ./verilog.nix {
+  inherit pinmux libresoc-nmigen;
+}
