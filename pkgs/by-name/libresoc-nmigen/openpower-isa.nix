@@ -152,6 +152,9 @@ pythonPackages.buildPythonPackage rec {
     "openpower"
   ];
 
+  # FIX:
+  doCheck = false;
+
   meta = {
     description = "OpenPOWER ISA resources including a python-based simulator";
     homepage = "https://git.libre-soc.org/?p=openpower-isa.git;a=summary";

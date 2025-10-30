@@ -37,4 +37,12 @@
       doCheck = final.python3Packages.pythonOlder "3.13";
     });
   })
+  # LibreSOC
+  (final: prev: {
+    boolector = prev.boolector.overrideAttrs (oldAttrs: {
+      cmakeFlags = oldAttrs.cmakeFlags or [ ] ++ [
+        "-DCMAKE_POLICY_VERSION_MINIMUM=3.5"
+      ];
+    });
+  })
 ]
