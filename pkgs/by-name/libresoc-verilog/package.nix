@@ -6,7 +6,6 @@ let
   inherit (libresoc-nmigen.passthru) fetchFromLibresoc;
 
   pinmux = callPackage ./pinmux.nix { inherit fetchFromLibresoc; };
+  verilog = callPackage ./verilog.nix { inherit pinmux libresoc-nmigen; };
 in
-callPackage ./verilog.nix {
-  inherit pinmux libresoc-nmigen;
-}
+verilog

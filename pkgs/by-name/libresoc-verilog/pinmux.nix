@@ -3,7 +3,7 @@
   fetchFromLibresoc,
   python3,
 }:
-stdenv.mkDerivation rec {
+stdenv.mkDerivation (finalAttrs: {
   name = "libresoc-pinmux";
   version = "unstable-2024-03-31";
 
@@ -33,4 +33,4 @@ stdenv.mkDerivation rec {
     description = "This tools currently generates a BSV code which implements the pin-muxing logic between peripheral ports.";
     homepage = "https://git.libre-soc.org/?p=pinmux.git;a=summary";
   };
-}
+})

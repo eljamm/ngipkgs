@@ -73,7 +73,7 @@ python3Packages.buildPythonPackage rec {
   # FIX:
   doCheck = false;
 
-  passthru = { inherit fetchFromLibresoc; };
+  passthru = { inherit fetchFromLibresoc libresoc-ieee754fpu; };
 
   meta = {
     description = "A nmigen-based OpenPOWER multi-issue Hybrid 3D CPU-VPU-GPU";
