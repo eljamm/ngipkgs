@@ -23,6 +23,10 @@ jobs:
           pr-title: "flake: Update flake.lock"
           pr-labels: |
             automated
+      - name: Set up Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
       - name: Update packages
         run: |
           nix-shell --run 'update-all --commit'
