@@ -8,7 +8,7 @@ on:
     # Run at an odd time to avoid spikes at, e.g. midnight.
     # We don't really care too much about the particular time.
     # https://crontab.guru/#17_1_*_*_Mon
-    - cron: '17 1 * * Mon'
+    - cron: "17 1 * * Mon"
 
 jobs:
   lockfile:
@@ -24,3 +24,7 @@ jobs:
           pr-title: "flake: Update flake.lock"
           pr-labels: |
             automated
+      - name: Update packages
+        run: |
+          nix-shell --run 'update-all --commit'
+          git push origin update_flake_lock_action
