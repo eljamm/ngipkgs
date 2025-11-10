@@ -48,7 +48,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: update-all.log
-          path: update-all.log
+          path: /tmp/update-all.log
       - name: Create Pull Request
         if: env.UPDATES != ''
         uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
