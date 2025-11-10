@@ -28,15 +28,10 @@ jobs:
           persist-credentials: false
           ref: "main"
       - uses: cachix/install-nix-action@7be5dee1421f63d07e71ce6e0a9f8a4b07c2a487 # v31.6.1
-      - name: Commit
+      - name: Update changelog
         run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-
           nix profile add github:nixos/nixpkgs/nixos-unstable#git-cliff
           git cliff -o CHANGELOG.md
-
-          git commit -a -m "ci: Update changelog"
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
         with:
