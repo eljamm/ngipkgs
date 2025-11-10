@@ -1,4 +1,4 @@
-name: update
+name: "update flake"
 
 permissions: {}
 
@@ -8,7 +8,7 @@ on:
     # Run at an odd time to avoid spikes at, e.g. midnight.
     # We don't really care too much about the particular time.
     # https://crontab.guru/#17_1_*_*_Mon
-    - cron: '17 1 * * Mon'
+    - cron: "17 1 * * Mon"
 
 jobs:
   lockfile:
@@ -18,9 +18,23 @@ jobs:
       - uses: actions/checkout@v4
         with: { persist-credentials: false }
       - uses: cachix/install-nix-action@7be5dee1421f63d07e71ce6e0a9f8a4b07c2a487 # v31.6.1
-      - uses: DeterminateSystems/update-flake-lock@db4ee38117a597ea8df8f7f75a187dd65093eade # v23
+      - name: Set up Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+      - name: Update flake
+        run: |
+          nix flake update --commit-lock-file
+      - name: Update all packages
+        run: |
+          nix-shell --run 'update-all --commit'
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
         with:
+          sign-commits: true
+          title: "flake: Update flake.lock"
+          commit-message: "flake.lock: Update"
+          branch: "update_flake_lock_action"
           token: ${{ secrets.GH_TOKEN_FOR_UPDATES }}
-          pr-title: "flake: Update flake.lock"
-          pr-labels: |
+          labels: |
             automated
