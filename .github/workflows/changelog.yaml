@@ -1,4 +1,4 @@
-name: update
+name: changelog
 
 permissions: {}
 
@@ -7,12 +7,11 @@ on:
   schedule:
     # Run at an odd time to avoid spikes at, e.g. midnight.
     # We don't really care too much about the particular time.
-    # https://crontab.guru/#17_1_*_*_Mon
-    - cron: "17 1 * * Mon"
+    # https://crontab.guru/#17_1_1_*_*
+    - cron: "17 1 1 * *"
 
 jobs:
   lockfile:
-    if: github.repository_owner == 'ngi-nix'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -27,11 +26,11 @@ jobs:
           git checkout -b update_changelog || git checkout update_changelog
           nix-shell -p git-cliff --run 'git cliff -o CHANGELOG.md'
           git commit -m "Update changelog"
-      - name: Create PR
-        run: >
-          gh pr create
-          --base main
-          --head my-branch
-          --title "Update changelog"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
+        with:
+          title: "ci: Update CHANGELOG.md"
+          branch: "update_changelog"
+          token: ${{ secrets.GH_TOKEN_FOR_UPDATES }}
+          labels: |
+            automated
