@@ -1,0 +1,1092 @@
+## [unreleased]
+
+### 🚀 Features
+
+- *(atomic-server)* Module for Atomic Server
+- Add mandatory metadata links
+
+### 🐛 Bug Fixes
+
+- Add cache to substituters too (#210)
+- Silence warning about hydra-queue-runner
+- Overview workflow missing checkout (#246)
+- Change example module type to path
+- Top-level examples and tests not being mapped
+- Declare submodule attributes in options
+- Access types recursively in types.nix
+- Use deferredModule
+- Modules for services and programs
+- Add name option for programs
+- Demo tests not being exposed
+
+### 💼 Other
+
+- Debugging use of liberaforms-env in module without an overlay
+- Import all modules into the flake
+- Php-composer-builder flake
+- Package lcrq
+- Package librecast
+- Package lcsync
+- Remove IFDs
+- Use pythonRelaxDeps instead of patch
+- Update all inputs
+- A67bafd -> 0.1.3
+- 969f153 -> 0.1.1
+- Init module at 1.8.0
+- Add package, module and tests
+- Fix pretalx-rebuild service
+- Add plugins
+- Use `buildPythonApplication`
+- 2.3.2 -> 2023.1.0
+- Use upstreamed `buildComposerProject` instead of external flake
+- Various fixes
+- 2023.1.0 -> 2023.1.3
+- Add GitHub Action to update flake.lock
+- Make nixosTests available to packages
+- Refactor Test Definition
+- Fix typo caught by pkg-config test
+- Fix plugins and enable tests for pretalx
+- Update nixpkgs input in flake.lock
+- Add toplevels to packages
+- Atomic-server at 0.34.5
+- Atomic-cli at 0.34.5
+- Introduce `pkgs/by-name`
+- Update
+- Add package
+- Add issue template for repository migration
+- Do not check packages marked as broken
+- Update with comments from Nixpkgs PR
+- Remove module
+- Disable strict composer validation
+- Update
+- Dissociates args of explicit & by-name pkgs
+- Fmt
+- Pkgconfig -> pkg-config
+- Quick-der -> quickder
+- Quick-mem -> quickmem
+- Quick-sasl -> quicksasl
+- Use root nixpkgs and rm some packages
+- Non-flake inputs -> fixed-output drvs
+- Pull package sources into package files
+- Remove empty arpa2-python-packages overlay
+- Remove unused poetry2nix input and overlay
+- Inline the mkArpa2Derivation helper
+- Migrate into root flake
+- Init at 0.0.1, add module
+- Add tests
+- Nixpkgs.nixosTests not available to local pkgs
+- Format test path w/ 1 string
+- MkTestModule binding
+- TestModule binding
+- TestDirs binding
+- DirToTest binding
+- Extract the three outputs attrsets
+- LinuxSystem -> system
+- FilterAttrs binding
+- ImportNixosConfigurations -> rawNixosConfigs
+- MapAttrs' instead of concatMapAttrs
+- Deep merge the outputs attrsets
+- NixosConfigurations binding
+- Inline nixosSystemWithModules
+- Rm nixos systems from packages output
+- Some formatting
+- Rm unused binding in module
+- Update
+- Add unfinished derivation
+- Fix usage of `importNixpkgs`
+- Init at 0.9.3
+- Init at 0.4.0
+- Init at 0.9.3
+- Init at 1.0.0-alpha.9
+- Init at 6.15.9
+- Init at 3.0.1
+- Init at 2.3.3
+- Init at 10.28.11
+- Init at 4.7.3
+- Name -> pname
+- Replace ensurePermissions
+- Only own mcaptcha DB
+- Nixos test imports dummy.nix
+- Atomic-server to 0.37.0
+- Atomic-cli to 0.37.0
+- Namespaced checks output
+- Init at 1.8.14
+- Init
+- Update
+- Rename module avoiding nixpkgs clash
+- Fix
+- Fix build with gcc13
+- Fix build with rust_1_76
+- Fix build with gcc13
+- Fix build with rust_1_76
+- Override from upstream
+- Restore main program to pretalx
+- Flexibly handle mainProgram
+- Wire NixOS test
+- Refactor to per-project structure
+- Add static site
+- Add to checks
+- Move to pkgs/by-name
+- Fix evaluation
+- Fix license SPDX identifier
+- Use `hasPrefix`, refactor
+- Init at 3.1.1
+- Refactor
+- Update
+- Run Hydra
+- Update
+- Require clean tree
+- Update
+- Update
+- Update
+- Update
+- Follow hydra/nix
+- Update
+- Update
+- Update to NixOS 20.09
+- Graham: update for new computer
+- Update
+- Update
+- Update
+- Update
+- Update
+- Update
+- Update
+- Update
+- Update
+- Update
+- Update
+- Enable GitHub login
+- Update
+- Update
+- Update
+- Create NAR cache
+- Initial terraform config
+- Add vcunat
+- Convert to a plain NixOS config
+- Update to 23.05, latest Hydra
+- Fix config
+- Add cleeyv access
+- Fix ACME
+- Add julienmalka
+- Add 999eagle (#276)
+- Add linus (#273)
+- Update to latest Hydra
+- Give John Ericson access
+- Stage Hydra PR 1316
+- Stage Hydra PR 1316 (#316)
+- Add delroth to infra (#317)
+- Infra-core += delroth (#323)
+- Migrate hexa to infra-core
+- Update
+- Update
+- Update Hydra back to (newer) master
+- Update Hydra to CA PR
+- Update
+- Update Hydra
+- Specify build machines in NixOS config
+- Nix fmt
+- Ignore `nix fmt infra` in blame
+- Remove silvan-demo
+- Remove unused, sort, refactor
+- Remove unused arguments, clean up
+- Refactor
+- Integrate makemake into flake
+- Replace treefmt-nix with pre-commit-hooks (#197)
+- Init at 0.10.7 (#198)
+- Init at 0.9.3-dev.33 (#142)
+- Disable explicit packages (#202)
+- Update flake.lock (#205)
+- Init at 0.10.0 (#137)
+- Add Erethon
+- Add nixbuild docs (#208)
+- Add Cachix docs (#207)
+- Document `cachix watch-store` (#211)
+- Init at 0.2.2023112801 (#97)
+- Drop (#212)
+- Init at 0-unstable-2022-07-19 (#151)
+- 0-unstable-2022-07-19 -> 0-unstable-2024-02-18 (#213)
+- Add aarch64-linux support (#203)
+- Enable actionlint (#216)
+- Init at 0.4.1 (#206)
+- Move NixOps deployment to separate file
+- Clean up makemake config
+- Add check for makemake's toplevel
+- Add Ericson2314
+- Remove custom error page
+- Use Caddy as reverse proxy
+- Clean up SSH keys
+- Remove old AWS instance config
+- Enable Nix garbage collection
+- Set Nix' `min-free` to 4 GiB
+- Disable SSH password authentication
+- Update flake.lock (#223)
+- Unify naming scheme, refactor (#225)
+- Remove nixosTests from packages (#224)
+- Update
+- Create a default interactive configuration for NixOS tests
+- Migrate tests
+- Add NixOS tests (#204)
+- Remove rust-overlay
+- Remove rust-overlay
+- Update (#235)
+- Drop non-existent follows (#237)
+- Trigger rebuild (#238)
+- Remove upstreamed plugins (#236)
+- Minor refactoring (#244)
+- Automatically deploy makemake (#241)
+- Update
+- Remove upstreamed package and module
+- Update flake.lock (#248)
+- Add defaultText to filesystem.static (#260)
+- Split lib.nix from nixpkgs lib (#256)
+- Make callPackage intrinsic
+- Update setting of db user password
+- Make more non-recursive (#263)
+- 0.9.3-dev.33 -> 0.11.2 (#271)
+- 0.10.7 -> 0.11.2 (#272)
+- Update (#276)
+- Remove as it has landed in nixpkgs (#273)
+- Re-init at unstable-2024-05-17
+- Fix build (#278)
+- Init at 0.37.0 (#170)
+- Remove as it has landed in nixpkgs (#274)
+- Wip
+- Move used derivations to pkgs/libresoc and delete unused derivations
+- Nmigen fixup
+- Nmigen-soc init
+- C4m-jtag init
+- Pinmux init
+- Power-instruction-analyzer init
+- Pytest-output-to-files init
+- Nmutil init
+- Ieee754fpu init
+- Sfyp init
+- Bigfloat init
+- Ieee754fpu enable test suite
+- Openpower-isa inclue missing __init__.py
+- Openpower-isa powerpc64le toolchain
+- Openpower-isa fix @git dependencies
+- Openpower-isa fix empty directory hack
+- Openpower-isa include linker scripts
+- Openpower-isa building
+- Openpower-isa enable test suite
+- Openpower-isa abstract python definitions
+- Soc init
+- Soc enable test suite
+- Verilog init
+- Expose package.nix
+- Use GitHub mirrors instead for reliability
+- Split nmigen and verilog export packages
+- Add  aligned with nlnet
+- Structure to match nlnet funding schema
+- Add secrets extracted from makemake state (#283)
+- Fix build (#293)
+- Add fricklerhandwerk to sops config (#284)
+- Fix install check with gnunet 0.21.2 (#295)
+- Update flake.lock (#287)
+- Wrap and set JAVA_HOME (#299)
+- Update (#300)
+- Gui
+- Ln icons store path
+- Update flake.lock (#308)
+- Init at 0.0.22
+- Init at 2.5.0
+- Init at 0.1.1
+- Init at 0.0.12
+- Init at 0.1.1
+- Init at 0.0.8
+- Init at 0.0.2
+- Init at 0.0.6
+- Init at 0.0.1
+- Init at 1.0.2
+- Init at 0.0.1
+- Init at 0.1.0
+- Init at 0.0.5
+- Init at 0.0.8
+- Init at 0.0.4
+- Init at 0.0.1
+- Init at 10.0.2
+- Init
+- 10.0.2 -> 10.1.2
+- Bump action versions (#310)
+- Update flake.lock (#311)
+- Update (#313)
+- Update (#317)
+- Init at 5.6.2 (#309)
+- Init at 0.10.1
+- Init at 0-unstable-2024-07-21
+- Update
+- Update options
+- Update options
+- Fix build
+- Fix build
+- Update
+- Update options
+- Fix cachix
+- Sync module as far as possible with NixOS PR https://github.com/NixOS/nixpkgs/pull/325541 (#331)
+- Refactor to rebuild from github source
+- Remove package and module, only leave example (#333)
+- Unstable-2023-03-08 -> 0.1.0
+- Unstable-2023-07-04 -> 0.1.0
+- Update flake.lock (#344)
+- Update (#348)
+- Update (#352)
+- Update (#353)
+- Switch to latest buildbot and use GH app
+- Update
+- Drop upstreamed packages
+- Unstable-2021-07-27 -> 0.15.0 (#358)
+- 0.10.0 -> 0.13.0
+- 0.37.0 -> 0.39.0
+- Update flake.lock (#359)
+- Drop
+- Sanitize
+- Stop setting services to null
+- Normalize service name
+- Fix devShells
+- Update (#368)
+- Update (#372)
+- 1.8.14 -> 1.8.17.1
+- 0.11.0 -> 0.13.2
+- Update (#376)
+- Init at 4.9.0 (#360)
+- Update (#377)
+- Reinit at 0.0.3
+- Update flake.lock (#380)
+- Update flake.lock (#383)
+- Update (#387)
+- Update (#388)
+- Update
+- Update maven hash
+- Relax deps
+- Update
+- Update
+- Override setuptools
+- Init
+- Build with gpgme_1_24_0
+- Update (#395)
+- Update (#402)
+- Update (#408)
+- Update (#425)
+- Update (#432)
+- Update (#426)
+- Add pname and version
+- Don't parse vnu stderr as JSON
+- Store key files in flat directory (#450)
+- Add getpsyched to remotebuilder (#455)
+- Update fricklerhandwerk ssh key
+- Increase timeout for wireguard test (#459)
+- Fix options rendering
+- Update (#456)
+- Update (#464)
+- Don't list unspecific dependencies in overivew
+- Update (#465)
+- Update flake.lock (#466)
+- Update (#467)
+- Update (#469)
+- Update flake.lock [2024-12-23] (#472)
+- Update flake.lock (#473)
+- Update flake.lock (#474)
+- Update flake.lock (#475)
+- Update (#477)
+- Update flake.lock (#478)
+- Update (#479)
+- Update (#480)
+- Add summer.nixos.org site and redirects (#476)
+- Update (#483)
+- Update flake.lock (#495)
+- Update (#506)
+- Update (#509)
+- Change passthru tests so they're unique
+- Update (#526)
+- 24.10.0-unstable-2025-02-15
+- Remove "packages"
+- Expand description on basic example
+- Update (#542)
+- Migrate to new project structure
+- Migrate to new project structure
+- Use nixos tests
+- Fix module option (#566)
+- Stable project urls (#570)
+- Render subgrant names if they exist in the new project model (#581)
+- Add a VM test (#586)
+- Build slop from source during the build
+- Wait for X before launching FF in test
+- Update
+- Fix test
+- Enable prometheus node exporter
+- Make contributors admins on buildbot
+- Move from projects-old into projects
+- Introduce module and test from Nixpkgs
+- Mark as experimental, add more information (#603)
+- Import upstream packages, add project (#616)
+- Extract from old Libervia, add to new project structure (#559)
+- Render project summary, basic styling (#627)
+- 0.39.0 -> 0.40.0
+- Use finalAttrs
+- Fix test
+- Don't escape option descriptions (#632)
+- Add binary type, make nixos modules optional
+- Add top-level links
+- Update
+- Override tomli
+- Relax pyopenssl
+- Update
+- Better rendering for subgrants (#633)
+- Move to projects
+- Use IBM Plex Mono for monospace applications instead of letting the browser choose
+- Redesign options rendering with focus on cognitive hierarchy
+- 1.8.17.1 -> 1.8.17.4
+- 4.9.0 -> 4.9.2
+- 0-unstable-2024-02-18 -> 1.0.3
+- Only ever generate html, remove pandoc as dependency (#673)
+- Don't render default fields when there is no default
+- Add example and test (#661)
+- Rebuild the rendering flow so that we can use markdown strings (#684)
+- Move projects-old/ -> projects
+- Projects-old/ -> projects/
+- Render project snippets with deliverable type and summary text (#685)
+- Signify readonly options
+- Provide Open Graph information for link previews
+- Move from projects-old/ to projects/
+- Fix font URLs
+- Update
+- Update
+- 0.5.0-unstable-2025-01-07 -> 0.5.3
+- 0.6.1 -> 0.6.1-unstable-2025-03-02
+- Fix build
+- 0.3.0-unstable-2025-01-07 -> 0.3.1
+- Move from projects-old to projects
+- 2.3.3 -> 2.8.0
+- 1.0.0-alpha.9 -> 7.2.2 (#707)
+- 3.0.1 -> 3.0.2
+- 7.0.23 -> 7.1.0
+- 10.28.11 -> 11.1.2 (#710)
+- Add project (#716)
+- Update
+- Use fetchCargoVendor
+- Init at 0-unstable-2023-12-23
+- Add project
+- Projects-old -> projects (#750)
+- Projects-old -> projects (#715)
+- Init at 0.2.1-unstable-2025-04-03
+- Add project metadata & VM test
+- Projects-old -> projects
+- Projects-old -> projects
+- Projects-old -> projects
+- Projects-old -> projects
+- Projects-old -> projects
+- Projects-old -> projects
+- Projects-old -> projects
+- Projects-old -> projects
+- Remove form projects-old
+- Projects-old -> Projects (#779)
+- Projects-old -> projects
+- Projects-old -> projects
+- Projects-old -> projects
+- Projects-old -> projects
+- Projects-old -> projects
+- Projects-old -> projects
+- Projects-old -> projects
+- Projects-old -> projects
+- Projects-old -> projects
+- Projects-old -> projects
+- Projects-old -> projects
+- Projects-old -> projects
+- Projects-old -> projects
+- Recythonize (#801)
+- Projects-old -> Projects (#798)
+- Fix wording (#636)
+- Projects-old -> projects
+- Projects-old -> projects
+- Projects-old -> projects
+- Projects-old -> projects
+- Projects-old -> projects
+- Projects-old -> projects (#786)
+- Add public Matrix room
+- Projects-old -> projects
+- Expose function to override allowList
+- Provide option to override allowlist of boards, symlink all allowed boards' ROMs
+- Acknowledge unmaintained & untested boards
+- Add more details about where images end up, and how they're named
+- Python39 -> python3
+- Add build-system; set pyproject
+- Add modgrammar
+- Update
+- Update
+- Drop package overrides
+- Relax dependencies
+- Update cargo lock
+- Projects-old -> Projects (#817)
+- Projects-old -> projects (#832)
+- Remove packages
+- Refactor demo; add openPorts option
+- Update
+- Add metadata
+- Move to maintainers
+- Remove `with lib;`
+- Add subgrant type
+- Don't check examples
+- Move to `overview`
+- 4.7.3 -> 4.11.1 (#921)
+- Setup CryptPad service on Caddy and host (#858)
+- Render service demos (#668)
+- Init at 0.4.0-unstable-2025-04-01
+- Delete old project entry
+- Projects-old -> projects
+- Projects-old -> projects
+- Extract test config into separate example
+- Init at 0.7.0
+- Add moduleLocFromOptionString (#857)
+- 1.0.3 -> 1.0.5
+- Provide download and copy buttons for demo code (#962)
+- Add subgrant type (#988)
+- Add link. library and binary types (#989)
+- Add test and example types  (#985)
+- Add service type  (#986)
+- Fixup (#994)
+- Add program type (#987)
+- Update
+- Fix hash
+- Init typing with module system
+- Fix a hard coded prefix for model options
+- Move optionsDoc to default.nix
+- Add devmode
+- Don't load copy button when JS is disabled
+- Show tags for projects with a demo
+- Fix demo port forwarding
+- Update flake.lock (#1010)
+- Remove derivation
+- Remove derivations
+- Remove unused deps
+- Compare output between typing system
+- Implement project list item as a module
+- Update Cachix token
+- Update
+- Move NIX_CONFIG into workflow YAML
+- Refactor vm config
+- Init app-shell; separate vm and shell functions
+- Use app-shell
+- Fix option name in example description
+- Mark test as broken
+- Move projects to types
+- Cleanup custom types
+- Refactor metadata type
+- Re-order options
+- Distinguish between custom and nixpkgs types
+- Implement the whole project list using modules (#1051)
+- Enable upstream test
+- Actually test the demo
+- Move basic test to top-level scope
+- Move module to a separate file
+- Implement project metadata
+- Don't collapse demo instructions
+- Show update script status for derivations  (#1090)
+- Update
+- Replace substituteAll with replaceVars
+- Init at 0-unstable-2019-12-10
+- 0.6.1-unstable-2025-03-02 -> 0.6.4
+- 0.6.1 -> 0.6.3
+- Mark test as broken
+- Modularize NIX_CONFIG (#1097)
+- Don't use <section> without title
+- Update
+- Render demo shell instructions  (#1082)
+- Fix typo
+- Implement xrsh program (#1093)
+- Init at 0.6.0
+- Init at 0.6.0
+- Init
+- Test syncing and neovim plugin
+- Inline nixosSystem
+- Refactor shell apps composition
+- Add env option to shell
+- Issue triaging instructions (#1095)
+- Implement project metadata
+- Implement project metadata
+- Implement project metadata
+- Add shell demo (#1118)
+- Move to default.nix and pass it to flake.nix
+- Add peertube-cli (#1142)
+- Init (#1153)
+- Init (#1157)
+- Init
+- Update
+- Disable ssh backdoor for tests
+- Support demo-shell
+- Implement project metadata
+- Implement program
+- Add example
+- Refactor nix-config
+- Expose
+- Init at 4.4.3
+- Init
+- Show copy button for all code blocks
+- Show number of projects
+- Show project list letter by letter
+- Unify lib' into lib and export lib
+- Use moduleLocFromOptionString to locate re-exported modules
+- Fix dart-sass
+- Init module and add basic example
+- Add option enableLocalDB
+- Add basic example
+- Update running devmode
+- Add Spike
+- Add derivation update task
+- Add derivation packaging task
+- Add example and demo tasks
+- Refactors
+- Refactor derivation updates
+- Init with service module and basic test (#870)
+- Refactor demos to the demo type
+- Refactor for demo type
+- Re-enable binary artefacts
+- Accept additional args
+- Fix extra args
+- Add cfg.package as default
+- Add, apply formatting treewide, add to pre-commit hook
+- Use cmakeFlags instead of calling CMake manually
+- Remove hardcoded env variable
+- Add demo vm
+- Add demo vm
+- Add service module
+- Fix link to triaging instructions
+- Fix link to triaging instructions
+- Add basic example
+- Add demo vm
+- Bump all inputs to latest versions
+- Mark test as broken
+- Mark nmigen & verilog derivations as broken
+- Disable qemu-coreboot-fbwhiptail-tpm1-hotp board
+- Disable tests for lxml-html-clean
+- 0.8.2-unstable-2025-03-14 -> 0.8.2-unstable-2025-04-03
+- Give test more memory
+- Disable test
+- Mark as broken
+- Mark desktop test as broken
+- Add example
+- Add VM test
+- Use path type for example modules
+- Refactor null types
+- Use evaluated-modules.config.projects
+- Introduce darkmode via css mediaquery
+- 10.1.2 > 13.0.0
+- Add update script
+- 0.1.1 > 0-unstable-2025-05-30
+- Add update script
+- 0.0.12 > 0-unstable-2025-05-30
+- Add update script
+- 0.1.1 > 0-unstable-2025-05-30
+- Add update script
+- Add update script
+- Add update script
+- Add update script
+- 0.0.22 > 0-unstable-2025-05-30
+- Add update script
+- 0.0.1 > 0-unstable-2025-05-30
+- Add update script
+- Add upadate script
+- 0.0.1 > 0-unstable-2025-05-30
+- Add update script
+- 0.1.0 > 0-unstable-2025-05-30
+- Add update script
+- Add update script
+- 0.0.8 > 0-unstable-2025-05-30
+- Add update script
+- Add update script
+- 2.5.0 > 0-unstable-2025-05-30
+- Add update script
+- 0.0.1 > 0-unstable-2025-05-30
+- 13.0.0 > 14.0.0
+- Provide expected converse emojis file
+- Include lrexlib-oniguruma dependency
+- Split off livechat test
+- Fix build (for now)
+- Use pkgs.nixosTests for exported tests
+- Fix wrong test position
+- Use module attribute in tests
+- Mark broken project tests with problem type
+- Make getty auto user optional
+- Update
+- Fix bring-your-own-services test
+- Fix test module option
+- Init
+- Add demo-shell functionality
+- Add test vm
+- Add demo VM  (#1264)
+- Init at 0-unstable-2025-06-12
+- Init at 4.0.1
+- Init at 4.0.1
+- Init
+- Init
+- Ignore .url files
+- Add button to link examples' docs (#1280)
+- Add note to open sub-tasks for deliverables (#1287)
+- Refactor files structure
+- Add demo shell
+- Add code-snippet and demo content-types
+- Modularize demo instruction
+- Render links to contributing tests and instructions
+- Improve updateDepsScript (#1293)
+- Remove
+- Remove
+- Wait until service is ready for demo vm
+- Add option to open ports in firewall
+- Move instructions to module
+- Add demo option
+- Open firewall; print ready message in demo
+- Update instructions on adding keys
+- Add prince213
+- Add prince213 to remotebuild
+- Add test VM
+- Add more disk space for VM demo
+- Add content-type for option (#1288)
+- Fix build
+- Modularize examples
+- Fix hash
+- Remove service definition
+- Add demo usage instruction template
+- Indicate problems on deliverable tags
+- Update
+- Add explicit format for python deps
+- Add a demo (#1328)
+- Init
+- Fix update script status for scopes
+- Migrate to new demo shell format
+- Add neovim with plugins to demo shell
+- Extend NixOS module
+- Add demo; use NixOS tests
+- Render missing programs/services
+- Enable verbose output
+- Make Linux build more verbose
+- Fix updateScript command
+- Init at 0.21.1
+- Init at 2.0.1-unstable-2025-03-20
+- Init at 2.1.0
+- Init at 5.3.3.2-mac
+- Init at 6.0.4
+- Add metadata, module, example and VM test
+- Init
+- Add demo vm
+- Fix demo description access
+- Add demo
+- Init at 6.5.0
+- Refactor option composition
+- Use example attribute name as title
+- Use top margin in example button
+- Fix dependency url
+- Add nix-update-script
+- Add versionCheckHook
+- Fix subgrant link
+- Add demo.shell test
+- Add demo shell usage instructions
+- Init
+- Apply patch to offer OpenStreetMap as tile provider
+- Apply patch to offer OpenStreetMap as tile provider
+- Set map tile provider in example/demo to OpenStreetMap
+- Add ngipkgs-test to test nixpkgs pr's against ngipkgs
+- Recommend using upstream module examples
+- Update
+- Remove temporary pygy fix patch
+- Update
+- Add fetcherVersion to fetchDeps
+- Remove program; cleanup
+- Fix holo-cli
+- Add more potential tests for protocols
+- Add upstream test as demo
+- Add service example and demo
+- Add demo test
+- Add program module
+- Add description to demo
+- Fix download button
+- Refactor demoFile
+- Add metadata, subgrants, summary
+- Add summary, two additional subgrants (#1429)
+- Add summary, additional subgrant (#1428)
+- Add summary, add additional subgrant (#1427)
+- Add metadata, summary, subgrants (#1426)
+- Add summary (#1425)
+- Add summary (#1424)
+- Update
+- Update coreboot hashes
+- Disable qemu-coreboot-fbwhiptail-tpm1-hotp board
+- Nixfmt 1.0.0 changes
+- Add nixfmt 1.0.0 reformat commit
+- Re-enable qemu-coreboot-fbwhiptail-tpm1-hotp board
+- Limit max-jobs and cores per nix build
+- Switch basic test from version to program example
+- Add demo shell
+- Add demo vm
+- Add link to config
+- Add sbt-derivation input
+- Update
+- Init at 3.0.10-bigbluebutton
+- Show demo instructions using markdown
+- Update
+- Add vscode ethersync extension example
+- Migrate to upstream test
+- Remove in favor of nixpkgs ethersync
+- Init
+- Make setup less prone to crashing on startup
+- Apply patch to fix flaky tests
+- Wait for postgresql in multiple steps during own services test
+- Init
+- Set Nix max-silent-time to one hour
+- Rework board enablement, add more boards
+- Add more boards that build, add more support for further boards
+- Add Librem targets
+- Init at 0.4.3-unstable-2024-05-31
+- Assert that specified board actually exists
+- Adjust web UI when plugins are managed with Nix
+- Update
+- Use vimPlugins.ethersync; enable vscode
+- Unbreak test
+- Mark test as broken
+- Add peertube-runner service
+- Link deliverable label to option anchor
+- Auto open target element on page load
+- Add style for option list and alert
+- Add demo vm
+- Add navigation breadcrumbs
+- Modify greet message
+- Add example
+- Add example; update test and usage
+- Mark test as broken
+- Add depscan test
+- Mark test as broken
+- Extend pkgs with ngipkgs overlay
+- Add demo-shell to module.nix
+- Init
+- Implement program and example (#1498)
+- Link to docs for adding demos
+- Handle graphics better
+- Abstract graphics config
+- Implement demo example
+- Implement VM test
+- Update
+- Add examples and tests
+- Init at 0-unstable-2025-06-15
+- Switch to upstream tests
+- Expose tests
+- Expose tests
+- Split demo configs to a separate module
+- Init
+- Fix deprecated option; refactor user setup
+- Separate demo utils from config
+- Add mitmproxy2swagger
+- Fix typo
+- Disable demo module by default
+- Add commons subgrants; refactor
+- Render non-list subgrants
+- Update
+- Clean up project
+- Add service module example
+- Add overview-instructions
+- Init at 1.0.0-alpha.1-unstable-2025-06-30
+- Init
+- Update
+- Update
+- Implement metadata
+- Implement metadata
+- Show full traces on failed builds
+- Remove package expression
+- Init at 0-unstable-2025-08-14
+- Update
+- Mark test as broken
+- Migrate to upstream test
+- Update
+- Update
+- Mark as broken
+- Add openssl; refactor
+- Fix and modernize
+- Fix build
+- Remove
+- Mark test as broken
+- Turn into package scope, split packages into individual files
+- Put mkSbtDerivation into callPackage scope
+- Improve metadata
+- Init at 0-unstable-2025-08-24
+- Init ratmand module
+- Add missing deliverables info
+- Init demo
+- 0-unstable-2025-08-24 -> 0-unstable-2025-09-14
+- Only run on ngi-nix/ngipkgs
+- Only run on ngi-nix/ngipkgs
+- Only run deployment on ngi-nix/ngipkgs
+- Update buildbot-nix
+- Init (#1621)
+- Use the refactoring branch of buildbot-nix
+- Follow main again on buildbot-nix
+- Unbreak
+- Unbreak
+- Unbreak
+- Re-enable & fix tests
+- Add VM demo
+- Remove terraform files for abandoned infra
+- Batch add mandatory links; refactor subgrants
+- Make more things shared across packages
+- Use lndir for symlinking deps
+- Init at 3.0.10-bigbluebutton
+- Init at 3.0.10-bigbluebutton
+- Init at 3.0.10-bigbluebutton
+- Init at 3.0.10-bigbluebutton
+- Init at 3.0.10-bigbluebutton
+- Init at 3.0.10-bigbluebutton
+- Update
+- Unpin llvmPackages
+- Properly wait for API in tests
+- Adjust service restart times
+- Refactor
+- Fix eval warning
+- Init at 0-unstable-2025-08-14
+- Init at 0.7.0
+- Init 0-unstable-2025-09-12
+- Update
+- Migrate from deprecated `authType`
+- Remove
+- Use buildNpmPackage for dashboard
+- Mark stream test as broken
+- Add program module
+- Add service module
+- Init program and service modules
+- Add VM test
+- Add service and program examples
+- Update
+- Refactor and fix test
+- Format render-template.py
+- Add `unique_id` function to jinja render
+- Update demo instructions
+- Move some colors to CSS variables
+- Use tabs when shell-instructions is a list
+- Update
+- Fix CMake 4 compatibility
+- Cut down amount of CI-built qemu boards
+- Copy CMake 4 fix from Nixpkgs
+- Mark test and derivation as broken
+- 4.9.2 -> 5.0.2
+- Migrate usage instructions
+- Migrate usage instructions
+- Migrate usage instructions
+- Migrate usage instructions
+- Migrate usage instructions
+- Migrate usage instructions
+- Migrate usage instructions
+- Migrate usage instructions
+- Migrate usage instructions
+- Migrate usage instructions
+- Migrate usage instructions
+- Make usage-instructions nullOr
+- Add source code declaration link to options
+- Add update script
+- Add update script
+- Add update script
+- Add update script
+- Use derivation from Nixpkgs
+- Use derivation from Nixpkgs
+- 5.1.0 -> 5.1.1
+- Refactor
+- 0.0.1 -> 0.0.1-unstable-2024-02-05; add update script
+- 0.0.1 -> 0.0.1-unstable-2024-02-05
+- Refactor derivation
+- Use fetchFromGitLab
+- 1.8.17.4 -> 1.9.1
+- 4.4.3 -> 4.6.0
+- Link missing artefacts to their docs sections
+- Update
+- Work around ratmand config failure
+- Fix declaration path with flakes
+- Add example files declaration links
+- Reuse common functions in modules
+- Add project declaration
+- 0-unstable-2025-06-12 -> 0-unstable-2025-10-07
+- Add update script; fix build
+- 0.4.3-unstable-2024-05-31 -> 0-unstable-2024-05-31
+- 0.7.0 -> 0.7.0-unstable-2025-09-09; add update script
+- 0-unstable-2025-06-15 -> 0-unstable-2025-06-17
+- 0.3.0 -> 0.3.0-unstable-2021-08-16
+- Refactor; move hkdf to the same dir
+- Fix build failure
+- Add update script
+- 1.0.5 -> 1.0.5-unstable-2025-10-15; refactor update script
+- Refactor update script
+- 0-unstable-2025-10-07 -> 0-unstable-2025-10-20
+- Fix build script; refactor
+- Add update script
+- Add update script; fix version
+- Add update script
+- 0.14.1 -> 1.0.0
+- 0-unstable-2025-08-14 -> 0-unstable-2025-10-07
+- 0-unstable-2025-08-14 -> 0-unstable-2025-10-07
+- Add update script
+- Add update script; update to latest version
+- Add label to project template
+
+### 🚜 Refactor
+
+- *(flake)* Implicit inclusion of configs/dummy.nix
+- Simplify amenities for interactive tests (#363)
+- Move test helpers into flake (#370)
+- Compactify checks flattening
+- Simplify attrs flattening (#379)
+- Project evaluation checking
+- Move custom lib to a separate file
+- Project composition; reorder attributes
+- Flatten project types; move project up
+
+### 📚 Documentation
+
+- Update README to replace liberaforms with pretalx
+- Spelling, Consistency, Split
+- Fix wording/language/typos
+- Add note about makemake automated deployment
+- Add section in infra about sops secrets
+- Replace Hydra mentions with Buildbot
+- Add instructions for exposing a project
+- Add usage instructions for overview's devmode
+- Add contributor guide on adding examples (#1244)
+- Add workflow for implmeneting a program
+- Update examples
+- Document project types
+- Add header to project reference; refactor & generate
+- Refactor project template; add demo
+
+### 🎨 Styling
+
+- Consistent bindings into builtins and lib
+
+### ⚙️ Miscellaneous Tasks
+
+- Add experimental feature no-url-literals
+- Use Cachix instead of Magic Nix Cache for push
+- Enable debugging on request
+- Nix flake show comment in prs
+- Show diff of `nix flake show`
+- Use Cachix if PR is not from a fork
+- Remove `nix flake show` diff generation
+- Merge workflows and accelerate with Cachix
+- Fix access to Cachix auth token
+- Run update at odd time of day, not midnight
+- Run pages workflow only on main branch
+- Set environment `NIX_ABORT_ON_WARN=true`
+- Consolidate workflows
+- Consolidate jobs
+- Use Build Matrix (#193)
+- Fix attribute name of overview (#215)
+- Filter for x86_64-linux (#217)
+- Fix preconditions of deploy job
+- Use ngi-nix-bot for update workflow (#242)
+- Move overview deployment to own workflow (#245)
+- Remove GitHub Actions CI Workflow (#261)
+- Add overview to checks (#281)
+- Add templates to check
+- Add VM test-demo workflow (#719)
+- Use branch's ngipkgs when testing demo
+- *(test-demo-vm)* Add ubuntu 25.04 to test matrix
+- Add test-demo-shell workflow; refactor test script (#1107)
+- Fix archlinux Nix installation for demo test (#1135)
+- Target debian 13 instead of 12
+- Remove ubuntu 24.10
+- Use cachix/install-nix-action
+- Enable flakes and nix-command in makemake workflow
+- Improve security
