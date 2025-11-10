@@ -17,17 +17,17 @@ jobs:
       - uses: actions/checkout@v4
         with: { persist-credentials: false }
       - uses: cachix/install-nix-action@7be5dee1421f63d07e71ce6e0a9f8a4b07c2a487 # v31.6.1
-      - uses: DeterminateSystems/update-flake-lock@db4ee38117a597ea8df8f7f75a187dd65093eade # v23
-        with:
-          token: ${{ secrets.GH_TOKEN_FOR_UPDATES }}
-          pr-title: "flake: Update flake.lock"
-          pr-labels: |
-            automated
-      - name: Set up Git
+      - name: Update flake
         run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          nix flake update --commit-lock-file
       - name: Update packages
         run: |
           nix-shell --run 'update-all --commit'
-          git push origin update_flake_lock_action
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          title: "flake: Update flake.lock"
+          branch: "update_flake_lock_action"
+          token: ${{ secrets.GH_TOKEN_FOR_UPDATES }}
+          labels: |
+            automated
