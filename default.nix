@@ -205,17 +205,7 @@ rec {
               "libresoc-nmigen"
               "libresoc-verilog"
             ];
-            update-packages =
-              with lib;
-              filter (x: !elem x skipped-packages) ([
-                "anastasis"
-                "anastasis-gtk"
-                "taldir"
-                "taler-mdb"
-                "tau-radio"
-                "tau-tower"
-                "meta-press"
-              ]);
+            update-packages = with lib; filter (x: !elem x skipped-packages) (attrNames ngipkgs);
             update-commands = lib.concatMapStringsSep "\n" (package: ''
               if ! nix-update --flake --use-update-script "${package}" "$@"; then
                 echo "${package}" >> "$TMPDIR/failed_updates.txt"
