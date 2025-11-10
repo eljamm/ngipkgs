@@ -214,9 +214,7 @@ rec {
           in
           # bash
           ''
-            TMPDIR=$(mktemp -d)
-
-            echo -n> "$TMPDIR/failed_updates.txt"
+            TMPDIR="''${UPDATE_OUTDIR:-$(mktemp -d)}"
 
             ${update-commands}
 

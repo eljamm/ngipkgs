@@ -1,4 +1,4 @@
-name: update
+name: "update flake"
 
 permissions: {}
 
@@ -8,11 +8,10 @@ on:
     # Run at an odd time to avoid spikes at, e.g. midnight.
     # We don't really care too much about the particular time.
     # https://crontab.guru/#17_1_*_*_Mon
-    - cron: '17 1 * * Mon'
+    - cron: "17 1 * * Mon"
 
 jobs:
   lockfile:
-    if: github.repository_owner == 'ngi-nix'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
