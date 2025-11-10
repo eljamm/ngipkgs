@@ -28,18 +28,22 @@ jobs:
           persist-credentials: false
           ref: "main"
       - uses: cachix/install-nix-action@7be5dee1421f63d07e71ce6e0a9f8a4b07c2a487 # v31.6.1
-      - name: Update changelog
-        uses: orhun/git-cliff-action@v4
-        with:
-          config: cliff.toml
-          args: --verbose
-        env:
-          OUTPUT: CHANGELOG.md
-          GITHUB_REPO: ${{ github.repository }}
+      # - name: Update changelog
+      #   uses: orhun/git-cliff-action@v4
+      #   with:
+      #     config: cliff.toml
+      #     args: --verbose
+      #   env:
+      #     OUTPUT: CHANGELOG.md
+      #     GITHUB_REPO: ${{ github.repository }}
       - name: Commit
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+          nix profile add nixpkgs#git-cliff
+          git cliff -o CHANGELOG.md
+
           git commit -a -m "ci: Update changelog"
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
