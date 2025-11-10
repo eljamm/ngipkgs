@@ -27,16 +27,20 @@ jobs:
           fetch-tags: true
           persist-credentials: false
           ref: "init/actions-update"
-      - uses: cachix/install-nix-action@7be5dee1421f63d07e71ce6e0a9f8a4b07c2a487 # v31.6.1
       - name: Update changelog
-        run: |
-          nix profile add github:nixos/nixpkgs/nixos-unstable#git-cliff
-          git cliff -o CHANGELOG.md
+        uses: orhun/git-cliff-action@v4
+        with:
+          config: cliff.toml
+          args: --verbose
+        env:
+          OUTPUT: CHANGELOG.md
+          GITHUB_REPO: ${{ github.repository }}
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
         with:
           sign-commits: true
           title: "ci: Update CHANGELOG.md"
+          commit-message: "ci: Update CHANGELOG.md"
           branch: "update_changelog"
           token: ${{ secrets.GH_TOKEN_FOR_UPDATES }}
           labels: |
