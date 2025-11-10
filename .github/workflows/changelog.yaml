@@ -26,8 +26,10 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
       - name: Update changelog
         run: |
+          git checkout main
           nix run nixpkgs#git-cliff -- -o CHANGELOG.md
-          git commit -a -m "Update changelog"
+          git add *
+          git commit -m "Update changelog"
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
         with:
