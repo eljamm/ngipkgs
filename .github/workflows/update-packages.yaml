@@ -29,18 +29,26 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-      - name: start upterm session
-        if: ${{ inputs.upterm }}
-        uses: owenthereal/action-upterm@2f4c8d6df06230280f48b80e87c4edc6cf2cf890 # v1.5.0
-        with:
-          limit-access-to-actor: true
       - name: Update all packages
+        id: update-packages
         run: |
-          export UPDATE_OUTDIR="/tmp/update"
-          # nix-shell --run 'update-all --commit'
-          nix-shell --run 'update meta-press --commit'
-          echo "UPDATES=$(git log origin/main..HEAD --format="- %s")" >> "$GITHUB_ENV"
-          echo "UPDATES_FAILED=$(cat "$UPDATE_OUTDIR"/failed_updates.txt)" >> "$GITHUB_ENV"
+          nix-shell --run 'update-all --commit' | tee /tmp/update-all.log
+
+          {
+            echo "UPDATES<<EOF"
+            git log origin/main..HEAD --format="- %s"
+            echo "EOF"
+          } >> "$GITHUB_ENV"
+
+          {
+            echo "UPDATES_FAILED<<EOF"
+            sed -n '/Failed to update the following packages:/,$p' /tmp/update-all.log
+            echo "EOF"
+          } >> "$GITHUB_ENV"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: update-all.log
+          path: update-all.log
       - name: Create Pull Request
         if: env.UPDATES != ''
         uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
@@ -65,3 +73,8 @@ jobs:
 
             </p>
             </details>
+      - name: start upterm session
+        if: ${{ inputs.upterm }}
+        uses: owenthereal/action-upterm@2f4c8d6df06230280f48b80e87c4edc6cf2cf890 # v1.5.0
+        with:
+          limit-access-to-actor: true
