@@ -36,13 +36,13 @@ jobs:
 
           {
             echo "UPDATES<<EOF"
-            git log origin/main..HEAD --format="- %s"
+            git log origin/main..HEAD --format="- %s (%h)"
             echo "EOF"
           } >> "$GITHUB_ENV"
 
           {
             echo "UPDATES_FAILED<<EOF"
-            sed -n '/Failed to update the following packages:/,$p' /tmp/update-all.log
+            sed -e '1,/Failed to update the following packages:/d' /tmp/update-all.log
             echo "EOF"
           } >> "$GITHUB_ENV"
       - uses: actions/upload-artifact@v4
