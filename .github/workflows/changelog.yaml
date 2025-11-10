@@ -19,7 +19,7 @@ jobs:
           fetch-depth: 0
           fetch-tags: true
           persist-credentials: false
-          ref: "main"
+          ref: "main-local"
       - name: Update changelog
         uses: orhun/git-cliff-action@v4
         with:
