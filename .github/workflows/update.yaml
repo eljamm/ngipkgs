@@ -4,6 +4,12 @@ permissions: {}
 
 on:
   workflow_dispatch:
+    inputs:
+      upterm:
+        description: "Start upterm session after nix build"
+        required: true
+        type: boolean
+        default: false
   schedule:
     # Run at an odd time to avoid spikes at, e.g. midnight.
     # We don't really care too much about the particular time.
@@ -54,3 +60,8 @@ jobs:
             The following packages have been automatically updated by GitHub Action:
 
             ${{ env.UPDATES }}
+      - name: start upterm session
+        if: ${{ inputs.upterm }}
+        uses: owenthereal/action-upterm@2f4c8d6df06230280f48b80e87c4edc6cf2cf890 # v1.5.0
+        with:
+          limit-access-to-actor: true
