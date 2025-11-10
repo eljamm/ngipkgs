@@ -6,15 +6,15 @@
 }:
 buildNpmPackage (finalAttrs: {
   pname = "peertube-plugin-auto-block-videos";
-  version = "0.0.2";
+  version = "0-unstable-2025-10-29";
 
   src = fetchFromGitLab {
     domain = "framagit.org";
     owner = "framasoft";
     repo = "peertube/official-plugins";
-    rev = "bf3602a782fb4605cc674aa21e1fe7dcb2693cf3";
+    rev = "b6ee1eee69f3e7ffd951c354b39f22207f500f57";
     sparseCheckout = [ "peertube-plugin-auto-block-videos" ];
-    hash = "sha256-whEVTnv2p44VWc+gzGpMwh0RRhyMNcCx1fY8QpEOCXo=";
+    hash = "sha256-fe6P6jmJMRL0Tzq4LB57TPAoFQTQYdrUG26mYUBjOqk=";
   };
 
   sourceRoot = "${finalAttrs.src.name}/peertube-plugin-auto-block-videos";
