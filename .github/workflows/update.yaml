@@ -38,7 +38,7 @@ jobs:
       - name: Update all packages
         run: |
           git fetch origin
-          nix-shell --run 'update-all --commit'
+          nix-shell --run 'update meta-press --commit'
           echo "UPDATES=$(git log main..HEAD --format="- %s")" >> "$GITHUB_ENV"
       - name: Create Pull Request
         if: env.UPDATES != ''
