@@ -43,11 +43,11 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
       - name: Update all packages
         run: |
-          git fetch origin
+          git checkout -b update_packages
           nix-shell --run 'update meta-press --commit'
           echo "UPDATES=$(git log main..HEAD --format="- %s")" >> "$GITHUB_ENV"
       - name: Create Pull Request
-        # if: env.UPDATES != ''
+        if: env.UPDATES != ''
         uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
         with:
           sign-commits: true
