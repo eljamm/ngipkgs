@@ -20,6 +20,19 @@ jobs:
           fetch-tags: true
           persist-credentials: false
           ref: "main-local"
+      - name: Get current date
+        id: date
+        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+      - name: Create tag
+        uses: actions/github-script@v8
+        with:
+          script: |
+            github.rest.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: 'refs/tags/${{ steps.date.outputs.date }}',
+              sha: context.sha
+            })
       - name: Update changelog
         uses: orhun/git-cliff-action@d77b37db2e3f7398432d34b72a12aa3e2ba87e51 # v4.6.0
         id: git-cliff
