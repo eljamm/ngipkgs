@@ -36,7 +36,7 @@ jobs:
 
           {
             echo "UPDATES<<EOF"
-            git log origin/main-local..HEAD --format="- %s (%h)"
+            git log --reverse origin/main-local..HEAD --format="- %s"
             echo "EOF"
           } >> "$GITHUB_ENV"
 
