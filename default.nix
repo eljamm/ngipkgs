@@ -36,7 +36,6 @@ let
     );
 
   extension = import ./pkgs/lib.nix { inherit lib sources system; };
-  extended = lib.extend (_: _: extension);
 
   scope = lib.makeScope pkgs.newScope (self: {
     lib = lib.extend (_: _: extension);
@@ -50,11 +49,11 @@ let
 
     ngipkgs = import ./pkgs/by-name {
       inherit
+        lib
         pkgs
         dream2nix
         mkSbtDerivation
         ;
-      lib = extended;
     };
 
     overlays.default =
