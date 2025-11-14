@@ -8,6 +8,7 @@
 let
   inherit (builtins)
     elem
+    elemAt
     readDir
     trace
     ;
@@ -15,6 +16,11 @@ let
   inherit (lib.attrsets)
     concatMapAttrs
     mapAttrs
+    ;
+
+  inherit (lib.fileset)
+    fileFilter
+    toList
     ;
 
   types = import ./types.nix { inherit lib; };
@@ -40,18 +46,52 @@ let
     in
     # TODO: use fileset and filter for `gitTracked` files
     concatMapAttrs names (readDir baseDirectory);
+
+  projectDirectories2 = lib.pipe ./. [
+    (lib.fileset.fileFilter (file: file.name == "default.nix"))
+    (lib.fileset.toList)
+    (map (
+      file:
+      let
+        # return the relative path of the file as a string, compared to the
+        # current directory
+        relative-path = lib.path.removePrefix ./. file;
+
+        project-name = lib.pipe relative-path [
+          # clean up and return project name
+          (lib.removePrefix "./")
+          (lib.removeSuffix "default.nix")
+          (lib.splitString "/")
+          (list: lib.elemAt list 0)
+        ];
+      in
+      project-name
+    ))
+
+    # remove files in ./.
+    (lib.filter (name: name != ""))
+
+    # get modules
+    (map (filename: "${./.}/${filename}/default.nix"))
+  ];
 in
 rec {
+  inherit projectDirectories2;
+
   raw-projects = {
     options.projects = types.options.projects;
-    config.projects = mapAttrs (name: directory: import directory args) projectDirectories;
+    config.projects = mapAttrs (name: directory: import directory args) projectDirectories2;
   };
 
   eval-projects = lib.evalModules {
     modules = [
-      raw-projects
-    ];
-    specialArgs.modulesPath = "${sources.nixpkgs}/nixos/modules";
+      { options = types.options; }
+    ]
+    ++ projectDirectories2;
+    specialArgs = {
+      inherit pkgs system;
+      modulesPath = "${sources.nixpkgs}/nixos/modules";
+    };
   };
 
   projects = eval-projects.config.projects;
