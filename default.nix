@@ -44,7 +44,7 @@ let
       };
 
     examples = lib.mapAttrs (
-      _: project: lib.mapAttrs (_: example: example.module) self.project.nixos.examples
+      _: project: lib.mapAttrs (_: example: example.module) project.nixos.examples
     ) self.hydrated-projects;
 
     nixos-modules =
