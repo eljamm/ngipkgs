@@ -112,7 +112,58 @@ let
       hydrated-projects
       ;
 
+    # Flake attributes that depend on systems, for each supported system.
+    # e.g. `.#packages.x86_64-linux.foobar`
+    flakeAttrs.perSystem = with self; {
+      packages = ngipkgs // {
+        inherit overview;
+
+        options = pkgs.runCommand "options.json" { build = optionsDoc.optionsJSON; } ''
+          mkdir $out
+          cp $build/share/doc/nixos/options.json $out/
+        '';
+      };
+
+      checks = self.call ./checks.nix { };
+
+      devShells.default = pkgs.mkShell {
+        inherit (flake.checks."infra/pre-commit") shellHook;
+        buildInputs = flake.checks."infra/pre-commit".enabledPackages ++ shell.nativeBuildInputs;
+      };
+
+      # TODO: use treefmt
+      formatter = pkgs.writeShellApplication {
+        name = "formatter";
+        text = ''
+          # shellcheck disable=all
+          shell-hook () {
+            ${flake.checks."infra/pre-commit".shellHook}
+          }
+
+          shell-hook
+          pre-commit run --all-files
+        '';
+      };
+    };
+
+    # Flake attributes that do not depend on systems.
+    # e.g. `.#nixosModules`
+    flakeAttr.systemAgnostic = with scope; {
+      lib = extension;
+
+      # Overlays a package set (e.g. Nixpkgs) with the packages defined in this flake.
+      inherit overlays;
+
+      toplevel = machine: machine.config.system.build.toplevel; # for makemake
+
+      nixosConfigurations.makemake = import ./infra/makemake { inherit inputs; };
+
+      # WARN: this is currently unstable and subject to change in the future
+      nixosModules = nixos-modules;
+    };
+
     scripts = self.call ./maintainers/scripts { };
+
     shell = pkgs.mkShellNoCC {
       packages = [
         # live overview watcher:
