@@ -58,9 +58,7 @@ let
             nixpkgs.overlays = [ self.overlays.default ];
           };
       }
-      // foldl recursiveUpdate { } (
-        map (project: project.nixos.modules) (attrValues self.hydrated-projects)
-      );
+      // self.projectModules;
 
     extendedNixosModules =
       let
@@ -98,53 +96,6 @@ let
         ;
     };
 
-    projfilter =
-      let
-        fs = lib.fileset;
-      in
-      lib.pipe ./projects [
-        (fs.fileFilter (file: file.name == "default.nix"))
-        (fs.toList)
-        (map (
-          file:
-          let
-            relative-path = lib.path.removePrefix ./projects file;
-            project-name = lib.pipe relative-path [
-              (lib.removePrefix "./")
-              (lib.removeSuffix "default.nix")
-              (lib.splitString "/")
-              (list: lib.elemAt list 0)
-            ];
-          in
-          project-name
-        ))
-      ];
-
-    projectDirectories3 = lib.pipe ./projects [
-      (lib.fileset.fileFilter (file: file.name == "default.nix"))
-      (lib.fileset.toList)
-      (map (
-        file:
-        let
-          # return the relative path of the file as a string, compared to the
-          # current directory
-          relative-path = lib.path.removePrefix ./projects file;
-
-          project-name = lib.pipe relative-path [
-            # clean up and return project name
-            (lib.removePrefix "./")
-            (lib.removeSuffix "default.nix")
-            (lib.splitString "/")
-            (list: lib.elemAt list 0)
-          ];
-        in
-        project-name
-      ))
-
-      # remove files in ./.
-      (lib.filter (name: name != ""))
-    ];
-
     inherit
       (self.call ./projects {
         pkgs = pkgs.extend self.overlays.default;
@@ -157,7 +108,8 @@ let
       checks
       projects
       hydrated-projects
-      projectDirectories2
+      projectModules
+      tests
       ;
 
     # Flake attributes that depend on systems, for each supported system.

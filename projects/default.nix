@@ -140,4 +140,17 @@ rec {
         };
     in
     mapAttrs (name: hydrate) raw-projects.config.projects;
+
+  tests =
+    with lib;
+    filterAttrs (n: v: isList v && hasInfix "imports" n && hasInfix "tests" n) (
+      flattenAttrs "." projects.xrsh
+    );
+
+  # tests = mapAttrs (_: v: {
+  #   nixos.tests = import ./tests.nix {
+  #     inherit lib pkgs project;
+  #     inherit (nixos) examples;
+  #   };
+  # }) projects;
 }
