@@ -50,7 +50,7 @@ let
   scope = lib.makeScope pkgs.newScope (
     self:
     {
-      lib = extended;
+      lib = lib.extend (_: _: extension);
 
       inherit
         pkgs
@@ -88,16 +88,16 @@ let
 
       extendedNixosModules =
         let
-          ngipkgsModules = lib.attrValues (lib.flattenAttrs "." nixos-modules);
+          ngipkgsModules = lib.attrValues (lib.flattenAttrs "." self.nixos-modules);
           nixosModules = import "${sources.nixpkgs}/nixos/modules/module-list.nix";
         in
         nixosModules ++ ngipkgsModules;
 
       overview = import ./overview {
-        inherit lib projects;
+        inherit (self) lib projects;
         self = flake;
-        pkgs = pkgs.extend overlays.default;
-        options = optionsDoc.optionsNix;
+        pkgs = pkgs.extend self.overlays.default;
+        options = self.optionsDoc.optionsNix;
       };
 
       optionsDoc = pkgs.nixosOptionsDoc {
@@ -116,7 +116,7 @@ let
               }
               ./overview/demo/shell.nix
             ]
-            ++ extendedNixosModules;
+            ++ self.extendedNixosModules;
             specialArgs.modulesPath = "${sources.nixpkgs}/nixos/modules";
           })
           options
@@ -126,11 +126,11 @@ let
       inherit
         (import ./projects {
           inherit lib system;
-          pkgs = pkgs.extend overlays.default;
+          pkgs = pkgs.extend self.overlays.default;
           sources = {
             inputs = sources;
-            modules = nixos-modules;
-            inherit examples;
+            modules = self.nixos-modules;
+            examples = self.examples;
           };
         })
         checks
@@ -247,15 +247,15 @@ let
           pkgs
           ngipkgs
           ;
-        raw-projects = hydrated-projects;
+        raw-projects = self.hydrated-projects;
       };
 
       report = import ./maintainers/report {
-        inherit lib pkgs metrics;
+        inherit (self) lib pkgs metrics;
       };
 
       project-demos = lib.filterAttrs (name: value: value != null) (
-        lib.mapAttrs (name: value: value.nixos.demo.vm or value.nixos.demo.shell or null) projects
+        lib.mapAttrs (name: value: value.nixos.demo.vm or value.nixos.demo.shell or null) self.projects
       );
 
       demo = import ./overview/demo {
@@ -266,12 +266,12 @@ let
           system
           ;
         demo-modules = lib.flatten (
-          lib.mapAttrsToList (name: value: value.module-demo.imports) project-demos
+          lib.mapAttrsToList (name: value: value.module-demo.imports) self.project-demos
         );
-        nixos-modules = extendedNixosModules;
+        nixos-modules = self.extendedNixosModules;
       };
 
-      inherit (demo)
+      inherit (self.demo)
         demo-vm
         demo-shell
         ;
