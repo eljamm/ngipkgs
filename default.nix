@@ -19,22 +19,7 @@ in
   lib ? import "${sources.nixpkgs}/lib",
 }:
 let
-  dream2nix = (import sources.dream2nix).overrideInputs { inherit (sources) nixpkgs; };
   nixdoc-to-github = pkgs.callPackage sources.nixdoc-to-github { };
-  mkSbtDerivation =
-    x:
-    import sources.sbt-derivation (
-      x
-      // {
-        inherit pkgs;
-        overrides = {
-          sbt = pkgs.sbt.override {
-            jre = pkgs.jdk17_headless;
-          };
-        };
-      }
-    );
-
   extension = import ./pkgs/lib.nix { inherit lib sources system; };
 
   scope = lib.makeScope pkgs.newScope (self: {
@@ -47,27 +32,21 @@ let
       extension
       ;
 
-    ngipkgs = import ./pkgs/by-name {
-      inherit
-        lib
-        pkgs
-        dream2nix
-        mkSbtDerivation
-        ;
-    };
+    # import file while passing all scope attributes as input
+    call = self.callPackage;
+
+    ngipkgs = self.call ./pkgs/by-name { };
 
     overlays.default =
       final: prev:
       import ./pkgs/by-name {
         pkgs = prev;
-        inherit lib dream2nix mkSbtDerivation;
+        inherit (self) lib dream2nix mkSbtDerivation;
       };
 
-    examples =
-      with lib;
-      mapAttrs (
-        _: project: mapAttrs (_: example: example.module) project.nixos.examples
-      ) hydrated-projects;
+    examples = lib.mapAttrs (
+      _: project: lib.mapAttrs (_: example: example.module) self.project.nixos.examples
+    ) self.hydrated-projects;
 
     nixos-modules =
       with lib;
@@ -77,10 +56,12 @@ let
         ngipkgs =
           { ... }:
           {
-            nixpkgs.overlays = [ overlays.default ];
+            nixpkgs.overlays = [ self.overlays.default ];
           };
       }
-      // foldl recursiveUpdate { } (map (project: project.nixos.modules) (attrValues hydrated-projects));
+      // foldl recursiveUpdate { } (
+        map (project: project.nixos.modules) (attrValues self.hydrated-projects)
+      );
 
     extendedNixosModules =
       let
@@ -89,8 +70,7 @@ let
       in
       nixosModules ++ ngipkgsModules;
 
-    overview = import ./overview {
-      inherit (self) lib projects;
+    overview = self.call ./overview {
       self = flake;
       pkgs = pkgs.extend self.overlays.default;
       options = self.optionsDoc.optionsNix;
@@ -120,8 +100,7 @@ let
     };
 
     inherit
-      (import ./projects {
-        inherit lib system;
+      (self.call ./projects {
         pkgs = pkgs.extend self.overlays.default;
         sources = {
           inputs = sources;
@@ -237,30 +216,17 @@ let
       ];
     };
 
-    metrics = import ./maintainers/metrics.nix {
-      inherit
-        lib
-        pkgs
-        ;
-      ngipkgs = self.ngipkgs;
+    metrics = self.call ./maintainers/metrics.nix {
       raw-projects = self.hydrated-projects;
     };
 
-    report = import ./maintainers/report {
-      inherit (self) lib pkgs metrics;
-    };
+    report = self.call ./maintainers/report { };
 
     project-demos = lib.filterAttrs (name: value: value != null) (
       lib.mapAttrs (name: value: value.nixos.demo.vm or value.nixos.demo.shell or null) self.projects
     );
 
-    demo = import ./overview/demo {
-      inherit
-        lib
-        pkgs
-        sources
-        system
-        ;
+    demo = self.call ./overview/demo {
       demo-modules = lib.flatten (
         lib.mapAttrsToList (name: value: value.module-demo.imports) self.project-demos
       );
@@ -271,6 +237,24 @@ let
       demo-vm
       demo-shell
       ;
+
+    # TODO:
+    # - remove dependency on dream2nix
+    # - include `mkSbtDerivation` in `lib`?
+    dream2nix = (import sources.dream2nix).overrideInputs { inherit (sources) nixpkgs; };
+    mkSbtDerivation =
+      x:
+      import sources.sbt-derivation (
+        x
+        // {
+          inherit pkgs;
+          overrides = {
+            sbt = pkgs.sbt.override {
+              jre = pkgs.jdk17_headless;
+            };
+          };
+        }
+      );
   });
 in
 scope // scope.ngipkgs
