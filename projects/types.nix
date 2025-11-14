@@ -826,8 +826,4 @@ rec {
       };
     };
   };
-
-  options.projects = mkOption {
-    type = with types; attrsOf (submodule project);
-  };
 }

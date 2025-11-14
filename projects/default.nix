@@ -23,7 +23,7 @@ let
     toList
     ;
 
-  types = import ./types.nix { inherit lib; };
+  types' = import ./types.nix { inherit lib; };
 
   baseDirectory = ./.;
 
@@ -47,51 +47,57 @@ let
     # TODO: use fileset and filter for `gitTracked` files
     concatMapAttrs names (readDir baseDirectory);
 
-  projectDirectories2 = lib.pipe ./. [
-    (lib.fileset.fileFilter (file: file.name == "default.nix"))
-    (lib.fileset.toList)
-    (map (
-      file:
-      let
-        # return the relative path of the file as a string, compared to the
-        # current directory
-        relative-path = lib.path.removePrefix ./. file;
+  projectModules = lib.listToAttrs (
+    lib.pipe ./. [
+      (fileFilter (file: file.name == "default.nix"))
+      (toList)
+      (map (
+        file:
+        let
+          # return the relative path of the file as a string, compared to the
+          # current directory
+          relative-path = lib.path.removePrefix ./. file;
 
-        project-name = lib.pipe relative-path [
-          # clean up and return project name
-          (lib.removePrefix "./")
-          (lib.removeSuffix "default.nix")
-          (lib.splitString "/")
-          (list: lib.elemAt list 0)
-        ];
-      in
-      project-name
-    ))
+          project-name = lib.pipe relative-path [
+            # clean up and return project name
+            (lib.removePrefix "./")
+            (lib.removeSuffix "default.nix")
+            (lib.splitString "/")
+            (list: lib.elemAt list 0)
+          ];
+        in
+        project-name
+      ))
 
-    # remove files in ./.
-    (lib.filter (name: name != ""))
+      # remove files in ./.
+      (lib.filter (name: name != ""))
 
-    # get modules
-    (map (filename: "${./.}/${filename}/default.nix"))
-  ];
+      # get modules
+      (map (projectName: {
+        name = projectName;
+        value = import "${./.}/${projectName}/default.nix";
+      }))
+    ]
+  );
 in
 rec {
-  inherit projectDirectories2;
+  inherit projectModules;
 
   raw-projects = {
-    options.projects = types.options.projects;
-    config.projects = mapAttrs (name: directory: import directory args) projectDirectories2;
+    options.projects = types'.options.projects;
+    config.projects = mapAttrs (name: directory: import directory args) projectDirectories;
   };
 
   eval-projects = lib.evalModules {
     modules = [
-      { options = types.options; }
-    ]
-    ++ projectDirectories2;
-    specialArgs = {
-      inherit pkgs system;
-      modulesPath = "${sources.nixpkgs}/nixos/modules";
-    };
+      {
+        options.projects = lib.mkOption {
+          type = with lib.types; attrsOf (submodule types'.project);
+        };
+        config.projects = projectModules;
+      }
+    ];
+    specialArgs.modulesPath = "${sources.nixpkgs}/nixos/modules";
   };
 
   projects = eval-projects.config.projects;
