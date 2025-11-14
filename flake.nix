@@ -37,7 +37,16 @@
       ...
     }@inputs:
     let
-      importFlake = arg: (system: (import ./. { inherit self inputs system; }).flakeAttrs.${arg} or { });
+      importFlake =
+        arg:
+        (
+          system:
+          (import ./. {
+            flake = self;
+            sources = inputs;
+            inherit system;
+          }).flakeAttrs.${arg} or { }
+        );
       systemAgnosticOutputs = flake-utils.lib.eachDefaultSystemPassThrough (importFlake "systemAgnostic");
       eachDefaultSystemOutputs = flake-utils.lib.eachDefaultSystem (importFlake "systemAgnostic");
     in
