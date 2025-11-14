@@ -46,233 +46,237 @@ let
       ;
     lib = extended;
   };
-in
-rec {
-  lib = extended;
 
-  inherit
-    pkgs
-    system
-    sources
-    extension
-    ngipkgs
-    ;
-
-  overlays.default =
-    final: prev:
-    import ./pkgs/by-name {
-      pkgs = prev;
-      inherit lib dream2nix mkSbtDerivation;
-    };
-
-  examples =
-    with lib;
-    mapAttrs (
-      _: project: mapAttrs (_: example: example.module) project.nixos.examples
-    ) hydrated-projects;
-
-  nixos-modules =
-    with lib;
-    # TODO: this is a weird shape for what we need: ngipkgs, services, modules?
+  scope = lib.makeScope pkgs.newScope (
+    self:
     {
-      # Allow using packages from `ngipkgs` to be used alongside regular `pkgs`
-      ngipkgs =
-        { ... }:
-        {
-          nixpkgs.overlays = [ overlays.default ];
+      lib = extended;
+
+      inherit
+        pkgs
+        system
+        sources
+        extension
+        ngipkgs
+        ;
+
+      overlays.default =
+        final: prev:
+        import ./pkgs/by-name {
+          pkgs = prev;
+          inherit lib dream2nix mkSbtDerivation;
         };
-    }
-    // foldl recursiveUpdate { } (map (project: project.nixos.modules) (attrValues hydrated-projects));
 
-  extendedNixosModules =
-    let
-      ngipkgsModules = lib.attrValues (lib.flattenAttrs "." nixos-modules);
-      nixosModules = import "${sources.nixpkgs}/nixos/modules/module-list.nix";
-    in
-    nixosModules ++ ngipkgsModules;
+      examples =
+        with lib;
+        mapAttrs (
+          _: project: mapAttrs (_: example: example.module) project.nixos.examples
+        ) hydrated-projects;
 
-  overview = import ./overview {
-    inherit lib projects;
-    self = flake;
-    pkgs = pkgs.extend overlays.default;
-    options = optionsDoc.optionsNix;
-  };
-
-  optionsDoc = pkgs.nixosOptionsDoc {
-    inherit
-      (lib.evalModules {
-        modules = [
-          {
-            nixpkgs.hostPlatform = system;
-
-            networking = {
-              domain = "invalid";
-              hostName = "options";
+      nixos-modules =
+        with lib;
+        # TODO: this is a weird shape for what we need: ngipkgs, services, modules?
+        {
+          # Allow using packages from `ngipkgs` to be used alongside regular `pkgs`
+          ngipkgs =
+            { ... }:
+            {
+              nixpkgs.overlays = [ overlays.default ];
             };
+        }
+        // foldl recursiveUpdate { } (map (project: project.nixos.modules) (attrValues hydrated-projects));
 
-            system.stateVersion = "23.05";
-          }
-          ./overview/demo/shell.nix
-        ]
-        ++ extendedNixosModules;
-        specialArgs.modulesPath = "${sources.nixpkgs}/nixos/modules";
-      })
-      options
-      ;
-  };
+      extendedNixosModules =
+        let
+          ngipkgsModules = lib.attrValues (lib.flattenAttrs "." nixos-modules);
+          nixosModules = import "${sources.nixpkgs}/nixos/modules/module-list.nix";
+        in
+        nixosModules ++ ngipkgsModules;
 
-  inherit
-    (import ./projects {
-      inherit lib system;
-      pkgs = pkgs.extend overlays.default;
-      sources = {
-        inputs = sources;
-        modules = nixos-modules;
-        inherit examples;
+      overview = import ./overview {
+        inherit lib projects;
+        self = flake;
+        pkgs = pkgs.extend overlays.default;
+        options = optionsDoc.optionsNix;
       };
-    })
-    checks
-    projects
-    hydrated-projects
-    ;
 
-  shell = pkgs.mkShellNoCC {
-    packages = [
-      # live overview watcher
-      (pkgs.devmode.override {
-        buildArgs = "-A overview --show-trace -v";
-      })
+      optionsDoc = pkgs.nixosOptionsDoc {
+        inherit
+          (lib.evalModules {
+            modules = [
+              {
+                nixpkgs.hostPlatform = system;
 
-      (pkgs.writeShellApplication {
-        # TODO: have the program list available tests
-        name = "ngipkgs-test";
-        text = ''
-          export pr="$1"
-          export proj="$2"
-          export test="$3"
-          # remove the first args and feed the rest (for example flags)
-          export args="''${*:4}"
+                networking = {
+                  domain = "invalid";
+                  hostName = "options";
+                };
 
-          nix build --override-input nixpkgs "github:NixOS/nixpkgs?ref=pull/$pr/merge" .#checks.x86_64-linux.projects/"$proj"/nixos/tests/"$test" "$args"
-        '';
-      })
+                system.stateVersion = "23.05";
+              }
+              ./overview/demo/shell.nix
+            ]
+            ++ extendedNixosModules;
+            specialArgs.modulesPath = "${sources.nixpkgs}/nixos/modules";
+          })
+          options
+          ;
+      };
 
-      # NOTE: currently, this only works with flakes, because `nix-update` can't
-      # find `maintainers/scripts/update.nix` otherwise
-      #
-      # nix-shell --run 'update PACKAGE_NAME --use-update-script'
-      (pkgs.writeShellApplication {
-        name = "update";
-        runtimeInputs = with pkgs; [ nix-update ];
-        text = ''
-          package=$1; shift # past value
-          nix-update --flake --use-update-script "$package" "$@"
-        '';
-      })
+      inherit
+        (import ./projects {
+          inherit lib system;
+          pkgs = pkgs.extend overlays.default;
+          sources = {
+            inputs = sources;
+            modules = nixos-modules;
+            inherit examples;
+          };
+        })
+        checks
+        projects
+        hydrated-projects
+        ;
 
-      (pkgs.writeShellApplication {
-        name = "update-all";
-        runtimeInputs = with pkgs; [ nix-update ];
-        text =
-          let
-            skipped-packages = [
-              "atomic-browser" # -> atomic-server
-              "atomic-cli" # -> atomic-server
-              "firefox-meta-press" # -> meta-press
-              "inventaire" # -> inventaire-client
-              "kbin" # -> kbin-backend
-              "kbin-frontend" # -> kbin-backend
-              "pretalxFull" # -> pretalx
-              # FIX: needs custom update script
-              "marginalia-search"
-              "peertube-plugin-livechat"
-              # FIX: dream2nix
-              "corestore"
-              "liberaforms"
-              # FIX: package scope
-              "bigbluebutton"
-              "heads"
-              # FIX: don't update `sparql-queries` if there is no version change
-              "inventaire-client"
-              # fetcher not supported
-              "libervia-backend"
-              "libervia-desktop-kivy"
-              "libervia-media"
-              "libervia-templates"
-              "sat-tmp"
-              "urwid-satext"
-              # broken package
-              "libresoc-nmigen"
-              "libresoc-verilog"
-            ];
-            update-packages = with lib; filter (x: !elem x skipped-packages) (attrNames ngipkgs);
-            update-commands = lib.concatMapStringsSep "\n" (package: ''
-              if ! nix-update --flake --use-update-script "${package}" "$@"; then
-                echo "${package}" >> "$TMPDIR/failed_updates.txt"
-              fi
-            '') update-packages;
-          in
-          # bash
-          ''
-            TMPDIR=$(mktemp -d)
+      shell = pkgs.mkShellNoCC {
+        packages = [
+          # live overview watcher
+          (pkgs.devmode.override {
+            buildArgs = "-A overview --show-trace -v";
+          })
 
-            echo -n> "$TMPDIR/failed_updates.txt"
+          (pkgs.writeShellApplication {
+            # TODO: have the program list available tests
+            name = "ngipkgs-test";
+            text = ''
+              export pr="$1"
+              export proj="$2"
+              export test="$3"
+              # remove the first args and feed the rest (for example flags)
+              export args="''${*:4}"
 
-            ${update-commands}
+              nix build --override-input nixpkgs "github:NixOS/nixpkgs?ref=pull/$pr/merge" .#checks.x86_64-linux.projects/"$proj"/nixos/tests/"$test" "$args"
+            '';
+          })
 
-            if [ -s "$TMPDIR/failed_updates.txt" ]; then
-              echo -e "\nFailed to update the following packages:"
-              cat "$TMPDIR/failed_updates.txt"
-            else
-              echo "All packages updated successfully!"
-            fi
-          '';
-      })
+          # NOTE: currently, this only works with flakes, because `nix-update` can't
+          # find `maintainers/scripts/update.nix` otherwise
+          #
+          # nix-shell --run 'update PACKAGE_NAME --use-update-script'
+          (pkgs.writeShellApplication {
+            name = "update";
+            runtimeInputs = with pkgs; [ nix-update ];
+            text = ''
+              package=$1; shift # past value
+              nix-update --flake --use-update-script "$package" "$@"
+            '';
+          })
 
-      # nix-shell --run nixdoc-to-github
-      (nixdoc-to-github.lib.nixdoc-to-github.run {
-        description = "NGI Project Types";
-        category = "";
-        file = "${toString ./projects/types.nix}";
-        output = "${toString ./maintainers/docs/project.md}";
-      })
-    ];
-  };
+          (pkgs.writeShellApplication {
+            name = "update-all";
+            runtimeInputs = with pkgs; [ nix-update ];
+            text =
+              let
+                skipped-packages = [
+                  "atomic-browser" # -> atomic-server
+                  "atomic-cli" # -> atomic-server
+                  "firefox-meta-press" # -> meta-press
+                  "inventaire" # -> inventaire-client
+                  "kbin" # -> kbin-backend
+                  "kbin-frontend" # -> kbin-backend
+                  "pretalxFull" # -> pretalx
+                  # FIX: needs custom update script
+                  "marginalia-search"
+                  "peertube-plugin-livechat"
+                  # FIX: dream2nix
+                  "corestore"
+                  "liberaforms"
+                  # FIX: package scope
+                  "bigbluebutton"
+                  "heads"
+                  # FIX: don't update `sparql-queries` if there is no version change
+                  "inventaire-client"
+                  # fetcher not supported
+                  "libervia-backend"
+                  "libervia-desktop-kivy"
+                  "libervia-media"
+                  "libervia-templates"
+                  "sat-tmp"
+                  "urwid-satext"
+                  # broken package
+                  "libresoc-nmigen"
+                  "libresoc-verilog"
+                ];
+                update-packages = with lib; filter (x: !elem x skipped-packages) (attrNames ngipkgs);
+                update-commands = lib.concatMapStringsSep "\n" (package: ''
+                  if ! nix-update --flake --use-update-script "${package}" "$@"; then
+                    echo "${package}" >> "$TMPDIR/failed_updates.txt"
+                  fi
+                '') update-packages;
+              in
+              # bash
+              ''
+                TMPDIR=$(mktemp -d)
 
-  metrics = import ./maintainers/metrics.nix {
-    inherit
-      lib
-      pkgs
-      ngipkgs
-      ;
-    raw-projects = hydrated-projects;
-  };
+                echo -n> "$TMPDIR/failed_updates.txt"
 
-  report = import ./maintainers/report {
-    inherit lib pkgs metrics;
-  };
+                ${update-commands}
 
-  project-demos = lib.filterAttrs (name: value: value != null) (
-    lib.mapAttrs (name: value: value.nixos.demo.vm or value.nixos.demo.shell or null) projects
+                if [ -s "$TMPDIR/failed_updates.txt" ]; then
+                  echo -e "\nFailed to update the following packages:"
+                  cat "$TMPDIR/failed_updates.txt"
+                else
+                  echo "All packages updated successfully!"
+                fi
+              '';
+          })
+
+          # nix-shell --run nixdoc-to-github
+          (nixdoc-to-github.lib.nixdoc-to-github.run {
+            description = "NGI Project Types";
+            category = "";
+            file = "${toString ./projects/types.nix}";
+            output = "${toString ./maintainers/docs/project.md}";
+          })
+        ];
+      };
+
+      metrics = import ./maintainers/metrics.nix {
+        inherit
+          lib
+          pkgs
+          ngipkgs
+          ;
+        raw-projects = hydrated-projects;
+      };
+
+      report = import ./maintainers/report {
+        inherit lib pkgs metrics;
+      };
+
+      project-demos = lib.filterAttrs (name: value: value != null) (
+        lib.mapAttrs (name: value: value.nixos.demo.vm or value.nixos.demo.shell or null) projects
+      );
+
+      demo = import ./overview/demo {
+        inherit
+          lib
+          pkgs
+          sources
+          system
+          ;
+        demo-modules = lib.flatten (
+          lib.mapAttrsToList (name: value: value.module-demo.imports) project-demos
+        );
+        nixos-modules = extendedNixosModules;
+      };
+
+      inherit (demo)
+        demo-vm
+        demo-shell
+        ;
+    } # required for update scripts
+    // ngipkgs
   );
-
-  demo = import ./overview/demo {
-    inherit
-      lib
-      pkgs
-      sources
-      system
-      ;
-    demo-modules = lib.flatten (
-      lib.mapAttrsToList (name: value: value.module-demo.imports) project-demos
-    );
-    nixos-modules = extendedNixosModules;
-  };
-
-  inherit (demo)
-    demo-vm
-    demo-shell
-    ;
-}
-# required for update scripts
-// ngipkgs
+in
+scope
