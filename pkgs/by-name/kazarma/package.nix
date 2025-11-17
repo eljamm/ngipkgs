@@ -17,14 +17,14 @@ let
   beamPackages' = beamPackages.extend (self: super: { elixir = self.elixir_1_17; });
 
   pname = "kazarma";
-  version = "1.0.0-alpha.1-unstable-2025-06-30";
+  version = "1.0.0-alpha.1-unstable-2025-11-04";
   src = fetchFromGitLab {
     group = "technostructures";
     owner = "kazarma";
     repo = "kazarma";
-    rev = "2cd1ca80d3c54e54a11fd3b9079f6c4fa6330302";
+    rev = "fbffc834c731631f6c3b489f030bc3431bc9eb9a";
     fetchSubmodules = true;
-    hash = "sha256-Ry5xgGeVzzjnumlYXrU8vzvf1l7IeVfSL+RvGPmWq9U=";
+    hash = "sha256-r+3U/63EVFDQGcRVk08+IZOflrWNtClukZpR6CmlltY=";
   };
 
   cldr = fetchFromGitHub {
@@ -51,7 +51,7 @@ beamPackages'.mixRelease {
   mixFodDeps = beamPackages'.fetchMixDeps {
     pname = "mix-deps-${pname}";
     inherit version src;
-    hash = "sha256-APOzFj+3yFrpDV8U2bZCJwZC9iHGISeKcZUGS8d3mtA=";
+    hash = "sha256-nsTAsVoDPmKQVjybaTDu18UGtqsvBz/A5mzzLKBqAHY=";
   };
 
   nativeBuildInputs = [

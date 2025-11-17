@@ -6,15 +6,15 @@
 }:
 buildNpmPackage (finalAttrs: {
   pname = "peertube-plugin-auto-mute";
-  version = "0.0.6";
+  version = "0-unstable-2025-10-29";
 
   src = fetchFromGitLab {
     domain = "framagit.org";
     owner = "framasoft";
     repo = "peertube/official-plugins";
-    rev = "932c51d45ce3160ab9ba097bbede51a44d890a61";
+    rev = "b6ee1eee69f3e7ffd951c354b39f22207f500f57";
     sparseCheckout = [ "peertube-plugin-auto-mute" ];
-    hash = "sha256-OOIUXs09Gx5WkXE8W8BpIwwpSxqDp0ifJh5PsA4Eoko=";
+    hash = "sha256-K5iOYbl0VliFsIIvrmT4Ws3qic2JMjxnGmO1LnJMjN8=";
   };
 
   sourceRoot = "${finalAttrs.src.name}/peertube-plugin-auto-mute";
