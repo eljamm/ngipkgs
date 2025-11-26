@@ -34,7 +34,7 @@ let
         '';
       };
 
-      checks = self.call ./checks.nix { };
+      checks = scope.callPackage ./checks.nix { };
 
       devShells.default = pkgs.mkShell {
         inherit (flake.checks."infra/pre-commit") shellHook;
@@ -70,6 +70,8 @@ let
 
       # WARN: this is currently unstable and subject to change in the future
       nixosModules = nixos-modules;
+
+      projects = scope.hydrated-projects;
     };
   };
 

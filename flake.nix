@@ -39,10 +39,12 @@
     let
       flake = self;
       sources = inputs;
+
       importFlake =
         arg: (system: (import ./. { inherit flake sources system; }).flakeAttrs.${arg} or { });
+
       systemAgnosticOutputs = flake-utils.lib.eachDefaultSystemPassThrough (importFlake "systemAgnostic");
-      eachDefaultSystemOutputs = flake-utils.lib.eachDefaultSystem (importFlake "systemAgnostic");
+      eachDefaultSystemOutputs = flake-utils.lib.eachDefaultSystem (importFlake "perSystem");
     in
     eachDefaultSystemOutputs // systemAgnosticOutputs;
 }
