@@ -28,29 +28,17 @@
       ...
     }@inputs:
     let
-      systemAgnosticOutputs = flake-utils.lib.eachDefaultSystemPassThrough (
-        system:
-        let
-          default' = import ./. {
-            flake = self;
-            sources = inputs;
-            inherit system;
-          };
-        in
-        default'.flakeAttrs.systemAgnostic
-      );
+      flake = self;
+      sources = inputs;
 
-      eachDefaultSystemOutputs = flake-utils.lib.eachDefaultSystem (
-        system:
-        let
-          default = import ./. {
-            flake = self;
-            sources = inputs;
-            inherit system;
-          };
-        in
-        default.flakeAttrs.perSystem
-      );
+      importFlake =
+        arg: (system: (import ./. { inherit flake sources system; }).flakeAttrs.${arg} or { });
+
+      # system-independant (e.g. nixosModules)
+      systemAgnosticOutputs = flake-utils.lib.eachDefaultSystemPassThrough (importFlake "systemAgnostic");
+
+      # depends on the system (e.g. packages.x86_64-linux)
+      eachDefaultSystemOutputs = flake-utils.lib.eachDefaultSystem (importFlake "perSystem");
     in
     eachDefaultSystemOutputs // systemAgnosticOutputs;
 }
