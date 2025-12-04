@@ -19,22 +19,6 @@ in
   nixpkgsLib ? import "${sources.nixpkgs}/lib",
 }:
 let
-  dream2nix = (import sources.dream2nix).overrideInputs { inherit (sources) nixpkgs; };
-  nixdoc-to-github = pkgs.callPackage sources.nixdoc-to-github { };
-  mkSbtDerivation =
-    x:
-    import sources.sbt-derivation (
-      x
-      // {
-        inherit pkgs;
-        overrides = {
-          sbt = pkgs.sbt.override {
-            jre = pkgs.jdk17_headless;
-          };
-        };
-      }
-    );
-
   flakeAttrs = {
     perSystem = {
       packages = default.ngipkgs;
@@ -50,41 +34,50 @@ let
   default = nixpkgsLib.makeScope pkgs.newScope (self: {
     lib = nixpkgsLib.extend self.overlays.customLib;
 
+    # Similar to `pkgs.callPackage`, but aware of `default` scope attributes.
+    # The result is overridable.
+    call = self.newScope {
+      nixdoc-to-github = pkgs.callPackage sources.nixdoc-to-github { };
+      dream2nix = (import sources.dream2nix).overrideInputs { inherit (sources) nixpkgs; };
+    };
+
+    # Similar to `import`, but aware of `default` scope attributes.
+    # Non overridable.
+    import =
+      f: args:
+      removeAttrs (self.call f args) [
+        "override"
+        "overrideDerivation"
+      ];
+
     inherit
       pkgs
       system
       sources
       ;
 
-    ngipkgs = self.callPackage ./pkgs/by-name {
-      inherit dream2nix mkSbtDerivation;
-    };
+    ngipkgs = self.import ./pkgs/by-name { };
 
-    shell = self.callPackage ./maintainers/shells/default.nix {
-      inherit nixdoc-to-github;
-    };
+    shell = self.import ./maintainers/shells/default.nix { };
 
     overlays = {
       default =
         final: prev:
-        import ./pkgs/by-name {
+        self.import ./pkgs/by-name {
           pkgs = prev;
-          inherit lib dream2nix mkSbtDerivation;
         };
 
       customLib =
         _: _:
-        import ./pkgs/lib.nix {
+        self.import ./pkgs/lib.nix {
           lib = nixpkgsLib;
-          inherit sources system;
         };
 
-      # apply package fixes
-      fixups = import ./pkgs/overlays.nix { inherit lib; };
+      fixups = self.import ./pkgs/overlays.nix { };
     };
 
-    overview = import ./overview {
-      inherit lib projects;
+    overview = self.import ./overview {
+      inherit projects;
       self = flake;
       pkgs = pkgs.extend self.overlays.default;
       options = self.optionsDoc.optionsNix;
@@ -140,11 +133,11 @@ let
         ;
     };
 
-    metrics = self.callPackage ./maintainers/metrics.nix {
+    metrics = self.import ./maintainers/metrics.nix {
       raw-projects = hydrated-projects;
     };
 
-    report = self.callPackage ./maintainers/report { };
+    report = self.import ./maintainers/report { };
   });
 
   inherit
