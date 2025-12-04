@@ -23,50 +23,39 @@
   outputs =
     {
       self,
-      nixpkgs,
       flake-utils,
-      pre-commit-hooks,
       ...
     }@inputs:
     let
-      classic' = import ./. {
-        flake = self;
-        system = null;
-      };
-
-      inherit (classic')
-        lib
-        ;
-
-      inherit (lib)
-        concatMapAttrs
-        filterAttrs
-        ;
-
-      toplevel = machine: machine.config.system.build.toplevel;
-
-      # Finally, define the system-agnostic outputs.
       systemAgnosticOutputs = flake-utils.lib.eachDefaultSystemPassThrough (
-        system: classic'.flakeAttrs.systemAgnostic
+        system:
+        let
+          default' = import ./. {
+            flake = self;
+            sources = inputs;
+            inherit system;
+          };
+        in
+        default'.flakeAttrs.systemAgnostic
       );
 
       eachDefaultSystemOutputs = flake-utils.lib.eachDefaultSystem (
         system:
         let
-          classic = import ./. {
+          default = import ./. {
             flake = self;
             inherit system;
           };
 
-          inherit (classic) pkgs;
+          inherit (default) pkgs;
         in
         rec {
-          packages = classic.packages;
-          checks = classic.flakeAttrs.perSystem.checks;
+          packages = default.packages;
+          checks = default.flakeAttrs.perSystem.checks;
 
           devShells.default = pkgs.mkShell {
             inherit (checks."infra/pre-commit") shellHook;
-            buildInputs = checks."infra/pre-commit".enabledPackages ++ classic.shell.nativeBuildInputs;
+            buildInputs = checks."infra/pre-commit".enabledPackages ++ default.shell.nativeBuildInputs;
           };
 
           formatter = pkgs.writeShellApplication {

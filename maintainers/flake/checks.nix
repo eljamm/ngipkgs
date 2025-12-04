@@ -1,6 +1,6 @@
 {
   lib,
-  self,
+  flake,
   system,
   sources,
 
@@ -20,7 +20,8 @@ let
     concatMapAttrs
     ;
 
-  # TODO
+  # TODO:
+  self = flake;
   projects = hydrated-projects;
 
   # everything must evaluate for checks to run

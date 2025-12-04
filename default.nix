@@ -52,6 +52,7 @@ let
       pkgs
       system
       sources
+      flake
       default # expose final scope
       flakeAttrs
       ;

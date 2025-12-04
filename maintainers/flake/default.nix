@@ -21,15 +21,17 @@
           '';
     };
 
-    checks = default.inputs.flake-utils.filterPackages system (default.import ./checks.nix { });
+    checks = default.sources.flake-utils.lib.filterPackages system (default.call ./checks.nix { });
   };
 
   systemAgnostic = {
     lib = default.overlays.customLib null null;
 
     nixosConfigurations = {
-      makemake = import ./infra/makemake { inherit (default) inputs; };
+      makemake = import ../../infra/makemake { inputs = default.sources; };
     };
+
+    toplevel = machine: machine.config.system.build.toplevel; # for makemake
 
     # WARN: this is currently unstable and subject to change in the future
     nixosModules = default.nixos-modules;
