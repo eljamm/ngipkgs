@@ -1,14 +1,9 @@
-let
-  flake-inputs = import (fetchTarball {
+{
+  flake-inputs ? import (fetchTarball {
     url = "https://github.com/fricklerhandwerk/flake-inputs/tarball/4.1.0";
     sha256 = "1j57avx2mqjnhrsgq3xl7ih8v7bdhz1kj3min6364f486ys048bm";
-  });
-  inherit (flake-inputs)
-    import-flake
-    ;
-in
-{
-  flake ? import-flake { src = ./.; },
+  }),
+  flake ? flake-inputs.import-flake { src = ./.; },
   sources ? flake.inputs,
   system ? builtins.currentSystem,
   pkgs ? import sources.nixpkgs {
@@ -36,9 +31,9 @@ let
     # Similar to `import`, but aware of `default` scope attributes.
     # Non overridable.
     import =
-      f: args:
+      file: args:
       let
-        result = self.call f args;
+        result = self.call file args;
       in
       if lib.isAttrs result then
         removeAttrs result [
@@ -88,6 +83,20 @@ let
       options = self.optionsDoc.optionsNix;
     };
 
+    nixos-modules =
+      # TODO: this is a weird shape for what we need: ngipkgs, services, modules?
+      {
+        # Allow using packages from `ngipkgs` to be used alongside regular `pkgs`
+        ngipkgs =
+          { ... }:
+          {
+            nixpkgs.overlays = [ self.overlays.default ] ++ self.overlays.fixups;
+          };
+      }
+      // lib.foldl lib.recursiveUpdate { } (
+        map (project: project.nixos.modules) (lib.attrValues self.hydrated-projects)
+      );
+
     project-utils = self.import ./projects {
       pkgs = pkgs.extend default.overlays.default;
       sources = {
@@ -115,20 +124,6 @@ let
       # - nix run .#demos.PROJECT_NAME
       demos
       ;
-
-    nixos-modules =
-      # TODO: this is a weird shape for what we need: ngipkgs, services, modules?
-      {
-        # Allow using packages from `ngipkgs` to be used alongside regular `pkgs`
-        ngipkgs =
-          { ... }:
-          {
-            nixpkgs.overlays = [ self.overlays.default ] ++ self.overlays.fixups;
-          };
-      }
-      // lib.foldl lib.recursiveUpdate { } (
-        map (project: project.nixos.modules) (lib.attrValues self.hydrated-projects)
-      );
 
     metrics = self.import ./maintainers/metrics.nix {
       raw-projects = self.hydrated-projects;

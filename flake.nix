@@ -20,7 +20,7 @@
   # See <https://github.com/ngi-nix/ngipkgs/issues/24> for plans to support Darwin.
   inputs.systems.url = "github:nix-systems/default-linux";
 
-  # Flake attributes are defined in ./flake and imported from ./default.nix
+  # Flake attributes are defined in ./maintainers/flake and imported from ./default.nix
   outputs =
     {
       self,
