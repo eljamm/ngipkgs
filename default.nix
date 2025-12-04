@@ -19,18 +19,9 @@ in
   nixpkgsLib ? import "${sources.nixpkgs}/lib",
 }:
 let
-  # TODO: move to ./flake
-  flakeAttrs = {
-    perSystem = {
-      packages = default.ngipkgs;
-    };
-
-    systemAgnostic = {
-      inherit (default) overlays;
-    };
-  };
-
   lib = default.lib;
+
+  flakeAttrs = default.import ./maintainers/flake { };
 
   default = nixpkgsLib.makeScope pkgs.newScope (self: {
     lib = nixpkgsLib.extend self.overlays.customLib;
@@ -61,6 +52,8 @@ let
       pkgs
       system
       sources
+      default # expose final scope
+      flakeAttrs
       ;
 
     ngipkgs = self.import ./pkgs/by-name { };
