@@ -45,10 +45,16 @@ let
     # Non overridable.
     import =
       f: args:
-      removeAttrs (self.call f args) [
-        "override"
-        "overrideDerivation"
-      ];
+      let
+        result = self.call f args;
+      in
+      if lib.isAttrs result then
+        removeAttrs result [
+          "override"
+          "overrideDerivation"
+        ]
+      else
+        result;
 
     inherit
       pkgs
@@ -69,11 +75,12 @@ let
 
       customLib =
         _: _:
-        self.import ./pkgs/lib.nix {
+        import ./pkgs/lib.nix {
           lib = nixpkgsLib;
+          inherit sources system;
         };
 
-      fixups = self.import ./pkgs/overlays.nix { };
+      fixups = self.call ./pkgs/overlays.nix { };
     };
 
     overview = self.import ./overview {
