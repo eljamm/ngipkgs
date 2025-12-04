@@ -7,6 +7,8 @@
   nixos-modules,
 }:
 let
+  nixosModules = import "${sources.nixpkgs}/nixos/modules/module-list.nix";
+
   raw-demos = lib.pipe projects [
     (lib.mapAttrs (_: value: value.nixos.demo.vm or value.nixos.demo.shell or null))
     (lib.filterAttrs (_: value: value != null))
@@ -29,6 +31,7 @@ rec {
         (sources.nixpkgs + "/nixos/modules/profiles/qemu-guest.nix")
         (sources.nixpkgs + "/nixos/modules/virtualisation/qemu-vm.nix")
       ]
+      ++ nixosModules
       ++ nixos-modules
       ++ demo-modules;
       specialArgs = { inherit sources; };

@@ -19,6 +19,7 @@ in
   nixpkgsLib ? import "${sources.nixpkgs}/lib",
 }:
 let
+  # TODO: move to ./flake
   flakeAttrs = {
     perSystem = {
       packages = default.ngipkgs;
@@ -83,6 +84,10 @@ let
       fixups = self.call ./pkgs/overlays.nix { };
     };
 
+    optionsDoc = pkgs.nixosOptionsDoc {
+      inherit (self.project-utils.eval-projects) options;
+    };
+
     overview = self.import ./overview {
       self = flake;
       pkgs = pkgs.extend self.overlays.default;
@@ -94,7 +99,9 @@ let
       sources = {
         inputs = sources;
         modules = default.nixos-modules;
-        inherit (default) examples;
+        examples = lib.mapAttrs (
+          _: project: lib.mapAttrs (_: example: example.module) project.nixos.examples
+        ) self.hydrated-projects;
       };
     };
 
@@ -104,9 +111,7 @@ let
       hydrated-projects
       ;
 
-    demo-utils = self.import ./overview/demo {
-      nixos-modules = default.extendedNixosModules;
-    };
+    demo-utils = self.import ./overview/demo { };
 
     inherit (self.demo-utils)
       # for demo code activation. used in the overview code snippets
@@ -116,12 +121,6 @@ let
       # - nix run .#demos.PROJECT_NAME
       demos
       ;
-
-    #TODO: cleanp
-
-    examples = lib.mapAttrs (
-      _: project: lib.mapAttrs (_: example: example.module) project.nixos.examples
-    ) self.hydrated-projects;
 
     nixos-modules =
       # TODO: this is a weird shape for what we need: ngipkgs, services, modules?
@@ -136,36 +135,6 @@ let
       // lib.foldl lib.recursiveUpdate { } (
         map (project: project.nixos.modules) (lib.attrValues self.hydrated-projects)
       );
-
-    extendedNixosModules =
-      let
-        ngipkgsModules = lib.attrValues (lib.flattenAttrs "." self.nixos-modules);
-        nixosModules = import "${sources.nixpkgs}/nixos/modules/module-list.nix";
-      in
-      nixosModules ++ ngipkgsModules;
-
-    optionsDoc = pkgs.nixosOptionsDoc {
-      inherit
-        (lib.evalModules {
-          modules = [
-            {
-              nixpkgs.hostPlatform = system;
-
-              networking = {
-                domain = "invalid";
-                hostName = "options";
-              };
-
-              system.stateVersion = "23.05";
-            }
-            ./overview/demo/shell.nix
-          ]
-          ++ self.extendedNixosModules;
-          specialArgs.modulesPath = "${sources.nixpkgs}/nixos/modules";
-        })
-        options
-        ;
-    };
 
     metrics = self.import ./maintainers/metrics.nix {
       raw-projects = self.hydrated-projects;
