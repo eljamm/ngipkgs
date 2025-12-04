@@ -77,21 +77,46 @@ let
     };
 
     overview = self.import ./overview {
-      inherit projects;
       self = flake;
       pkgs = pkgs.extend self.overlays.default;
       options = self.optionsDoc.optionsNix;
     };
 
-    ##
-    examples =
-      with lib;
-      mapAttrs (
-        _: project: mapAttrs (_: example: example.module) project.nixos.examples
-      ) hydrated-projects;
+    project-utils = self.import ./projects {
+      pkgs = pkgs.extend default.overlays.default;
+      sources = {
+        inputs = sources;
+        modules = default.nixos-modules;
+        inherit (default) examples;
+      };
+    };
+
+    inherit (self.project-utils)
+      checks
+      projects
+      hydrated-projects
+      ;
+
+    demo-utils = self.import ./overview/demo {
+      nixos-modules = default.extendedNixosModules;
+    };
+
+    inherit (self.demo-utils)
+      # for demo code activation. used in the overview code snippets
+      demo-shell
+      demo-vm
+      # - $(nix-build -A demos.PROJECT_NAME)
+      # - nix run .#demos.PROJECT_NAME
+      demos
+      ;
+
+    #TODO: cleanp
+
+    examples = lib.mapAttrs (
+      _: project: lib.mapAttrs (_: example: example.module) project.nixos.examples
+    ) self.hydrated-projects;
 
     nixos-modules =
-      with lib;
       # TODO: this is a weird shape for what we need: ngipkgs, services, modules?
       {
         # Allow using packages from `ngipkgs` to be used alongside regular `pkgs`
@@ -101,7 +126,9 @@ let
             nixpkgs.overlays = [ self.overlays.default ] ++ self.overlays.fixups;
           };
       }
-      // foldl recursiveUpdate { } (map (project: project.nixos.modules) (attrValues hydrated-projects));
+      // lib.foldl lib.recursiveUpdate { } (
+        map (project: project.nixos.modules) (lib.attrValues self.hydrated-projects)
+      );
 
     extendedNixosModules =
       let
@@ -134,45 +161,11 @@ let
     };
 
     metrics = self.import ./maintainers/metrics.nix {
-      raw-projects = hydrated-projects;
+      raw-projects = self.hydrated-projects;
     };
 
     report = self.import ./maintainers/report { };
   });
-
-  inherit
-    (import ./projects {
-      inherit lib system;
-      pkgs = pkgs.extend default.overlays.default;
-      sources = {
-        inputs = sources;
-        modules = default.nixos-modules;
-        inherit (default) examples;
-      };
-    })
-    checks
-    projects
-    hydrated-projects
-    ;
-
-  inherit
-    (import ./overview/demo {
-      inherit
-        lib
-        pkgs
-        sources
-        system
-        projects
-        ;
-      nixos-modules = default.extendedNixosModules;
-    })
-    # for demo code activation. used in the overview code snippets
-    demo-shell
-    demo-vm
-    # - $(nix-build -A demos.PROJECT_NAME)
-    # - nix run .#demos.PROJECT_NAME
-    demos
-    ;
 in
 default
 # required for update scripts
