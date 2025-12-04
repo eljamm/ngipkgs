@@ -20,6 +20,7 @@
   # See <https://github.com/ngi-nix/ngipkgs/issues/24> for plans to support Darwin.
   inputs.systems.url = "github:nix-systems/default-linux";
 
+  # Flake attributes are defined in ./flake and imported from ./default.nix
   outputs =
     {
       self,
@@ -44,33 +45,11 @@
         let
           default = import ./. {
             flake = self;
+            sources = inputs;
             inherit system;
           };
-
-          inherit (default) pkgs;
         in
-        rec {
-          packages = default.packages;
-          checks = default.flakeAttrs.perSystem.checks;
-
-          devShells.default = pkgs.mkShell {
-            inherit (checks."infra/pre-commit") shellHook;
-            buildInputs = checks."infra/pre-commit".enabledPackages ++ default.shell.nativeBuildInputs;
-          };
-
-          formatter = pkgs.writeShellApplication {
-            name = "formatter";
-            text = ''
-              # shellcheck disable=all
-              shell-hook () {
-                ${checks."infra/pre-commit".shellHook}
-              }
-
-              shell-hook
-              pre-commit run --all-files
-            '';
-          };
-        }
+        default.flakeAttrs.perSystem
       );
     in
     eachDefaultSystemOutputs // systemAgnosticOutputs;

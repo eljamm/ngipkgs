@@ -1,12 +1,11 @@
 {
   lib,
   pkgs,
-  system,
   default,
   ...
 }:
 {
-  perSystem = {
+  perSystem = rec {
     packages = default.ngipkgs // {
       inherit (default) overview demos;
 
@@ -21,7 +20,25 @@
           '';
     };
 
-    checks = default.sources.flake-utils.lib.filterPackages system (default.call ./checks.nix { });
+    checks = default.import ./checks.nix { };
+
+    devShells.default = pkgs.mkShell {
+      inherit (checks."infra/pre-commit") shellHook;
+      buildInputs = checks."infra/pre-commit".enabledPackages ++ default.shell.nativeBuildInputs;
+    };
+
+    formatter = pkgs.writeShellApplication {
+      name = "formatter";
+      text = ''
+        # shellcheck disable=all
+        shell-hook () {
+          ${checks."infra/pre-commit".shellHook}
+        }
+
+        shell-hook
+        pre-commit run --all-files
+      '';
+    };
   };
 
   systemAgnostic = {
