@@ -67,7 +67,7 @@ rec {
           specialArgs.modulesPath = "${sources.nixpkgs}/nixos/modules";
           modules = [
             {
-              nixpkgs.hostPlatform = builtins.currentSystem or "x86_64-linux";
+              nixpkgs.hostPlatform = system;
             }
           ]
           ++ import "${sources.nixpkgs}/nixos/modules/module-list.nix";

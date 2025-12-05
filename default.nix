@@ -29,7 +29,7 @@ let
     };
 
     # Similar to `import`, but aware of `default` scope attributes.
-    # Non overridable.
+    # The result is non-overridable.
     import =
       file: args:
       let
