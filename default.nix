@@ -114,7 +114,9 @@ let
       hydrated-projects
       ;
 
-    demo-utils = self.import ./overview/demo { };
+    demo-utils = self.import ./overview/demo {
+      ngipkgs-modules = lib.attrValues (lib.flattenAttrs "." self.nixos-modules);
+    };
 
     inherit (self.demo-utils)
       # for demo code activation. used in the overview code snippets
