@@ -40,13 +40,18 @@ rec {
   demo-vm =
     module:
     let
-      nixos-vm = (eval module).config.system.build.vm;
+      nixos-vm = (eval module).config.system.build.vm.overrideAttrs (oldAttrs: {
+        meta.mainProgram = "run-demo";
+        buildCommand = oldAttrs.buildCommand + ''
+          ln -s $out/bin/${oldAttrs.meta.mainProgram} $out/bin/run-demo
+        '';
+      });
     in
     if isFLake then
       nixos-vm
     else
       pkgs.writeShellScript "demo-vm" ''
-        exec ${nixos-vm}/bin/run-nixos-vm "$@"
+        exec ${nixos-vm}/bin/${nixos-vm.meta.mainProgram} "$@"
       '';
   demo-shell = module: (eval module).config.shells.bash.activate;
   demo = d: (if d.type == "vm" then demo-vm else demo-shell) d.module;

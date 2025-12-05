@@ -123,7 +123,7 @@ let
       demo-shell
       demo-vm
       # - $(nix-build -A demos.PROJECT_NAME)
-      # - nix run .#demos.PROJECT_NAME
+      # - nix run .#PROJECT_NAME
       demos
       ;
 
@@ -137,3 +137,6 @@ in
 default
 # required for update scripts
 // default.ngipkgs
+# - $(nix-build -A PROJECT_NAME)
+# - nix run .#PROJECT_NAME
+// default.demos

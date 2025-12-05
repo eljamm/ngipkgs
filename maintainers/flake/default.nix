@@ -24,8 +24,19 @@
 
   # depends on the system (e.g. packages.x86_64-linux)
   perSystem = rec {
+    apps =
+      let
+        mkApps =
+          apps:
+          lib.mapAttrs (name: value: {
+            type = "app";
+            program = "${lib.getExe' value "run-demo"}";
+          }) apps;
+      in
+      mkApps default.demos;
+
     packages = default.ngipkgs // {
-      inherit (default) overview demos;
+      inherit (default) overview;
 
       options =
         pkgs.runCommand "options.json"

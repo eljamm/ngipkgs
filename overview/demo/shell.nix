@@ -16,7 +16,7 @@ let
   activate =
     demo-shell:
     pkgs.writeShellApplication rec {
-      name = "demo-shell";
+      name = "run-demo";
       runtimeInputs = lib.attrValues demo-shell.programs;
       runtimeEnv = demo-shell.env;
       passthru.inheritManPath = false;
