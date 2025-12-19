@@ -6,7 +6,8 @@
 }@args:
 
 let
-  cfg = config.services.sylkserver;
+  service = "sylkserver";
+  cfg = config.services.${service};
   settingsFormat = pkgs.formats.ini { };
 
   configDir = pkgs.runCommand "sylkserver-config-dir" { } ''
@@ -18,16 +19,11 @@ let
       EOF
     '') (lib.attrNames cfg.settings)}
   '';
-
-  logsDir = cfg.settings.config.Server.trace_dir;
-  spoolDir = cfg.settings.config.Server.spool_dir;
-  transferDir = cfg.settings.conference.Conference.file_transfer_dir;
-  screensharingDir = cfg.settings.conference.Conference.screensharing_images_dir;
 in
 
 {
   options = {
-    services.sylkserver = {
+    services.${service} = {
       enable = lib.mkEnableOption "the SylkServer SIP/XMPP/WebRTC Application Server";
       package = lib.mkPackageOption pkgs "sylkserver" { };
       debug = lib.mkEnableOption "verbose logging";
@@ -36,18 +32,6 @@ in
         type = lib.types.bool;
         default = false;
         description = "Whether to open ports in the firewall for SylkServer.";
-      };
-
-      user = lib.mkOption {
-        type = lib.types.nonEmptyStr;
-        default = "sylkserver";
-        description = "User account under which SylkServer runs.";
-      };
-
-      group = lib.mkOption {
-        type = lib.types.nonEmptyStr;
-        default = "sylkserver";
-        description = "Group under which SylkServer runs.";
       };
 
       # See configuration samples for options
@@ -114,18 +98,18 @@ in
     # TODO: dynamic user?
     # there were some issues with using a dynamic user (tied to uid and gid)
     # that may warrant patching the software
-    users.groups.${cfg.group} = { };
-    users.users.${cfg.user} = {
+    users.groups.${service} = { };
+    users.users.${service} = {
       description = "SylkServer service user";
       isSystemUser = true;
-      group = cfg.group;
+      group = service;
     };
 
     systemd.services.sylkserver = {
       description = "SylkServer SIP/XMPP/WebRTC Application Server";
       serviceConfig = {
-        User = cfg.user;
-        Group = cfg.group;
+        User = config.users.users.${service}.name;
+        Group = config.users.groups.${service}.name;
         ExecStart = toString [
           (lib.getExe' cfg.package "sylk-server")
           (lib.optionalString cfg.debug "--debug")
@@ -133,18 +117,16 @@ in
           "--config-dir ${configDir}"
         ];
         StateDirectory = [
-          "sylkserver"
-          "sylkserver/file_transfer"
-          "sylkserver/screensharing_images"
+          service
+          "${service}/file_transfer"
+          "${service}/screensharing_images"
         ];
-        LogsDirectory = [
-          "sylkserver"
-        ];
+        LogsDirectory = [ service ];
         BindPaths = [
-          "%S/sylkserver/file_transfer:${transferDir}"
-          "%S/sylkserver/screensharing_images:${screensharingDir}"
-          "%S/sylkserver:${spoolDir}"
-          "%L/sylkserver:${logsDir}"
+          cfg.settings.conference.Conference.file_transfer_dir
+          cfg.settings.conference.Conference.screensharing_images_dir
+          cfg.settings.config.Server.spool_dir
+          cfg.settings.config.Server.trace_dir
         ];
         Restart = "on-failure";
         RestartSec = 5;
