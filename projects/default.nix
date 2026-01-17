@@ -88,6 +88,13 @@ rec {
       ;
   };
 
+  modules = lib.pipe eval-projects.config.projects [
+    (lib.mapAttrs (name: value: value.nixos.modules))
+    (lib.flattenAttrs ".")
+    (lib.filterAttrs (name: value: lib.isPath value))
+    (lib.attrValues)
+  ];
+
   # TODO: no longer useful. refactor whatever needs this and remove.
   hydrated-projects =
     with lib;
