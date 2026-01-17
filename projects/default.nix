@@ -110,30 +110,15 @@ rec {
   }) eval-projects.config.projects;
 
   tests = lib.mapAttrs (projectName: project: {
-    services = lib.pipe project.nixos.modules.services [
-      (lib.mapAttrs (name: value: value.examples))
-      (lib.mapAttrs (_: example: lib.mapAttrs (_: value: value.tests) example))
-    ];
-    programs = lib.pipe project.nixos.modules.programs [
-      (lib.mapAttrs (name: value: value.examples))
+    services = lib.pipe project.services [
       (lib.mapAttrs (_: example: lib.concatMapAttrs (_: value: value.tests) example))
-      # (lib.mapAttrs (name: value: value.module))
+      (lib.mapAttrs (_: test: lib.mapAttrs (_: value: value.module) test))
     ];
-  }) eval-projects.config.projects;
-
-  test = lib.mapAttrs (projectName: project: {
     programs = lib.pipe project.programs [
       (lib.mapAttrs (_: example: lib.concatMapAttrs (_: value: value.tests) example))
-      # (lib.mapAttrs (name: value: value.tests))
-      (lib.flattenAttrs ".")
-      # (lib.mapAttrs (_: example: lib.concatMapAttrs (_: value: value.tests) example))
-      # (lib.mapAttrs (name: value: value.module))
+      (lib.mapAttrs (_: test: lib.mapAttrs (_: value: value.module) test))
     ];
   }) examples;
-
-  programs = lib.mapAttrs (
-    _: project: lib.mapAttrs (_: program: program.name) project.programs
-  ) examples;
 
   tests-2 = lib.mapAttrs (
     name: project:
