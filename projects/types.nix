@@ -426,7 +426,7 @@ rec {
             description = "Name of the program";
           };
           module = mkOption {
-            type = nullOr deferredModule;
+            type = nullOr (either path deferredModule);
             description = ''
               Contains the path to the NixOS module for the program.
             '';
@@ -549,7 +549,7 @@ rec {
             description = "Name of the service";
           };
           module = mkOption {
-            type = nullOr deferredModule;
+            type = nullOr path;
             description = ''
               Contains the path to the NixOS module for the service.
             '';
