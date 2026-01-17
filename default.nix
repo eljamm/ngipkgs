@@ -66,14 +66,14 @@ let
             nixpkgs.overlays = [ self.overlays.default ] ++ self.overlays.fixups;
           };
       }
-      // self.project-utils.compat.nixos.modules;
+      // self.project-utils.compat._modules;
 
     project-utils = self.import ./projects {
       pkgs = pkgs.extend default.overlays.default;
       sources = {
         inputs = sources;
         modules = default.nixos-modules;
-        examples = self.project-utils.compat-examples;
+        examples = self.project-utils.compat._examples;
       };
     };
 
@@ -89,7 +89,7 @@ let
       module-check = default.checks.${name};
     });
 
-    tests = self.project-utils.compat-tests;
+    tests = self.project-utils.compat._tests;
 
     demo-utils = self.import ./overview/demo {
       ngipkgs-modules = lib.attrValues (devLib.flattenAttrs "." self.nixos-modules);
@@ -107,7 +107,7 @@ let
       ;
 
     metrics = self.import ./maintainers/metrics.nix {
-      raw-projects = self.project-utils.compat;
+      raw-projects = self.project-utils.compat.projects;
     };
 
     report = self.import ./maintainers/report { };

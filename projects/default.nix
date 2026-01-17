@@ -147,20 +147,20 @@ rec {
     }
   ) raw-tests;
 
-  compat = {
-    _examples = lib.pipe examples [
-      (lib.concatMapAttrs (_: value: value.programs // value.services))
-      (lib.mapAttrs (_: example: lib.mapAttrs (_: value: value.module) example))
-    ];
-    _modules = {
-      services = lib.concatMapAttrs (_: value: value.services) modules;
-      programs = lib.concatMapAttrs (_: value: value.programs) modules;
-    };
-    _tests = tests;
-  }
-  // lib.genAttrs project-names (name: {
+  # TODO: migrate and remove this
+  compat._examples = lib.pipe examples [
+    (lib.concatMapAttrs (_: value: value.programs // value.services))
+    (lib.mapAttrs (_: example: lib.mapAttrs (_: value: value.module) example))
+  ];
+  compat._modules = {
+    services = lib.concatMapAttrs (_: value: value.services) modules;
+    programs = lib.concatMapAttrs (_: value: value.programs) modules;
+  };
+  compat._tests = tests;
+
+  compat.projects = lib.genAttrs project-names (name: {
     metadata = metadata.${name};
-    nixos.demo = raw-demos.${name} or null;
+    nixos.demo = raw-demos.${name} or { };
     nixos.modules = modules.${name};
     nixos.examples = lib.concatMapAttrs (_: value: value) examples.${name};
     nixos.tests = compat._tests.${name};
