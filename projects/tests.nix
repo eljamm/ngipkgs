@@ -1,9 +1,8 @@
 {
   lib,
   pkgs,
+  tests,
   sources,
-  project,
-  examples,
   ...
 }:
 let
@@ -45,27 +44,17 @@ let
     in
     if lib.isDerivation test then test else pkgs.testers.runNixOSTest args;
 
-  # TODO: refactor
-  tests = lib.mergeAttrsList [
-    (project.nixos.tests or { })
-    (project.nixos.demo.vm.tests or { })
-    (project.nixos.demo.shell.tests or { })
-    (lib.filter-map examples "tests")
-  ];
-
-  filtered-tests = lib.filterAttrs (
-    _: test: (!test ? problem.broken) && (test ? module && test.module != null)
-  ) tests;
+  callTest =
+    test:
+    if lib.isString test || lib.isPath test then
+      nixosTest (
+        import test {
+          inherit pkgs lib sources;
+          inherit (pkgs) system;
+        }
+      )
+    else
+      nixosTest test;
 in
-lib.mapAttrs (
-  _: test:
-  if lib.isString test.module || lib.isPath test.module then
-    nixosTest (
-      import test.module {
-        inherit pkgs lib sources;
-        inherit (pkgs) system;
-      }
-    )
-  else
-    nixosTest test.module
-) filtered-tests
+# turn all leaf nodes into NixOS test derivations
+lib.mapAttrsRecursive (path: callTest) tests

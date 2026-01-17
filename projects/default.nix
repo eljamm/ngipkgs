@@ -133,16 +133,17 @@ rec {
     demo = lib.mapAttrs (_: value: value.module) (raw-demos.${projectName}.tests or { });
   }) examples;
 
-  tests-2 = lib.mapAttrs (
-    name: project:
-    import ./tests-2.nix {
+  tests-drv = lib.mapAttrs (
+    _: tests:
+    import ./tests.nix {
       inherit
         lib
         pkgs
-        project
+        tests
+        sources
         ;
     }
-  ) examples;
+  ) tests;
 
   # TODO: no longer useful. refactor whatever needs this and remove.
   hydrated-projects =
