@@ -150,7 +150,7 @@ rec {
   compat._examples = lib.mapAttrs (
     _: project:
     lib.concatMapAttrs (_: value: lib.mapAttrs (_: example: example.module) value) (
-      project.services // project.programs
+      lib.recursiveUpdate project.programs project.services
     )
   ) examples;
 
