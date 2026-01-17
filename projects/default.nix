@@ -45,6 +45,8 @@ let
     concatMapAttrs names (readDir baseDirectory);
 in
 rec {
+  project-names = lib.attrNames projectDirectories;
+
   raw-projects = {
     options.projects = types.options.projects;
     config.projects = mapAttrs (name: directory: import directory args) projectDirectories;
@@ -89,9 +91,9 @@ rec {
       ;
   };
 
-  metadata = lib.mapAttrs (name: project: project.metadata) eval-projects.config.projects;
+  metadata = lib.mapAttrs (name: project: project.metadata) projects;
 
-  raw-demos = lib.pipe eval-projects.config.projects [
+  raw-demos = lib.pipe projects [
     (lib.mapAttrs (_: value: value.nixos.demo.vm or value.nixos.demo.shell or null))
     (lib.filterAttrs (_: value: value != null))
   ];
@@ -110,7 +112,7 @@ rec {
       (lib.mapAttrs (name: value: value.module))
       (lib.filterAttrs (name: value: value != null))
     ];
-  }) eval-projects.config.projects;
+  }) projects;
 
   examples = lib.mapAttrs (name: project: {
     services = lib.pipe project.nixos.modules.services [
@@ -119,7 +121,12 @@ rec {
     programs = lib.pipe project.nixos.modules.programs [
       (lib.mapAttrs (name: value: value.examples))
     ];
-  }) eval-projects.config.projects;
+  }) projects;
+
+  compat-examples = lib.pipe examples [
+    (lib.concatMapAttrs (_: value: value.programs // value.services))
+    (lib.mapAttrs (_: example: lib.mapAttrs (_: value: value.module) example))
+  ];
 
   tests = lib.mapAttrs (projectName: project: {
     services = lib.pipe project.services [
@@ -133,28 +140,30 @@ rec {
     demo = lib.mapAttrs (_: value: value.module) (raw-demos.${projectName}.tests or { });
   }) examples;
 
-  compat = {
-    nixos.demo = raw-demos;
-    nixos.modules = {
-      services = lib.concatMapAttrs (_: value: value.services) modules;
-      programs = lib.concatMapAttrs (_: value: value.programs) modules;
-    };
-    nixos.examples = lib.pipe examples [
-      (lib.concatMapAttrs (_: value: value.programs // value.services))
-      (lib.mapAttrs (_: example: lib.mapAttrs (_: value: value.module) example))
-    ];
-    nixos.tests = lib.mapAttrs (
-      _: tests:
-      import ./tests.nix {
-        inherit
-          lib
-          pkgs
-          tests
-          sources
-          ;
-      }
-    ) tests;
+  compat-modules = {
+    services = lib.concatMapAttrs (_: value: value.services) modules;
+    programs = lib.concatMapAttrs (_: value: value.programs) modules;
   };
+
+  compat-tests = lib.mapAttrs (
+    _: tests:
+    import ./tests.nix {
+      inherit
+        lib
+        pkgs
+        tests
+        sources
+        ;
+    }
+  ) tests;
+
+  compat = lib.genAttrs project-names (name: {
+    metadata = metadata.${name};
+    nixos.demo = raw-demos.${name};
+    nixos.modules = compat-modules.${name};
+    nixos.examples = lib.concatMapAttrs (_: value: value) examples.${name};
+    nixos.tests = compat-tests.${name};
+  });
 
   # TODO: no longer useful. refactor whatever needs this and remove.
   hydrated-projects =
