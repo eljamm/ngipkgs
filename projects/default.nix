@@ -95,6 +95,34 @@ rec {
     (lib.attrValues)
   ];
 
+  outstuff = lib.foldl' (
+    acc: project:
+    acc
+    // {
+      ${project.name} = {
+        services = lib.pipe project.nixos.modules.services [
+          (lib.mapAttrs (name: value: value))
+        ];
+        programs = lib.pipe project.nixos.modules.programs [
+          (lib.mapAttrs (name: value: value.module.imports))
+          # (lib.head)
+          # (lib.flattenAttrs ".")
+        ];
+      };
+    }
+  ) { } (lib.attrValues eval-projects.config.projects);
+
+  services = lib.pipe eval-projects.config.projects [
+    (lib.mapAttrs (name: value: value.nixos.modules.services))
+  ];
+
+  programs = lib.pipe eval-projects.config.projects [
+    (lib.mapAttrs (name: value: value.nixos.modules.programs))
+  ];
+
+  examples = lib.pipe { inherit programs services; } [
+  ];
+
   # TODO: no longer useful. refactor whatever needs this and remove.
   hydrated-projects =
     with lib;
