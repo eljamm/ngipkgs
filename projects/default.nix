@@ -89,6 +89,8 @@ rec {
       ;
   };
 
+  metadata = lib.mapAttrs (name: project: project.metadata) eval-projects.config.projects;
+
   modules = lib.mapAttrs (name: project: {
     services = lib.pipe project.nixos.modules.services [
       (lib.mapAttrs (name: value: value.module))
