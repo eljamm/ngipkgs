@@ -135,17 +135,14 @@ rec {
     demo = lib.mapAttrs (_: value: value.module) (raw-demos.${projectName}.tests or { });
   }) examples;
 
-  tests = lib.mapAttrs (
-    _: tests:
-    import ./tests.nix {
-      inherit
-        lib
-        pkgs
-        tests
-        sources
-        ;
-    }
-  ) raw-tests;
+  tests = import ./tests.nix {
+    inherit
+      lib
+      pkgs
+      raw-tests
+      sources
+      ;
+  };
 
   # TODO: migrate and remove this
   compat._examples = lib.pipe examples [

@@ -1,7 +1,7 @@
 {
   lib,
   pkgs,
-  tests,
+  raw-tests,
   sources,
   ...
 }:
@@ -57,4 +57,4 @@ let
       nixosTest test;
 in
 # turn all leaf nodes into NixOS test derivations
-lib.mapAttrsRecursive (path: callTest) tests
+lib.mapAttrsRecursiveCond (as: !(as ? "type" && as.type == "derivation")) (path: callTest) raw-tests
