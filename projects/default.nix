@@ -47,47 +47,32 @@ in
 rec {
   project-names = lib.attrNames projectDirectories;
 
-  raw-projects = {
-    options.projects = types.options.projects;
-    config.projects = projectDirectories;
-  };
-
-  eval-projects-2 = lib.evalModules {
-    class = "nixos";
-    modules = [
-      (./. + "/~types/projects.nix")
-      {
-        _module.args = {
-          inherit system;
-        };
-      }
-    ]
-    ++ (lib.attrValues projectDirectories);
-    specialArgs = {
-      modulesPath = "${sources.nixpkgs}/nixos/modules";
-      inherit sources pkgs;
-    };
-  };
-
   eval-projects = lib.evalModules {
     class = "nixos";
     modules = [
-      (./. + "/~types/projects.nix")
-      raw-projects.config
+      (
+        {
+          lib,
+          config,
+          ...
+        }:
+        {
+          _file = "projects";
 
-      {
-        # Don't check because NixOS options are not included.
-        # See comment in NixOS' `noCheckForDocsModule`.
-        _module.check = false;
+          options.projects = types.options.projects;
 
-        _module.args = {
-          pkgs = lib.mkDefault pkgs;
-        };
-      }
+          config = {
+            projects = mapAttrs (name: directory: import directory config._module.args) projectDirectories;
+
+            # Don't check because NixOS options are not included.
+            # See comment in NixOS' `noCheckForDocsModule`.
+            _module.check = false;
+
+            _module.args = args;
+          };
+        }
+      )
     ];
-    # specialArgs.modulesPath = "${sources.inputs.nixpkgs}/nixos/modules";
-    # specialArgs.sources = sources.inputs;
-    # specialArgs.pkgs = pkgs;
   };
 
   projects = eval-projects.config.projects;
