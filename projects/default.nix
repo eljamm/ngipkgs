@@ -133,13 +133,17 @@ rec {
     demo = lib.mapAttrs (_: value: value.module) (raw-demos.${projectName}.tests or { });
   }) examples;
 
-  deploy = {
-    examples = lib.concatMapAttrs (_: value: value.programs // value.services) examples;
-    modules = {
-      programs = lib.concatMapAttrs (_: value: value.programs) modules;
+  compat = {
+    nixos.demo = raw-demos;
+    nixos.modules = {
       services = lib.concatMapAttrs (_: value: value.services) modules;
+      programs = lib.concatMapAttrs (_: value: value.programs) modules;
     };
-    tests = lib.mapAttrs (
+    nixos.examples = lib.pipe examples [
+      (lib.concatMapAttrs (_: value: value.programs // value.services))
+      (lib.mapAttrs (_: example: lib.mapAttrs (_: value: value.module) example))
+    ];
+    nixos.tests = lib.mapAttrs (
       _: tests:
       import ./tests.nix {
         inherit
