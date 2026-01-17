@@ -49,14 +49,34 @@ rec {
 
   raw-projects = {
     options.projects = types.options.projects;
-    config.projects = mapAttrs (name: directory: import directory args) projectDirectories;
+    config.projects = mapAttrs (name: directory: import directory) projectDirectories;
   };
 
   eval-projects = lib.evalModules {
     modules = [
-      raw-projects
+      {
+        config.class = "nixos";
+
+        # Don't check because NixOS options are not included.
+        # See comment in NixOS' `noCheckForDocsModule`.
+        config._module.check = false;
+
+        config.nixpkgs.hostPlatform = system;
+
+        imports = [
+          # raw-projects
+          {
+            options.projects = types.options.projects;
+            config.projects = {
+              Corteza = import ./Corteza/default.nix args;
+            };
+          }
+        ];
+      }
     ];
     specialArgs.modulesPath = "${sources.inputs.nixpkgs}/nixos/modules";
+    specialArgs.sources = sources.inputs;
+    specialArgs.pkgs = pkgs;
   };
 
   projects = eval-projects.config.projects;
