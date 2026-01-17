@@ -91,6 +91,16 @@ rec {
 
   metadata = lib.mapAttrs (name: project: project.metadata) eval-projects.config.projects;
 
+  raw-demos = lib.pipe eval-projects.config.projects [
+    (lib.mapAttrs (_: value: value.nixos.demo.vm or value.nixos.demo.shell or null))
+    (lib.filterAttrs (_: value: value != null))
+  ];
+
+  demo-modules = lib.pipe raw-demos [
+    (lib.mapAttrsToList (_: value: value.module-demo.imports))
+    (lib.flatten)
+  ];
+
   modules = lib.mapAttrs (name: project: {
     services = lib.pipe project.nixos.modules.services [
       (lib.mapAttrs (name: value: value.module))
@@ -120,6 +130,7 @@ rec {
       (lib.mapAttrs (_: example: lib.concatMapAttrs (_: value: value.tests) example))
       (lib.mapAttrs (_: test: lib.mapAttrs (_: value: value.module) test))
     ];
+    demo = lib.mapAttrs (_: value: value.module) (raw-demos.${projectName}.tests or { });
   }) examples;
 
   tests-2 = lib.mapAttrs (

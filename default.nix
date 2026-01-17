@@ -97,7 +97,8 @@ let
 
     demo-utils = self.import ./overview/demo {
       ngipkgs-modules = lib.attrValues (devLib.flattenAttrs "." self.nixos-modules);
-      projects = self.project-utils.projects;
+      raw-demos = self.project-utils.raw-demos;
+      demo-modules = self.project-utils.demo-modules;
     };
 
     inherit (self.demo-utils)

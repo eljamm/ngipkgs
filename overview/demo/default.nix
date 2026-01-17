@@ -3,22 +3,12 @@
   pkgs,
   system,
   sources,
-  projects,
+  raw-demos,
+  demo-modules,
   ngipkgs-modules,
 }:
 let
   nixos-modules = import "${sources.nixpkgs}/nixos/modules/module-list.nix";
-
-  raw-demos = lib.pipe projects [
-    (lib.mapAttrs (_: value: value.nixos.demo.vm or value.nixos.demo.shell or null))
-    (lib.filterAttrs (_: value: value != null))
-  ];
-
-  demo-modules = lib.pipe raw-demos [
-    (lib.mapAttrsToList (_: value: value.module-demo.imports))
-    (lib.flatten)
-  ];
-
   isFLake = !builtins ? currentSystem;
 in
 rec {
