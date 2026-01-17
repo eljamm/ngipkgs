@@ -54,6 +54,7 @@ let
       pkgs = pkgs.extend self.overlays.default;
       options = self.optionsDoc.optionsNix;
       projects = self.project-utils.projects;
+      examples = self.project-utils.compat._examples;
     };
 
     nixos-modules =

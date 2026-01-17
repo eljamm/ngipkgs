@@ -4,6 +4,7 @@
   options,
   pkgs,
   projects,
+  examples,
   self,
 }:
 let
@@ -106,15 +107,7 @@ let
 
   pick = {
     options = prefix: filter (option: lib.lists.hasPrefix prefix option.loc) (attrValues options);
-    examples =
-      project:
-      attrValues (
-        filterAttrs (name: example: example.module != null) (
-          project.nixos.examples
-          // (lib.filter-map project.nixos.modules.programs "examples")
-          // (lib.filter-map project.nixos.modules.services "examples")
-        )
-      );
+    examples = projectName: attrValues examples.${projectName};
   };
 
   render = {
@@ -209,7 +202,7 @@ let
               name
               tests
               ;
-          }) (pick.examples project);
+          }) (pick.examples name);
         };
 
         metadata-subgrants = eval {
