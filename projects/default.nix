@@ -123,12 +123,7 @@ rec {
     ];
   }) projects;
 
-  compat-examples = lib.pipe examples [
-    (lib.concatMapAttrs (_: value: value.programs // value.services))
-    (lib.mapAttrs (_: example: lib.mapAttrs (_: value: value.module) example))
-  ];
-
-  tests = lib.mapAttrs (projectName: project: {
+  raw-tests = lib.mapAttrs (projectName: project: {
     services = lib.pipe project.services [
       (lib.mapAttrs (_: example: lib.concatMapAttrs (_: value: value.tests) example))
       (lib.mapAttrs (_: test: lib.mapAttrs (_: value: value.module) test))
@@ -140,12 +135,7 @@ rec {
     demo = lib.mapAttrs (_: value: value.module) (raw-demos.${projectName}.tests or { });
   }) examples;
 
-  compat-modules = {
-    services = lib.concatMapAttrs (_: value: value.services) modules;
-    programs = lib.concatMapAttrs (_: value: value.programs) modules;
-  };
-
-  compat-tests = lib.mapAttrs (
+  tests = lib.mapAttrs (
     _: tests:
     import ./tests.nix {
       inherit
@@ -155,14 +145,25 @@ rec {
         sources
         ;
     }
-  ) tests;
+  ) raw-tests;
 
-  compat = lib.genAttrs project-names (name: {
+  compat = {
+    _examples = lib.pipe examples [
+      (lib.concatMapAttrs (_: value: value.programs // value.services))
+      (lib.mapAttrs (_: example: lib.mapAttrs (_: value: value.module) example))
+    ];
+    _modules = {
+      services = lib.concatMapAttrs (_: value: value.services) modules;
+      programs = lib.concatMapAttrs (_: value: value.programs) modules;
+    };
+    _tests = tests;
+  }
+  // lib.genAttrs project-names (name: {
     metadata = metadata.${name};
-    nixos.demo = raw-demos.${name};
-    nixos.modules = compat-modules.${name};
+    nixos.demo = raw-demos.${name} or null;
+    nixos.modules = modules.${name};
     nixos.examples = lib.concatMapAttrs (_: value: value) examples.${name};
-    nixos.tests = compat-tests.${name};
+    nixos.tests = compat._tests.${name};
   });
 
   # TODO: no longer useful. refactor whatever needs this and remove.
