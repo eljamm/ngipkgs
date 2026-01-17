@@ -145,10 +145,13 @@ rec {
   };
 
   # TODO: migrate and remove this
-  compat._examples = lib.pipe examples [
-    (lib.concatMapAttrs (_: value: value.programs // value.services))
-    (lib.mapAttrs (_: example: lib.mapAttrs (_: value: value.module) example))
-  ];
+  compat._examples = lib.mapAttrs (
+    _: project:
+    lib.concatMapAttrs (_: value: lib.mapAttrs (_: example: example.module) value) (
+      project.services // project.programs
+    )
+  ) examples;
+
   compat._modules = {
     services = lib.concatMapAttrs (_: value: value.services) modules;
     programs = lib.concatMapAttrs (_: value: value.programs) modules;
