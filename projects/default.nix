@@ -27,7 +27,7 @@ let
     let
       names =
         name: type:
-        if type == "directory" then
+        if type == "directory" && (!lib.elem name allowedFiles) then
           { ${name} = baseDirectory + "/${name}"; }
         # nothing else should be kept in this directory reserved for projects
         else
@@ -37,8 +37,8 @@ let
         "README.md"
         "default.nix"
         "tests.nix"
-        "tests-2.nix"
         "types.nix"
+        "~types"
       ];
     in
     # TODO: use fileset and filter for `gitTracked` files
@@ -52,26 +52,36 @@ rec {
     config.projects = mapAttrs (name: directory: import directory) projectDirectories;
   };
 
-  eval-projects = lib.evalModules {
+  eval-projects-2 = lib.evalModules {
+    class = "nixos";
     modules = [
+      (./. + "/~types/projects.nix")
       {
-        config.class = "nixos";
+        _module.args = {
+          inherit system;
+        };
+      }
+    ]
+    ++ (lib.attrValues projectDirectories);
+    specialArgs = {
+      modulesPath = "${sources.nixpkgs}/nixos/modules";
+      inherit sources pkgs;
+    };
+  };
 
+  eval-projects = lib.evalModules {
+    class = "nixos";
+    modules = [
+      (./. + "/~types/projects.nix")
+
+      {
         # Don't check because NixOS options are not included.
         # See comment in NixOS' `noCheckForDocsModule`.
         config._module.check = false;
 
-        config.nixpkgs.hostPlatform = system;
-
-        imports = [
-          # raw-projects
-          {
-            options.projects = types.options.projects;
-            config.projects = {
-              Corteza = import ./Corteza/default.nix args;
-            };
-          }
-        ];
+        config.projects = {
+          Corteza = ./Corteza/default.nix;
+        };
       }
     ];
     specialArgs.modulesPath = "${sources.inputs.nixpkgs}/nixos/modules";
