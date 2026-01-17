@@ -4,7 +4,7 @@
 
   checks,
   formatter,
-  hydrated-projects,
+  projects,
   nonBrokenPackages,
   overview,
   ...
@@ -23,7 +23,6 @@ let
 
   # TODO: rename toplevel attributes?
   self = flake;
-  projects = hydrated-projects;
 
   toplevel = machine: machine.config.system.build.toplevel; # for makemake
 

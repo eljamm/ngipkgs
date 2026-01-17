@@ -79,7 +79,6 @@ let
 
     inherit (self.project-utils)
       checks
-      hydrated-projects
       optionsDoc
       ;
 
