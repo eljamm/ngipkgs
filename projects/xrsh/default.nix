@@ -26,7 +26,7 @@
   nixos.modules.programs = {
     xrsh = {
       module = ./programs/xrsh/module.nix;
-      examples."Enable xrsh and set a port to serve on" = {
+      examples.basic = {
         module = ./programs/xrsh/examples/basic.nix;
         description = ''
           This example shows how to enable xrsh and run a terminal inside WebXR.
