@@ -100,7 +100,7 @@ rec {
                         examples.basic = {
                           module = ./programs/foobar/examples/basic.nix;
                           description = "Basic configuration example for foobar";
-                          tests.basic.module = import ./programs/foobar/tests/basic.nix args;
+                          tests.basic.module = ./programs/foobar/tests/basic.nix;
                         };
                       };
                     '';
@@ -364,7 +364,7 @@ rec {
           examples."Enable PROGRAM_NAME" = {
             module = ./programs/PROGRAM_NAME/examples/basic.nix;
             description = "Basic configuration example for PROGRAM_NAME";
-            tests.basic.module = import ./programs/PROGRAM_NAME/tests/basic.nix args;
+            tests.basic.module = ./programs/PROGRAM_NAME/tests/basic.nix;
           };
         };
       }
@@ -443,7 +443,7 @@ rec {
               nixos.modules.programs.examples."Enable foobar" = {
                 module = ./programs/foobar/examples/basic.nix;
                 description = "Basic configuration example for foobar";
-                tests.foobar-basic.module = import ./programs/foobar/tests/basic.nix args;
+                tests.foobar-basic.module = ./programs/foobar/tests/basic.nix;
               };
             '';
             default = { };
@@ -487,7 +487,7 @@ rec {
           examples."Enable SERVICE_NAME" = {
             module = ./services/SERVICE_NAME/examples/basic.nix;
             description = "Basic configuration example for SERVICE_NAME";
-            tests.basic.module = import ./services/SERVICE_NAME/tests/basic.nix args;
+            tests.basic.module = ./services/SERVICE_NAME/tests/basic.nix;
           };
         };
       }
@@ -594,7 +594,7 @@ rec {
         "Basic mail server setup with default ports" = {
           module = ./services/SERVICE_NAME/examples/basic.nix;
           description = "Send email via SMTP to port 587 to check that it works";
-          tests.basic.module = import ./services/SERVICE_NAME/tests/basic.nix args;
+          tests.basic.module = ./services/SERVICE_NAME/tests/basic.nix;
         };
       };
     }
@@ -836,7 +836,7 @@ rec {
     ```nix
     { ... }@args:
     {
-      tests.basic.module = import ./test.nix args;
+      tests.basic.module = ./test.nix;
     }
     ```
 
