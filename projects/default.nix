@@ -88,33 +88,16 @@ rec {
       ;
   };
 
-  modules = lib.pipe eval-projects.config.projects [
-    (lib.mapAttrs (name: value: value.nixos.modules))
-    (lib.flattenAttrs ".")
-    (lib.filterAttrs (name: value: lib.isPath value))
-    (lib.attrValues)
-  ];
-
-  outstuff = lib.foldl' (
-    acc: project:
-    acc
-    // {
-      ${project.name} = {
-        services = lib.pipe project.nixos.modules.services [
-          (lib.mapAttrs (name: value: lib.head value.module.imports))
-          (lib.mapAttrs (name: value: lib.flattenAttrs "." value))
-          (lib.mapAttrs (name: value: lib.head value.imports))
-          (lib.filterAttrs (name: value: value != null))
-        ];
-        programs = lib.pipe project.nixos.modules.programs [
-          (lib.mapAttrs (name: value: lib.head value.module.imports))
-          (lib.mapAttrs (name: value: lib.flattenAttrs "." value))
-          (lib.mapAttrs (name: value: lib.head value.imports))
-          (lib.filterAttrs (name: value: value != null))
-        ];
-      };
-    }
-  ) { } (lib.attrValues eval-projects.config.projects);
+  modules = lib.mapAttrs (name: project: {
+    services = lib.pipe project.nixos.modules.services [
+      (lib.mapAttrs (name: value: value.module))
+      (lib.filterAttrs (name: value: value != null))
+    ];
+    programs = lib.pipe project.nixos.modules.programs [
+      (lib.mapAttrs (name: value: value.module))
+      (lib.filterAttrs (name: value: value != null))
+    ];
+  }) eval-projects.config.projects;
 
   services = lib.pipe eval-projects.config.projects [
     (lib.mapAttrs (name: value: value.nixos.modules.services))
