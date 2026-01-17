@@ -148,7 +148,11 @@ rec {
 
   # TODO: migrate and remove this
   compat._examples = lib.mapAttrs (
-    _: project: lib.concatMapAttrs (_: example: example) project.nixos.examples
+    _: project:
+    lib.pipe project.nixos.examples [
+      (lib.concatMapAttrs (_: example: example))
+      (lib.filterAttrs (_: value: value.module != null))
+    ]
   ) compat.projects;
 
   compat._modules = {
