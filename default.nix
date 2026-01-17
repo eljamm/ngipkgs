@@ -73,7 +73,9 @@ let
       sources = {
         inputs = sources;
         modules = default.nixos-modules;
-        examples = self.project-utils.compat._examples;
+        examples = lib.mapAttrs (
+          _: project: lib.mapAttrs (_: example: example.module) project
+        ) self.project-utils.compat._examples;
       };
     };
 

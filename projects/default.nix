@@ -148,11 +148,8 @@ rec {
 
   # TODO: migrate and remove this
   compat._examples = lib.mapAttrs (
-    _: project:
-    lib.concatMapAttrs (_: value: lib.mapAttrs (_: example: example.module) value) (
-      lib.recursiveUpdate project.programs project.services
-    )
-  ) examples;
+    _: project: lib.concatMapAttrs (_: example: example) project.nixos.examples
+  ) compat.projects;
 
   compat._modules = {
     services = lib.concatMapAttrs (_: project: project.services) modules;
