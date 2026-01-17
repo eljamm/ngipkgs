@@ -101,12 +101,16 @@ rec {
     // {
       ${project.name} = {
         services = lib.pipe project.nixos.modules.services [
-          (lib.mapAttrs (name: value: value))
+          (lib.mapAttrs (name: value: lib.head value.module.imports))
+          (lib.mapAttrs (name: value: lib.flattenAttrs "." value))
+          (lib.mapAttrs (name: value: lib.head value.imports))
+          (lib.filterAttrs (name: value: value != null))
         ];
         programs = lib.pipe project.nixos.modules.programs [
-          (lib.mapAttrs (name: value: value.module.imports))
-          # (lib.head)
-          # (lib.flattenAttrs ".")
+          (lib.mapAttrs (name: value: lib.head value.module.imports))
+          (lib.mapAttrs (name: value: lib.flattenAttrs "." value))
+          (lib.mapAttrs (name: value: lib.head value.imports))
+          (lib.filterAttrs (name: value: value != null))
         ];
       };
     }
