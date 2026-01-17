@@ -99,16 +99,14 @@ rec {
     ];
   }) eval-projects.config.projects;
 
-  services = lib.pipe eval-projects.config.projects [
-    (lib.mapAttrs (name: value: value.nixos.modules.services))
-  ];
-
-  programs = lib.pipe eval-projects.config.projects [
-    (lib.mapAttrs (name: value: value.nixos.modules.programs))
-  ];
-
-  examples = lib.pipe { inherit programs services; } [
-  ];
+  examples = lib.mapAttrs (name: project: {
+    services = lib.pipe project.nixos.modules.services [
+      (lib.mapAttrs (name: value: value.examples))
+    ];
+    programs = lib.pipe project.nixos.modules.programs [
+      (lib.mapAttrs (name: value: value.examples))
+    ];
+  }) eval-projects.config.projects;
 
   # TODO: no longer useful. refactor whatever needs this and remove.
   hydrated-projects =
