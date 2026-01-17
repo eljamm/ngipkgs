@@ -37,6 +37,7 @@ let
         "README.md"
         "default.nix"
         "tests.nix"
+        "tests-2.nix"
         "types.nix"
       ];
     in
@@ -107,6 +108,30 @@ rec {
       (lib.mapAttrs (name: value: value.examples))
     ];
   }) eval-projects.config.projects;
+
+  tests = lib.mapAttrs (name: project: {
+    services = lib.pipe project.nixos.modules.services [
+      (lib.mapAttrs (name: value: value.examples))
+      (lib.mapAttrs (name: value: value.tests))
+    ];
+    programs = lib.mapAttrs (_: example: example) (
+      lib.pipe project.nixos.modules.programs [
+        (lib.mapAttrs (name: value: value.examples))
+        # (lib.mapAttrs (name: value: value.tests))
+      ]
+    );
+  }) eval-projects.config.projects;
+
+  tests-2 = lib.mapAttrs (
+    name: project:
+    import ./tests-2.nix {
+      inherit
+        lib
+        pkgs
+        project
+        ;
+    }
+  ) examples;
 
   # TODO: no longer useful. refactor whatever needs this and remove.
   hydrated-projects =
