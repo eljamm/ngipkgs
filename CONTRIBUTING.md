@@ -364,7 +364,7 @@ For services, click on the module name to reveal more details, then copy the nam
      For example:
 
      ```nix
-     nixos.tests.some-test = import ./test.nix args;
+     nixos.tests.some-test.module = import ./test.nix args;
      ```
 
      The module tests will then be accessible from `checks.<system>.some-project`.
