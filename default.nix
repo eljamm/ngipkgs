@@ -91,7 +91,7 @@ let
       module-check = default.checks.${name};
     });
 
-    tests = self.project-utils.compat._tests;
+    tests = self.project-utils.tests;
 
     demo-utils = self.import ./overview/demo {
       ngipkgs-modules = lib.attrValues (devLib.flattenAttrs "." self.nixos-modules);
