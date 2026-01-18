@@ -142,12 +142,12 @@ rec {
   raw-tests = lib.mapAttrs (projectName: project: {
     services = lib.pipe project.services [
       (lib.mapAttrs (_: example: lib.concatMapAttrs (_: value: value.tests) example))
-      (lib.filterAttrs (_: test: (!test ? problem.broken) && (test ? module && test.module != null)))
+      # (lib.filterAttrs (_: test: (!test ? problem.broken) && (test ? module && test.module != null)))
       (lib.mapAttrs (_: test: lib.mapAttrs (_: value: value.module) test))
     ];
     programs = lib.pipe project.programs [
       (lib.mapAttrs (_: example: lib.concatMapAttrs (_: value: value.tests) example))
-      (lib.filterAttrs (_: test: (!test ? problem.broken) && (test ? module && test.module != null)))
+      # (lib.filterAttrs (_: test: (!test ? problem.broken) && (test ? module && test.module != null)))
       (lib.mapAttrs (_: test: lib.mapAttrs (_: value: value.module) test))
     ];
     demo = lib.mapAttrs (_: value: value.module) (raw-demos.${projectName}.tests or { });
