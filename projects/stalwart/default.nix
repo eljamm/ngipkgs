@@ -27,7 +27,7 @@
         description = ''
           Basic configuration for stalwart mail server.
         '';
-        tests.basic.module = pkgs.nixosTests.stalwart-mail;
+        tests.basic.module = ./services/stalwart/tests/basic.nix;
       };
     };
   };

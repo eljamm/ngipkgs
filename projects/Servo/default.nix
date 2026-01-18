@@ -31,7 +31,7 @@
       examples.basic = {
         module = ./example.nix;
         description = "Enable the servo program";
-        tests.basic.module = pkgs.nixosTests.servo;
+        tests.basic.module = ./services/Servo/tests/basic.nix;
         tests.basic.problem.broken.reason = ''
           Servo fails to build because of incompatabilities with Rust 1.89
 
@@ -44,7 +44,7 @@
   nixos.demo.shell = {
     module = ./example.nix;
     description = "A demo shell for opening valgrind docs with Servo";
-    tests.basic.module = pkgs.nixosTests.servo;
+    tests.basic.module = ./services/Servo/tests/basic.nix;
     tests.basic.problem.broken.reason = ''
       Servo fails to build because of incompatabilities with Rust 1.89
 

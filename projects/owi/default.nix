@@ -25,7 +25,7 @@
       examples.basic = {
         module = ./programs/owi/examples/basic.nix;
         description = "Enable the owi program";
-        tests.basic.module = pkgs.nixosTests.owi;
+        tests.basic.module = ./services/owi/tests/basic.nix;
       };
     };
   };
@@ -34,6 +34,6 @@
     module = ./programs/owi/examples/basic.nix;
     module-demo = ./module-demo.nix;
     description = "owi usage example";
-    tests.basic.module = pkgs.nixosTests.owi;
+    tests.basic.module = ./services/owi/tests/basic.nix;
   };
 }

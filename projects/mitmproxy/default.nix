@@ -19,7 +19,7 @@
       examples.basic = {
         module = ./demo.nix;
         description = "";
-        tests.basic.module = pkgs.nixosTests.mitmproxy;
+        tests.basic.module = ./services/mitmproxy/tests/basic.nix;
       };
     };
   };

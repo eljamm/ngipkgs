@@ -1,9 +1,7 @@
 {
   lib,
-  pkgs,
-  sources,
   ...
-}@args:
+}:
 
 {
   metadata = {
@@ -32,7 +30,7 @@
       module = lib.moduleLocFromOptionString "services.owncast";
       examples."Enable owncast" = {
         module = ./services/owncast/examples/basic.nix;
-        tests.basic.module = pkgs.nixosTests.owncast;
+        tests.basic.module = ./services/owncast/tests/basic.nix;
       };
     };
   };

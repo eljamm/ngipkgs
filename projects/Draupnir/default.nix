@@ -28,13 +28,13 @@
       module = lib.moduleLocFromOptionString "services.draupnir";
       examples."Enable Draupnir" = {
         module = ./example.nix;
-        tests.basic.module = pkgs.nixosTests.draupnir;
+        tests.basic.module = ./services/Draupnir/tests/basic.nix;
       };
     };
     demo.vm = {
       module = ./example.nix;
       description = "Deployment for demo purposes";
-      tests.basic.module = pkgs.nixosTests.draupnir;
+      tests.basic.module = ./services/Draupnir/tests/basic.nix;
       problem.broken.reason = ''
         Still a work in progress.
       '';

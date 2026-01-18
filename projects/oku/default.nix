@@ -19,7 +19,7 @@
       module = ./programs/oku/module.nix;
       examples."Enable Oku" = {
         module = ./programs/oku/examples/basic.nix;
-        tests.basic.module = pkgs.nixosTests.oku;
+        tests.basic.module = ./services/oku/tests/basic.nix;
       };
     };
   };
@@ -41,6 +41,6 @@
       }
     ];
 
-    tests.basic.module = pkgs.nixosTests.oku;
+    tests.basic.module = ./services/oku/tests/basic.nix;
   };
 }

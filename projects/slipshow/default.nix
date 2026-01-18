@@ -20,7 +20,7 @@
       examples.basic = {
         module = ./programs/slipshow/examples/basic.nix;
         description = "Enable the slipshow program";
-        tests.basic.module = pkgs.nixosTests.slipshow;
+        tests.basic.module = ./services/slipshow/tests/basic.nix;
       };
     };
   };
@@ -29,6 +29,6 @@
     module = ./programs/slipshow/examples/basic.nix;
     module-demo = ./module-demo.nix;
     description = "slipshow example";
-    tests.basic.module = pkgs.nixosTests.slipshow;
+    tests.basic.module = ./services/slipshow/tests/basic.nix;
   };
 }

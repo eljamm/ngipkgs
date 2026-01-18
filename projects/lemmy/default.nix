@@ -37,7 +37,7 @@
       module = lib.moduleLocFromOptionString "services.lemmy";
       examples."Enable lemmy" = {
         module = ./services/lemmy/examples/basic.nix;
-        tests.basic.module = pkgs.nixosTests.lemmy;
+        tests.basic.module = ./services/lemmy/tests/basic.nix;
       };
     };
   };

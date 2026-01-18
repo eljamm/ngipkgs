@@ -34,13 +34,13 @@
     module = lib.moduleLocFromOptionString "services.corteza";
     examples."Enable Corteza" = {
       module = ./example.nix;
-      tests.basic.module = pkgs.nixosTests.corteza;
+      tests.basic.module = ./services/Corteza/tests/basic.nix;
     };
   };
 
   nixos.demo.vm = {
     module = ./demo-vm.nix;
     description = "Deployment for demo purposes";
-    tests.basic.module = pkgs.nixosTests.corteza;
+    tests.basic.module = ./services/Corteza/tests/basic.nix;
   };
 }

@@ -31,7 +31,7 @@ in
       module = ./module.nix;
       examples."Enable Galene" = {
         module = ./example.nix;
-        tests.basic.module = pkgs.nixosTests.galene.basic;
+        tests.basic.module = ./services/Galene/tests/basic.nix;
         tests.file-transfer.module = pkgs.nixosTests.galene.file-transfer;
         tests.stream.module = pkgs.nixosTests.galene.stream;
         tests.stream.problem.broken.reason = ''
@@ -74,6 +74,6 @@ in
         '';
       }
     ];
-    tests.basic.module = pkgs.nixosTests.galene.basic;
+    tests.basic.module = ./services/Galene/tests/basic.nix;
   };
 }

@@ -34,7 +34,7 @@
         # See https://github.com/NixOS/nixpkgs/blob/master/nixos/tests/taler/common/nodes.nix
         # TODO: render multi-file examples in the overview
         module = ./examples/basic/default.nix;
-        tests.basic.module = pkgs.nixosTests.taler.basic;
+        tests.basic.module = ./services/GNUTaler/tests/basic.nix;
         tests.basic.problem.broken.reason = ''
           Libeufin dependencies need to be updated
 

@@ -30,7 +30,7 @@
       module = ./module.nix;
       examples."Enable Cryptpad" = {
         module = ./demo.nix;
-        tests.basic.module = pkgs.nixosTests.cryptpad;
+        tests.basic.module = ./services/Cryptpad/tests/basic.nix;
       };
       links = {
         admin-guide = {
