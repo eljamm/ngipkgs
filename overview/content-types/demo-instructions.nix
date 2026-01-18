@@ -135,8 +135,9 @@ in
         let
           tests = lib.attrValues self.demo.tests;
           nullTests = lib.any (test: test.module == null) tests;
+          problem = self.demo.problem != null;
         in
-        if (self.demo.problem == null && !nullTests) then
+        if (!problem && !nullTests) then
           ''
             ${self.heading}
 
@@ -195,7 +196,7 @@ in
                   <a href="https://github.com/ngi-nix/ngipkgs/blob/main/maintainers/docs/project.md#libtest">Contribute tests for the demo.</a>
                 </li>
               ''
-              + lib.optionalString (self.demo.problem != null) ''
+              + lib.optionalString (!problem) ''
                 <li><span class="option-alert">Problem</span> ${
                   lib.concatMapAttrsStringSep "\n" (name: value: value.reason) self.demo.problem
                 }</li>
