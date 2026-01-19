@@ -868,7 +868,7 @@ rec {
   test = types.submodule {
     options = {
       module = mkOption {
-        type = with types; nullOr (either path package);
+        type = with types; nullOr deferredModule;
         default = null;
         description = "NixOS test module";
       };
