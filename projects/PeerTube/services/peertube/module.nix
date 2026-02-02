@@ -26,7 +26,7 @@ in
       default = [ ];
       example = lib.literalExpression ''
         with pkgs; [
-          peertube-plugins.hello-world
+          peertube-plugin-hello-world
         ]
       '';
       description = ''

@@ -27,8 +27,8 @@
       enable = true;
       plugins = with pkgs; [
         peertube-theme-dark
-        peertube-plugins.video-annotation
-        peertube-plugins.livechat
+        peertube-plugin-video-annotation
+        peertube-plugin-livechat
       ];
     };
 

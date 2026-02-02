@@ -2,6 +2,7 @@
   lib,
   buildNpmPackage,
   fetchFromGitLab,
+  peertube-plugin-akismet,
 }:
 buildNpmPackage (finalAttrs: {
   pname = "peertube-plugin-auth-openid-connect";
@@ -12,7 +13,8 @@ buildNpmPackage (finalAttrs: {
     owner = "framasoft";
     repo = "peertube/official-plugins";
     rev = "b0f4f4ba5c6708ebade66dc1b17000ca640ad9e9";
-    hash = "sha256-6yFcBmtKKSD6mfVAQsHDXaxb8i9t4LvN2eelQrjL7Hc=";
+    sparseCheckout = [ "peertube-plugin-auth-openid-connect" ];
+    hash = "sha256-UMdiEe7lYcgkBvh50hmJgDrOdRGpMrOCHoon/tFF5VM=";
   };
 
   sourceRoot = "${finalAttrs.src.name}/peertube-plugin-auth-openid-connect";
@@ -21,11 +23,13 @@ buildNpmPackage (finalAttrs: {
 
   dontNpmBuild = true;
 
+  passthru.updateScript = peertube-plugin-akismet.peertubeOfficialPluginsUpdateScript;
+
   meta = {
     description = "Add OpenID Connect support to login form in PeerTube";
     homepage = "https://framagit.org/framasoft/peertube/official-plugins/tree/master/peertube-plugin-auth-openid-connect";
     license = lib.licenses.agpl3Only;
+    maintainers = with lib.maintainers; [ ];
     platforms = lib.platforms.unix;
-    teams = with lib.teams; [ ngi ];
   };
 })

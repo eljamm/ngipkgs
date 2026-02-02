@@ -19,7 +19,7 @@
 
         services.peertube = {
           plugins.plugins = lib.mkForce [
-            pkgs.peertube-plugins.livechat
+            pkgs.peertube-plugin-livechat
           ];
           # Needed to get output detected by test
           settings.log.level = "debug";
