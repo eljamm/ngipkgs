@@ -45,6 +45,13 @@
           ];
 
         boot.kernelPackages = pkgs.linuxPackages_latest;
+
+        environment.systemPackages = with pkgs; [
+          jq
+          nodejs
+          pnpm_10
+          neovim
+        ];
       };
   };
 
@@ -86,4 +93,6 @@
       with subtest("peertube plugin ${pkgs.peertube-plugin-hello-world.pname} works"):
           server.wait_for_console_text("hello world PeerTube admin")
     '';
+
+  interactive.sshBackdoor.enable = true;
 }
