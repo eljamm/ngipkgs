@@ -28,6 +28,9 @@
     });
   })
   (final: prev: {
+    peertube = final.callPackage ./by-name/peertube/package.nix { };
+  })
+  (final: prev: {
     # Remove on next release: https://github.com/NixOS/nixpkgs/pull/456442
     canaille = prev.canaille.overridePythonAttrs { doCheck = false; };
     python3 = prev.python3.override {
