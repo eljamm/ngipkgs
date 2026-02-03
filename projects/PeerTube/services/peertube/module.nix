@@ -114,76 +114,60 @@ in
 
           environment = env;
 
-          script =
-            let
-              nixosPluginsJson = pkgs.writeText "nixos-plugins.json" (
-                builtins.toJSON (map (plugin: plugin.pname) cfg.plugins)
-              );
-            in
-            lib.getExe (
-              pkgs.writeShellApplication {
-                name = "peertube-plugins${lib.optionalString (!configured) "-initial"}-script";
+          script = lib.getExe (
+            pkgs.writeShellApplication {
+              name = "peertube-plugins${lib.optionalString (!configured) "-initial"}-script";
 
-                runtimeInputs =
-                  with pkgs;
-                  [
-                    jq
-                    nodejs
-                    pnpm_10
-                    coreutils
-                    bash
-                  ]
-                  ++ lib.optionals (!configured) [
-                    iproute2
-                  ];
+              runtimeInputs =
+                with pkgs;
+                [
+                  jq
+                  nodejs
+                  pnpm_10
+                  moreutils
+                ]
+                ++ lib.optionals (!configured) [
+                  iproute2
+                ];
 
-                text = ''
-                  set -euox pipefail
+              text = ''
+                set -euox pipefail
 
-                  ${lib.optionalString (!configured) ''
-                    # Ensure peertube is done configuring & running (HACK)
-                    while ! ss -H -t -l -n sport = :${toString peerCfg.listenWeb} | grep -q "^LISTEN.*:${toString peerCfg.listenWeb}"; do
-                      sleep 1
-                    done
-                  ''}
+                ${lib.optionalString (!configured) ''
+                  # Ensure peertube is done configuring & running (HACK)
+                  while ! ss -H -t -l -n sport = :${toString peerCfg.listenWeb} | grep -q "^LISTEN.*:${toString peerCfg.listenWeb}"; do
+                    sleep 1
+                  done
+                ''}
 
-                  if [ -e "${peerCfg.settings.storage.plugins}package.json" ]; then
-                    packages_hash_pre="$(sha256sum ${peerCfg.settings.storage.plugins}package.json)"
-                  else
-                    packages_hash_pre=""
-                  fi
+                PLUGINS_DIR="${peerCfg.settings.storage.plugins}"
 
-                  # To install packages offline from their caches, configure NPM to behave
-                  npmfun="$(mktemp -d)"
-                  export NPM_CONFIG_USERCONFIG="$npmfun"/.npmrc
-                  pnpm config set offline false
-                  pnpm config set progress false
-                  pnpm config set loglevel verbose
+                if [ ! -d "$PLUGINS_DIR/node_modules" ]; then
+                  mkdir -p "$PLUGINS_DIR/node_modules"
+                fi
 
-                  ${lib.concatMapStrings (plugin: ''
-                    pnpm config set cache ${plugin.npmDeps or "/no-npm-deps"}
-                    echo "Running installer for ${plugin}/lib/node_modules/${plugin.pname}"
-                    node ${peerCfg.package}/dist/scripts/plugin/install.js -p ${plugin}/lib/node_modules/${plugin.pname}
-                  '') cfg.plugins}
+                echo '{"dependencies": {}}' > "$PLUGINS_DIR/package.json"
 
-                  if [ -e "${peerCfg.settings.storage.plugins}nixos-plugins.json" ]; then
-                    for plugin in $(jq --slurp --raw-output '.[0] - .[1] | .[]' ${peerCfg.settings.storage.plugins}nixos-plugins.json ${nixosPluginsJson}); do
-                      # ignore trailing newline
-                      [ -z "$plugin" ] && continue
-                      echo "Removing plugin $plugin (even on success, a (wrong) error message is returned)"
-                      node ${peerCfg.package}/dist/scripts/plugin/uninstall.js -n "$plugin"
-                    done
-                  fi
+                ${lib.concatMapStringsSep "\n" (pkg: ''
+                  PLUGIN_NAME="${pkg.pname}"
+                  PLUGIN_PATH="${pkg}/lib/node_modules/$PLUGIN_NAME"
 
-                  rm -r "$npmfun"
+                  echo "Linking plugin: $PLUGIN_NAME"
+                  ln -sfn "$PLUGIN_PATH" "$PLUGINS_DIR/node_modules/$PLUGIN_NAME"
 
-                  ln -sf ${nixosPluginsJson} ${peerCfg.settings.storage.plugins}nixos-plugins.json
+                  # Update package.json.
+                  # This tells PeerTube that the plugin is installed.
+                  jq \
+                    --arg name "$PLUGIN_NAME" \
+                    --arg path "file:$PLUGIN_PATH" \
+                    '.dependencies[$name] = $path' \
+                    "$PLUGINS_DIR/package.json" | sponge package.json
+                '') cfg.plugins}
 
-                  packages_hash_post="$(sha256sum ${peerCfg.settings.storage.plugins}package.json)"
-                  [ "$packages_hash_pre" = "$packages_hash_post" ] || touch ${peerCfg.settings.storage.plugins}.restart
-                '';
-              }
-            );
+                touch ${peerCfg.settings.storage.plugins}.restart
+              '';
+            }
+          );
 
           serviceConfig = {
             ExecCondition =
