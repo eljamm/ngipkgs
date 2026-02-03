@@ -161,7 +161,8 @@ in
                     --arg name "$PLUGIN_NAME" \
                     --arg path "file:$PLUGIN_PATH" \
                     '.dependencies[$name] = $path' \
-                    "$PLUGINS_DIR/package.json" | sponge package.json
+                    "$PLUGINS_DIR/package.json" > "$PLUGINS_DIR/package.json.tmp" \
+                    && mv "$PLUGINS_DIR/package.json.tmp" "$PLUGINS_DIR/package.json"
                 '') cfg.plugins}
 
                 touch ${peerCfg.settings.storage.plugins}.restart
@@ -199,12 +200,12 @@ in
             # Sandboxing
             RestrictAddressFamilies = [ ];
 
-            # # System Call Filtering
-            # SystemCallFilter = [
-            #   ("~" + lib.concatStringsSep " " systemCallsList)
-            #   "pipe"
-            #   "pipe2"
-            # ];
+            # System Call Filtering
+            SystemCallFilter = [
+              ("~" + lib.concatStringsSep " " systemCallsList)
+              "pipe"
+              "pipe2"
+            ];
           }
           // cfgService;
         }
