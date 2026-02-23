@@ -1,0 +1,39 @@
+error:
+       … while evaluating attribute 'pname'
+         at /nix/store/jkmw6jhri8frhh0kkckx262dwavzin6n-nix-update-1.14.0/lib/python3.13/site-packages/nix_update/eval.nix:105:3:
+          104|   name = pkg.name;
+          105|   pname = pkg.pname;
+             |   ^
+          106|   old_version = pkg.version or (builtins.parseDrvName pkg.name).version;
+
+       error: attribute 'pname' missing
+       at /nix/store/jkmw6jhri8frhh0kkckx262dwavzin6n-nix-update-1.14.0/lib/python3.13/site-packages/nix_update/eval.nix:105:11:
+          104|   name = pkg.name;
+          105|   pname = pkg.pname;
+             |           ^
+          106|   old_version = pkg.version or (builtins.parseDrvName pkg.name).version;
+       Did you mean name?
+Traceback (most recent call last):
+  File "/nix/store/jkmw6jhri8frhh0kkckx262dwavzin6n-nix-update-1.14.0/bin/.nix-update-wrapped", line 9, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "/nix/store/jkmw6jhri8frhh0kkckx262dwavzin6n-nix-update-1.14.0/lib/python3.13/site-packages/nix_update/__init__.py", line 467, in main
+    package = update(options)
+  File "/nix/store/jkmw6jhri8frhh0kkckx262dwavzin6n-nix-update-1.14.0/lib/python3.13/site-packages/nix_update/update.py", line 193, in update
+    package = eval_attr(opts)
+  File "/nix/store/jkmw6jhri8frhh0kkckx262dwavzin6n-nix-update-1.14.0/lib/python3.13/site-packages/nix_update/eval.py", line 144, in eval_attr
+    res = run(cmd)
+  File "/nix/store/jkmw6jhri8frhh0kkckx262dwavzin6n-nix-update-1.14.0/lib/python3.13/site-packages/nix_update/utils.py", line 54, in run
+    return subprocess.run(
+           ~~~~~~~~~~~~~~^
+        command,
+        ^^^^^^^^
+    ...<5 lines>...
+        env=env,
+        ^^^^^^^^
+    )
+    ^
+  File "/nix/store/slhpx9glq7vl99bwi93bgrhn3syv98s1-python3-3.13.11/lib/python3.13/subprocess.py", line 577, in run
+    raise CalledProcessError(retcode, process.args,
+                             output=stdout, stderr=stderr)
+subprocess.CalledProcessError: Command '['nix-instantiate', '--eval', '--json', '--strict', '/nix/store/jkmw6jhri8frhh0kkckx262dwavzin6n-nix-update-1.14.0/lib/python3.13/site-packages/nix_update/eval.nix', '--argstr', 'importPath', '/tmp/nix-shell-33139-304441422/tmpkns28_92/nixpkgs', '--argstr', 'attribute', '["openfire"]', '--arg', 'isFlake', 'false', '--arg', 'sanitizePositions', 'true']' returned non-zero exit status 1.
