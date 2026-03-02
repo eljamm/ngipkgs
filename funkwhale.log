@@ -1,0 +1,19 @@
+Traceback (most recent call last):
+  File "/nix/store/jkmw6jhri8frhh0kkckx262dwavzin6n-nix-update-1.14.0/bin/.nix-update-wrapped", line 9, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "/nix/store/jkmw6jhri8frhh0kkckx262dwavzin6n-nix-update-1.14.0/lib/python3.13/site-packages/nix_update/__init__.py", line 467, in main
+    package = update(options)
+  File "/nix/store/jkmw6jhri8frhh0kkckx262dwavzin6n-nix-update-1.14.0/lib/python3.13/site-packages/nix_update/update.py", line 209, in update
+    update_hash = update_version(
+        opts,
+    ...<3 lines>...
+        opts.version_regex,
+    )
+  File "/nix/store/jkmw6jhri8frhh0kkckx262dwavzin6n-nix-update-1.14.0/lib/python3.13/site-packages/nix_update/update.py", line 113, in update_version
+    new_version = fetch_new_version(opts, package, version, preference, version_regex)
+  File "/nix/store/jkmw6jhri8frhh0kkckx262dwavzin6n-nix-update-1.14.0/lib/python3.13/site-packages/nix_update/update.py", line 103, in fetch_new_version
+    return fetch_latest_version(package.parsed_url, config)
+  File "/nix/store/jkmw6jhri8frhh0kkckx262dwavzin6n-nix-update-1.14.0/lib/python3.13/site-packages/nix_update/version/__init__.py", line 203, in fetch_latest_version
+    raise VersionError(msg)
+nix_update.errors.VersionError: Found an unstable version 2.0.0-rc20, which is being ignored. To update to unstable version, please use '--version=unstable'
