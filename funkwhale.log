@@ -1,0 +1,42 @@
+warning: Git tree '/tmp/nix-shell-18255-3389247448/tmptz1qdj9b/nixpkgs' is dirty
+Traceback (most recent call last):
+  File "/nix/store/jkmw6jhri8frhh0kkckx262dwavzin6n-nix-update-1.14.0/bin/.nix-update-wrapped", line 9, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "/nix/store/jkmw6jhri8frhh0kkckx262dwavzin6n-nix-update-1.14.0/lib/python3.13/site-packages/nix_update/__init__.py", line 467, in main
+    package = update(options)
+  File "/nix/store/jkmw6jhri8frhh0kkckx262dwavzin6n-nix-update-1.14.0/lib/python3.13/site-packages/nix_update/update.py", line 230, in update
+    update(subpackage_opts)
+    ~~~~~~^^^^^^^^^^^^^^^^^
+  File "/nix/store/jkmw6jhri8frhh0kkckx262dwavzin6n-nix-update-1.14.0/lib/python3.13/site-packages/nix_update/update.py", line 232, in update
+    update_dependency_hashes(opts, package, update_hash=update_hash)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/nix/store/jkmw6jhri8frhh0kkckx262dwavzin6n-nix-update-1.14.0/lib/python3.13/site-packages/nix_update/dependency_hashes.py", line 177, in update_dependency_hashes
+    updater(opts, package.filename, dep_value)
+    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/nix/store/jkmw6jhri8frhh0kkckx262dwavzin6n-nix-update-1.14.0/lib/python3.13/site-packages/nix_update/dependency_hashes.py", line 102, in update_hash_with_prefetch
+    target_hash = nix_prefetch(opts, attr_name)
+  File "/nix/store/jkmw6jhri8frhh0kkckx262dwavzin6n-nix-update-1.14.0/lib/python3.13/site-packages/nix_update/dependency_hashes.py", line 91, in nix_prefetch
+    raise UpdateError(msg)
+nix_update.errors.UpdateError: failed to retrieve hash when trying to update funkwhale.frontend.yarnOfflineCache
+--- nix stderr (last 20 lines) ---
+    at main (/nix/store/09hq2mx7rlgsiydf4fhvrs60d5r24wrm-prefetch-yarn-deps-26.05pre-git/libexec/index.js:204:11)
+error: Cannot build '/nix/store/4k6c1nivcf4mj5qg095z8vi3qnjh8cbs-offline.drv'.
+       Reason: builder failed with exit code 1.
+       Output paths:
+         /nix/store/9nyg6qj21776n21jvrcww9q0bi22bwxh-offline
+       Last 12 log lines:
+       > Running phase: patchPhase
+       > Running phase: updateAutotoolsGnuConfigScriptsPhase
+       > Running phase: configurePhase
+       > no configure script, doing nothing
+       > Running phase: buildPhase
+       > SyntaxError: Unknown token: { line: 3, col: 2, type: 'INVALID', value: undefined } 3:2 in lockfile
+       >     at Parser.unexpected (/nix/store/09hq2mx7rlgsiydf4fhvrs60d5r24wrm-prefetch-yarn-deps-26.05pre-git/libexec/yarnpkg-lockfile.js:5064:11)
+       >     at Parser.parse (/nix/store/09hq2mx7rlgsiydf4fhvrs60d5r24wrm-prefetch-yarn-deps-26.05pre-git/libexec/yarnpkg-lockfile.js:5193:14)
+       >     at parse (/nix/store/09hq2mx7rlgsiydf4fhvrs60d5r24wrm-prefetch-yarn-deps-26.05pre-git/libexec/yarnpkg-lockfile.js:5262:17)
+       >     at module.exports.exports.default (/nix/store/09hq2mx7rlgsiydf4fhvrs60d5r24wrm-prefetch-yarn-deps-26.05pre-git/libexec/yarnpkg-lockfile.js:4835:96)
+       >     at prefetchYarnDeps (/nix/store/09hq2mx7rlgsiydf4fhvrs60d5r24wrm-prefetch-yarn-deps-26.05pre-git/libexec/index.js:159:29)
+       >     at main (/nix/store/09hq2mx7rlgsiydf4fhvrs60d5r24wrm-prefetch-yarn-deps-26.05pre-git/libexec/index.js:204:11)
+       For full logs, run:
+         nix log /nix/store/4k6c1nivcf4mj5qg095z8vi3qnjh8cbs-offline.drv
